@@ -93,7 +93,7 @@
               icon: "users",
               url: "/partyMember/member"
             },
-
+            
             {
               pid: 1,
               name: "党员变更",
@@ -163,7 +163,7 @@
           url: "/quanxian",
           children: []
         },
-
+        
         // {
         //   id: 7,
         //   name: "测试专用",
@@ -302,10 +302,10 @@
   	font-size:14px;
   	border: 1px solid black;
   	span{
-  		border-bottom:1px solid transparent;
+  		border-bottom:1px solid transparent; 		
   	&:hover{
   		cursor:pointer;
-			border-bottom:1px solid #FF0000;
+			border-bottom:1px solid #FF0000; 		
   	}
   	}
   }

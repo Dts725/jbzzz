@@ -7,26 +7,9 @@
 
     <!--<div class="app-con">-->
     <!--<sidebar class="sidebar-container"></sidebar>-->
-    <div class="menu-con">
-		    <menus class="sidebar-container" :menus="menus" @selected="selected">
-		    </menus>
-		    <div class='tr'>
-		    	<span @click="dialogVisible = true" class="ou">市委组织部党建指导员    欧晓明</span>
-		    	<span @click="dialogVisible1 = true">市委组织部党建指导员    卫华韵</span>
-		    </div>
-		    <el-dialog
-				  :visible.sync="dialogVisible"
-				  width="840px"
-				  :before-close="handleClose" class='biaodan'>
-				  <img src="../../../static/22.jpg"/>
-			</el-dialog>
-			<el-dialog
-				  :visible.sync="dialogVisible1"
-				  width="840px"
-				  :before-close="handleClose" class='biaodan'>
-				  <img src="../../../static/11.jpg"/>
-			</el-dialog>
-    </div>
+    <!--<div class="menu-con">-->
+    <menus class="sidebar-container" :menus="menus" @selected="selected"></menus>
+    <!--</div>-->
     <div class="main-container">
       <navbar></navbar>
       <app-main></app-main>
@@ -53,10 +36,8 @@
     mixins: [ResizeMixin],
     data() {
       return {
-        menus: [],
-        dialogVisible:false,
-      	dialogVisible1:false,
-      }
+        menus: []
+      };
     },
     computed: {
       sidebar() {
@@ -93,7 +74,7 @@
               icon: "users",
               url: "/partyMember/member"
             },
-
+            
             {
               pid: 1,
               name: "党员变更",
@@ -156,14 +137,6 @@
           url: "/contacts",
           children: []
         },
-       	{
-          id: 9,
-          name: "权限管理",
-          icon: "calendar-minus-o",
-          url: "/quanxian",
-          children: []
-        },
-
         // {
         //   id: 7,
         //   name: "测试专用",
@@ -288,30 +261,5 @@
 
   .menu-con {
     padding-top: 2rem;
-  }
-  .tr{
-  	text-align: center;
-  	position:fixed;
-  	bottom:10px;
-  	left: 10px;
-  	height: 100px;
-  	width: 200px;
-  	z-index:2000;
-  	color: red;
-  	/*background:red ;*/
-  	font-size:14px;
-  	border: 1px solid black;
-  	span{
-  		border-bottom:1px solid transparent;
-  	&:hover{
-  		cursor:pointer;
-			border-bottom:1px solid #FF0000;
-  	}
-  	}
-  }
-  .ou{
-  	display: block;
-  	margin-top: 20px;
-  	margin-bottom: 20px;
   }
 </style>

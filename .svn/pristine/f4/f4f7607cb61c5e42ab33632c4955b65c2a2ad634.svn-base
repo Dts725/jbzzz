@@ -1,0 +1,1132 @@
+<template>
+  <div class="app-container">
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar" :thead="thead" :actionBar="actionBar"></list>
+
+    <!-- 新建 编辑 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="15vh" width="1080px">
+      <el-form :model="addForm" :rules="rules" ref="addForm" label-width="120px" class="demo-ruleForm">
+        <!--<el-row :gutter="20">-->
+        <!-- <el-upload class="avatar-uploader" :action="this.uploadURL" name="file" :headers="headers" :show-file-list="false" :on-success="handlePictureCardPreview" :before-upload="beforeAvatarUpload">
+                                      <img v-if="image" :src="imgUrl+image" class="img_border">
+                                      <i v-else class="el-icon-plus avatar-uploader-icon" :class="{is_border: !image}"></i>
+                                      <span class="upload_btn" v-if="!image">上传图片</span>
+                                      <span v-else class="upload_btn">更换图片</span>
+                                    </el-upload>
+                                    <span class="del_img" v-show="image">
+                                      <i class="el-icon-circle-close" @click="deleteImg"></i>
+                                    </span> -->
+
+        <div @click="attendFlag()">
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="活动名称" prop="active_name">
+                <el-input v-model="addForm.active_name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="活动类别" prop="active_type">
+                <el-input v-model="addForm.active_type"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="活动时间" prop="active_date">
+                <el-date-picker v-model="addForm.active_date" type="datetime" align="left" value-format="timestamp" placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="活动地点" prop="active_place">
+                <el-input v-model="addForm.active_place"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="主持人" prop="active_host">
+                <el-input v-model="addForm.active_host"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="党组织名" prop="active_organization_id">
+                <el-select v-model="addForm.active_organization_id" placeholder="请选择">
+                  <el-option v-for="item in options_organization" :key="item.index" :label="item.label" :value="String(item.index)">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="应到人数" prop="active_should_number">
+                <el-input v-model="addForm.active_should_number"></el-input>
+              </el-form-item>
+
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="实到人数" prop="active_actual_number">
+                <el-input v-model="addForm.active_actual_number"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+
+
+        <div @click='attend'>
+          <el-row :span="24 ">
+            <el-form-item label="出席人" prop="active_attend">
+              <div class="attend-join" disabled>{{checkedCities.join(",")}}</div>
+            </el-form-item>
+          </el-row>
+        </div>
+
+
+        <!--出席人数具体名单-->
+
+
+        <el-row v-show="attendNum" class="attend-parent overflow-auto h8vh padding-5">
+          <el-col :span="24">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChangeAttend">全选</el-checkbox>
+            <div style="margin: 15px 0;"></div>
+            <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChangeAttend" class="attend ">
+              <el-checkbox class="w20 item" v-for="(city,index) in cities" :label="city" :key="city" true-label @click.native="submitAttendUserId(index)">{{city}}</el-checkbox>
+            </el-checkbox-group>
+          </el-col>
+        </el-row>
+
+
+        <div @click='activeAbsence'>
+          <el-row :span="24">
+            <el-form-item label="缺席人" prop="active_absence_number">
+              <div class="attend-join">{{checkedCitiesReserve.join(",")}}</div>
+            </el-form-item>
+          </el-row>
+        </div>
+
+
+
+
+        <!--缺席人数具体名单-->
+
+
+        <el-row v-show="activeAbsenceFlag" class="attend-parent overflow-auto h8vh padding-5">
+          <el-col :span="24">
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChangeAbsence">全选</el-checkbox>
+            <div style="margin: 15px 0;"></div>
+            <el-checkbox-group v-model="checkedCitiesReserve" @change="handleCheckedCitiesChangeAbsence" class="attend ">
+              <el-checkbox class="w20 item" v-for="(city,index) in activeAbsenceList" :label="city" :key="city" true-label @click.native="activeAbsenceUserId(index)"></el-checkbox>
+            </el-checkbox-group>
+          </el-col>
+        </el-row>
+        <div @click="attendFlag">
+          <el-row>
+            <el-form-item label="活动内容" prop="content">
+              <quill-editor v-model="addForm.content" ref="myQuillEditor" class="editer" :options="editorOption" @ready="onEditorReady($event)"></quill-editor>
+            </el-form-item>
+          </el-row>
+          <br /><br />
+
+          <el-row>
+            <br />
+            <br />
+            <el-form-item label="活动照片">
+              <div class="allPics">
+                <!--v-bind:class="{allPics:imgList.length>0}" -->
+
+                <input type="file" name="file" multiple @change="uploadPic" class="imgInput">
+                <span v-for="(data,i) in imgList" :key="i" style="position:relative;">
+                                        <img :src="imgUrl+imgList[i]" alt="" class="addPic">
+                                        <i class="el-icon-circle-close" style="position:absolute;top: 1px;left: 144px;color:blue;cursor:pointer;" @click="delImgList(i)"></i>
+                                      </span>
+
+              </div>
+            </el-form-item>
+          </el-row>
+
+          <el-form-item style="margin-left:0px;text-align: right;margin-right:60px;">
+            <el-button type="primary" @click.stop="submitAddForm('addForm', dialogType)">确定</el-button>
+            <el-button @click="resetAddForm('addForm')">取消</el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+
+    </el-dialog>
+
+    <!-- 详情 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialogInfo" center top="15vh" width="720px">
+      <div class="activeInfo-all">
+        <el-row>
+          <el-col :span="12">
+            <div class="activeInfo-a">
+              <span>活动名称：</span>{{addForm.active_name}}
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="activeInfo-b">
+              <span>活动时间：</span>{{dateformat.format(new Date(Number(addForm.active_date)))}}
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <div class="activeInfo-c">
+              <span>活动地点：</span>{{addForm.active_place}}
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="activeInfo-d">
+              <span>活动类别：</span>{{addForm.active_type}}
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <div class="activeInfo-e">
+              <span>所属党组织：</span>{{addForm.organization_name}}
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="activeInfo-e">
+              <span>主持人：</span>{{addForm.active_host}}
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <div class="activeInfo-h">
+              <span>应到人数：</span> {{addForm.active_should_number}}
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="activeInfo-g">
+              <span>实到人数：</span>{{addForm.active_actual_number}}
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <div class="activeInfo-f">
+            <span>出席人：</span> <br />
+            <div class="activeInfo-textIndent">
+              {{addForm.active_attend_name}}
+            </div>
+          </div>
+        </el-row>
+
+        <el-row>
+          <div class="activeInfo-i">
+            <span>缺席人：</span> <br />
+            <div class="activeInfo-textIndent">
+              {{addForm.active_absence_name}}
+            </div>
+          </div>
+        </el-row>
+
+        <el-row>
+          <div class="activeInfo-j">
+            <span>内容：</span>
+            <div class="activeInfo-textIndent" v-html="addForm.content"></div>
+          </div>
+        </el-row>
+
+        <el-row>
+          <div class="activeInfo-k ">
+            <span>照片：</span>
+            <div class="activeInfo-imgs clearFloat">
+              <div class="leftFloat" v-for="(data,i) in addForm.photo" :key="i">
+                <img :src="imgUrl+addForm.photo[i]" alt="">
+              </div>
+            </div>
+          </div>
+        </el-row>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import {
+    getList2,
+    getDetail
+  } from '@/api/member';
+
+  import http from "@/api/http";
+  import list from "@/components/TableList";
+  import {
+    Message,
+    MessageBox
+  } from "element-ui";
+  import $axios from "axios";
+  import {
+    quillEditor
+  } from "vue-quill-editor";
+
+  export default {
+    components: {
+      list,
+      quillEditor
+    },
+    data() {
+      return {
+        activeAbsenceFlag: false, //是否显示缺席人列表
+        /** *************** 引用的表格的  start *************** **/
+        listLoading: true,
+        /** *************** 选择*************** **************************************************************/
+        checkedCities: [],
+        checkedCitiesReserve: [],
+        attendNum: false, //标记是否点中出席
+        checkAll: false,
+        cities: [],
+        activeAbsenceList: [],
+        isIndeterminate: true,
+        // 列表头部的功能区--key为搜索的字段名
+        topBar: [{
+            name: "新增",
+            type: "success",
+            class: "",
+            fun: this.newRole
+          },
+          {
+            name: "搜索",
+            key: "active_name",
+            searchTipCon: "请输入搜索内容",
+            class: ""
+          }
+          // useNewBtn: {
+          //   btnName: "新增",
+          //   btnClass: "",
+          //   btnType: "success",
+          //   keys: [],
+          //   fun: this.newRole
+          // },
+          // useSearch: {
+          //   key: "active_name",
+          //   btnName: "搜索",
+          //   searchTipCon: "请输入搜索内容"
+          // }
+        ],
+        // 表格头- 是否可选
+        canSelect: false,
+        // 表格头- 索引序号
+        indexBar: {
+          name: "编号",
+          key: "auto",
+          width: "60"
+        },
+        // 表格头 - 字段内容
+        thead: [
+          // { name: "编号", key: "active_id" },
+          {
+            name: "活动名称",
+            key: "active_name"
+          },
+          {
+            name: "时间",
+            key: "active_date"
+          },
+          {
+            name: "地点",
+            key: "active_place"
+          },
+          {
+            name: "类别",
+            key: "active_type"
+          },
+          {
+            name: "所属党组织",
+            key: "organization_name"
+          }
+          // { name: "主持人", key: "active_host" }
+        ],
+        update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
+        // 表格头 - 最右边的功能区
+        actionBar: [{
+            name: "详情",
+            fun: this.info,
+            type: "info"
+          },
+          {
+            name: "编辑",
+            fun: this.edit,
+            type: "success"
+          },
+          {
+            name: "删除",
+            fun: this.delete,
+            type: "danger"
+          }
+        ],
+        /** *************** 引用的表格的  end *************** **/
+
+        /** *************** 弹窗的  start *************** **/
+        showDialog: false, //新建、编辑
+        showDialogInfo: false, //详情
+        dialogTitle: "", // 弹窗标题
+        dialogType: "", // 弹窗类型  用来区分新增或编辑
+        active_attend_userID: [], //varchar(20) DEFAULT NULL COMMENT '出席人ID'
+        active_attend_userID_select: [],
+        active_absence_userID: [], //varchar(20) DEFAULT NULL COMMENT '缺席人ID'
+        active_absence_userID_select: [],
+
+        // 新增弹出表单
+        addForm: {
+          // CREATE TABLE `active` (
+          id: "", //int(11) NOT NULL AUTO_INCREMENT COMMENT '活动id'
+          active_name: "", //` varchar(50) DEFAULT NULL COMMENT '活动名称'
+          active_date: "", //varchar(20) DEFAULT NULL COMMENT '活动时间'
+          active_place: "", //varchar(255) DEFAULT NULL COMMENT '活动地点'
+          active_type: "", //varchar(50) DEFAULT NULL COMMENT '活动类别'
+          active_host: "", //varchar(20) DEFAULT NULL COMMENT '主持人'
+          active_attend: "", //varchar(20) DEFAULT NULL COMMENT '出席人'
+          active_attend_name: "", //varchar(20) DEFAULT NULL COMMENT '出席人'
+          active_absence: "", //varchar(20) DEFAULT NULL COMMENT '缺席人'
+          active_absence_name: "", //varchar(20) DEFAULT NULL COMMENT '缺席人'
+          active_actual_number: "", //varchar(20) DEFAULT NULL COMMENT '实到人数'
+          active_should_number: "", //varchar(20) DEFAULT NULL COMMENT '应到人数'
+
+          content: "", //text COMMENT '内容'
+          photo: "" //longtext COMMENT '照片'
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='活动表';
+        },
+        //上传图片路径
+        image: "",
+        imgList: [],
+        //日期
+        activateDate: "",
+        //党组织名下拉列表
+        options_organization: [],
+        // //内容
+        // content: "",
+        //富文本编辑器工具 https://github.com/surmon-china/vue-quill-editor/blob/master/examples/04-example.vue
+        editorOption: {
+          modules: {
+            toolbar: [
+              [{
+                size: ["small", false, "large", "huge"]
+              }],
+              ["bold", "italic"],
+              [{
+                  color: []
+                },
+                {
+                  background: []
+                }
+              ],
+              [{
+                  list: "ordered"
+                },
+                {
+                  list: "bullet"
+                }
+              ],
+              ["image"],
+              ["clean"]
+            ],
+            syntax: {
+              highlight: text => hljs.highlightAuto(text).value
+            }
+          }
+        },
+        // 表单验证规则
+        rules: {
+          organization_name: [{
+              required: true,
+              message: "请输党组织名字",
+              trigger: "blur"
+            },
+            {
+              min: 2,
+              max: 30,
+              message: "长度在 2 到 30 个字符",
+              trigger: "blur"
+            }
+          ],
+          organization_part: [{
+              required: true,
+              message: "请输入牵头部门",
+              trigger: "blur"
+            },
+            {
+              min: 2,
+              max: 30,
+              message: "长度在 2 到 30 个字符",
+              trigger: "blur"
+            }
+          ],
+          organization_secretary_name: [{
+            required: true,
+            message: "请输入书记名字",
+            trigger: "blur"
+          }],
+          organization_deputy_secretary_name: [{
+            required: true,
+            message: "请输入副书记名字",
+            trigger: "blur"
+          }],
+          organization_contact_name: [{
+            required: true,
+            message: "请输入联系人",
+            trigger: "blur"
+          }],
+          organization_contact_phone: [{
+            required: true,
+            message: "请输入联系人电话",
+            trigger: "blur"
+          }],
+          organization_secretary_phone: [{
+            required: true,
+            message: "请输入书记电话",
+            trigger: "blur"
+          }],
+          organization_commissioner: [{
+            required: true,
+            message: "请输入委员",
+            trigger: "blur"
+          }],
+          organization_date: [{
+            required: true,
+            message: "请输入成立时间",
+            trigger: "change"
+          }]
+        },
+        // 角色列表
+        roleList: [],
+        // 社区列表
+        communityList: [],
+        /** *************** 弹窗的  end *************** **/
+        community_id: "", // 社区id
+        username: "",
+        url: "/active?page=1",
+
+        /** *************************** 假数据 *************************** **/
+        datas: []
+      };
+    },
+    created() {
+      this.init();
+    },
+    activated() {
+      this.init();
+    },
+
+
+    computed: {
+      editor() {
+        return this.$refs.myQuillEditor.quill;
+      },
+      headers() {
+        return {};
+      }
+    },
+    methods: {
+      //	-------------------------------------选择出席
+      handleCheckAllChangeAttend(val, el) {
+        // if (this.attendNum) {
+        this.checkedCities = val ? this.cities : [];
+        // this.addForm.active_attend_name = this.checkedCities
+        // } else {
+        //   this.checkedCitiesReserve = val ? this.activeAbsenceList : [];
+        //   this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
+        // }
+
+
+
+
+        this.isIndeterminate = false;
+      },
+      handleCheckedCitiesChangeAttend(value) {
+        console.log(this.checkedCities)
+        // this.addForm.active_attend_name = this.checkedCities;
+
+        console.log(this.addForm.active_attend_name)
+
+        let checkedCount = value.length;
+        this.checkAll = checkedCount === this.cities.length;
+        this.isIndeterminate =
+          checkedCount > 0 && checkedCount < this.cities.length;
+      },
+
+
+      // 选择缺席
+      handleCheckAllChangeAbsence(val) {
+
+        this.checkedCitiesReserve = val ? this.activeAbsenceList : [];
+        // this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
+        this.isIndeterminate = false;
+      },
+      handleCheckedCitiesChangeAbsence(value) {
+        // this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
+        let checkedCount = value.length;
+        this.checkAll = checkedCount === this.cities.length;
+        this.isIndeterminate =
+          checkedCount > 0 && checkedCount < this.cities.length;
+      },
+
+      init() {
+        // // 获取党组织名列表
+        http.get("/organization").then(res => {
+          if (res.code == 0) {
+            this.options_organization = [];
+            let data = res.data.data;
+            for (let i = 0; i < data.length; i++) {
+              this.options_organization.push({
+                index: data[i].id,
+                label: data[i].organization_name
+              });
+            }
+          }
+        });
+      },
+      /** 详情 **/
+      info(e, d) {
+        this.showDialogInfo = true;
+        this.dialogTitle = "党组织活动详情";
+        this.dialogType = "info";
+        http.http("active/" + d.id, "", "get").then(res => {
+          if (res.code == 0) {
+            this.addForm = res.data;
+            this.imgList = res.data.photo;
+          }
+        });
+      },
+      /** 新建 **/
+      newRole(e, d) {
+        this.showDialog = true;
+        this.dialogTitle = "新建党组织活动";
+        this.dialogType = "new";
+        this.initForm();
+      },
+      /** 编辑 **/
+      edit(e, d) {
+        this.showDialog = true;
+        this.dialogTitle = "编辑党组织活动";
+        this.dialogType = "edit";
+        http.http("active/" + d.id, "", "get").then(res => {
+          if (res.code == 0) {
+            this.addForm = res.data;
+            this.imgList = res.data.photo;
+          }
+        });
+      },
+      /** 删除 **/
+      delete(e, d) {
+        MessageBox.confirm("您确定删除吗？", "删除", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          this.sendData("/active/" + d.id, "", "delete", res => {
+            if (res.code == 0) {
+              Message({
+                message: "删除成功！！！",
+                // type: 'error',
+                duration: 1500
+              });
+              this.update++;
+            }
+          });
+        });
+      },
+      /** 取消 **/
+      resetAddForm(e, d) {
+        this.showDialog = false;
+        this.initForm();
+      },
+      /** 初始化表单 **/
+      initForm() {
+        this.addForm = {
+          id: "", //int(11) NOT NULL AUTO_INCREMENT COMMENT '活动id'
+          active_name: "", //` varchar(50) DEFAULT NULL COMMENT '活动名称'
+          active_date: "", //varchar(20) DEFAULT NULL COMMENT '活动时间'
+          active_place: "", //varchar(255) DEFAULT NULL COMMENT '活动地点'
+          active_type: "", //varchar(50) DEFAULT NULL COMMENT '活动类别'
+          active_host: "", //varchar(20) DEFAULT NULL COMMENT '主持人'
+          active_attend: "", //varchar(20) DEFAULT NULL COMMENT '出席人'
+          active_actual_number: "", //varchar(20) DEFAULT NULL COMMENT '实到人数'
+          active_should_number: "", //varchar(20) DEFAULT NULL COMMENT '应到人数'
+          active_absence: "", //varchar(20) DEFAULT NULL COMMENT '缺席人'
+          content: "", //text COMMENT '内容'
+          photo: [] //longtext COMMENT '照片'
+        };
+        this.imgList = [];
+      },
+      // 确定
+      submitAddForm(formName, type) {
+
+        this.attendFlag();
+        let _this = this,
+          sendType = "get",
+          url = "active";
+
+        this.addForm.active_attend = this.arrDiff(this.active_attend_userID_select, this.active_attend_userID, this.addForm.active_attend = []).join(",");
+        this.addForm.active_absence = this.arrDiff(this.active_absence_userID_select, this.active_absence_userID, this.addForm.active_absence = []).join(",");
+        console.log("11111111111111111111")
+
+        this.addForm.active_attend_name = undefined;
+        this.addForm.active_absence_name = undefined;
+        console.log(this.addForm)
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            _this.addForm.photo = _this.imgList;
+            if (type == "new") {
+              sendType = "post";
+              // delete _this.addForm.id;
+            } else if (type == "edit") {
+              sendType = "put";
+              url = url + "/" + _this.addForm.id;
+            }
+            delete _this.addForm.id;
+            delete _this.addForm.organization_name;
+            _this.sendData(url, this.addForm, sendType, res => {
+              if (res.code == 0) {
+                Message({
+                  message: type == "new" ? "新增成功！！！" : "修改成功！！！",
+                  type: "success",
+                  duration: 1500
+                });
+                this.showDialog = false;
+                this.initForm();
+                this.update++;
+              }
+            });
+          }
+        });
+      },
+      // 发送数据
+      sendData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof call == "function") {
+            call(res);
+          }
+        });
+      },
+      /**
+       * 上传图片
+       */
+      handlePictureCardPreview(file) {
+        this.image = file.data.store_result;
+      },
+      beforeAvatarUpload(file) {
+        let type = false;
+        if (
+          file.type === "image/jpeg" ||
+          file.type === "image/png" ||
+          file.type === "image/jpg" ||
+          file.type === "image/gif" ||
+          file.type === "image/bmp"
+        ) {
+          type = true;
+        }
+
+        var img = new Image();
+        img.src = this.image;
+        img.onload = function() {};
+
+        const isLt2M = file.size / 1024 / 1024 < 10;
+        if (!type) {
+          this.$message.error("上传图片只能是 JPEG/jpg/png/gif/bmp 格式!");
+        }
+        if (!isLt2M) {
+          this.$message.error("上传图片大小不能超过 10MB!");
+        }
+        return type && isLt2M;
+      },
+      deleteImg() {
+        this.$confirm("确定删除图片吗?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+            center: true
+          })
+          .then(() => {
+            this.image = "";
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
+      onEditorReady(editor) {},
+      //上传多张图片
+      handlePictureListPreview(res, file, fileList) {
+        this.imgList.push(res.data.store_result);
+      },
+      // 图片上传前
+      beforeAvatarUpload(file) {
+        let type = false;
+        if (
+          file.type === "image/jpeg" ||
+          file.type === "image/png" ||
+          file.type === "image/jpg" ||
+          file.type === "image/bmp"
+        ) {
+          type = true;
+        }
+        const isLt2M = file.size / 1024 / 1024 < 10;
+        if (!type) {
+          this.$message.error("上传头像图片只能是 JPEG/jpg/png/gif/bmp 格式!");
+        }
+        if (!isLt2M) {
+          this.$message.error("上传头像图片大小不能超过 10MB!");
+        }
+        return type && isLt2M;
+      },
+      uploadPic(e) {
+        let type = e.target.files[0],
+          file = "",
+          param = "",
+          lis = e.target.files;
+        for (let i = 0; i < lis.length; i++) {
+          if (this.beforeAvatarUpload(lis[i])) {
+            file = lis[i];
+            param = new FormData(); // 创建form对象
+            param.append("file", file, file.name); // 通过append向form对象添加数据
+            let config = {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            }; // 添加请求头
+
+            $axios.post(this.uploadURL, param, config).then(response => {
+              this.handlePictureListPreview(response.data);
+            });
+          }
+        }
+      },
+      //出席人数失去焦点
+
+
+      //删除单张图片
+      delImgList(i) {
+        this.$confirm("确定删除图片吗?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+            center: true
+          })
+          .then(() => {
+            this.imgList.splice(i, 1);
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
+
+      /************************************************************* */
+
+      attendFlag() {
+        this.attendNum = false;
+        this.activeAbsenceFlag = false;
+      },
+
+      //出席人数
+      attend() {
+        this.activeAbsenceFlag = false;
+        this.attendNum = !this.attendNum;
+        if (this.cities.length) return;
+        http.get("/user").then(res => {
+          if (res.code == 0) {
+            let data = res.data.data;
+            data.forEach(el => {
+              this.cities.push(el.user_name);
+              this.active_attend_userID.push(el.id);
+
+            });
+          }
+        });
+      },
+
+      //缺席人数
+      activeAbsence() {
+        this.attendNum = false;
+
+        this.activeAbsenceFlag = !this.activeAbsenceFlag;
+        if (this.activeAbsenceList.length) return;
+        http.get("/user").then(res => {
+          if (res.code == 0) {
+            let data = res.data.data;
+            data.forEach(el => {
+              this.active_absence_userID.push(el.id);
+              this.activeAbsenceList.push(el.user_name);
+            });
+          }
+        });
+      },
+
+      //处理上传出席userID
+
+      submitAttendUserId($index) {
+        console.log($index);
+        this.active_attend_userID_select.push($index);
+      },
+
+      //处上传缺席userID
+      activeAbsenceUserId($index) {
+        this.active_absence_userID_select.push($index);
+      },
+
+      //数组去重
+      arrDiff(arrSelect, arrUserId, attendUserId) {
+        let selectList = [];
+        let result = [];
+
+        selectList = Array.from(new Set(arrSelect));
+
+        arrUserId.forEach((el, index) => {
+          for (let i = 0; i < selectList.length; i++) {
+            if (index === selectList[i]) {
+              result.push(el);
+            }
+
+          }
+        })
+        return Array.from(new Set(result, ...attendUserId));
+      }
+    },
+  };
+</script>
+
+<style lang="scss" scoped>
+  .header {
+    .el-input {
+      width: 20%;
+    }
+  }
+
+  .pagination {
+    text-align: right;
+    margin-top: 2rem;
+  }
+
+
+  /* 活动详情 */
+
+  .activeInfo-all {
+    //标题
+    span {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .el-row {
+      margin-bottom: 10px;
+    }
+    // 出席人 内容
+    .activeInfo-f,
+    .activeInfo-j {
+      border-top: 1px #ccc dashed;
+      padding-top: 10px;
+    }
+    // 换行内容首行缩进
+    .activeInfo-textIndent {
+      text-indent: 2rem;
+    }
+    //图片集合
+    .activeInfo-imgs {
+      border: 1px #409eff dashed;
+      padding-top: 5px;
+    }
+    .leftFloat {
+      display: table !important;
+      float: left;
+    }
+    .clearFloat::after {
+      display: block;
+      clear: both;
+      content: "";
+    }
+    //图片
+    img {
+      width: 160px;
+      height: 120px;
+    }
+  }
+
+
+  /* element-ui */
+
+  .el-dialog__body button {
+    margin-top: 20px;
+  }
+
+  .inputMaxLength {
+    width: 93.5% !important;
+  }
+
+  .el-input,
+  .el-input__inner,
+  .el-select {
+    width: 85%;
+  }
+
+
+  /* 新增图片 */
+
+  .imgInput {
+    background: url(../../../static/add.png) no-repeat;
+    border: none;
+    text-indent: -2000px;
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 50px;
+  }
+
+  .allPics {
+    border: 1px solid #ccc;
+    padding: 18px 15px 10px 20px;
+    width: 850px;
+    display: flex;
+    flex-wrap: wrap;
+    // justify-content: space-between;
+  }
+
+  .addPic {
+    width: 160px;
+    height: 120px;
+    // border: 1px dashed #6fb6ff;
+    margin-right: 5%;
+  }
+
+
+  /*
+                        上传图片
+                        */
+
+  .avatar-uploader {
+    text-align: right;
+  }
+
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+
+  .img_border {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    height: 135px;
+    min-width: 178px;
+    max-width: 216px;
+    display: block;
+  }
+
+  .is_border {
+    border: 1px dashed #ddd !important;
+    border-radius: 5px;
+    height: 135px !important;
+    line-height: 135px !important;
+  }
+
+  .upload_btn {
+    display: block;
+    background-color: #00a1ff;
+    font-weight: bold;
+    color: #fff;
+    padding: 2px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+
+  .upload_btn:hover {
+    background-color: #13ce66;
+  }
+
+  .del_img {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    color: #00a1ff;
+  }
+
+  .del_img:hover {
+    cursor: pointer;
+    color: #f00;
+  }
+
+  .del_img i:before {
+    font-size: 20px;
+  }
+
+  //文本编辑器
+  .quill-editor {
+    height: 350px;
+    width: 850px;
+  }
+
+  .editer {
+    padding: 10px 0;
+  }
+
+  .attend {
+    display: flex;
+    // flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: center;
+  }
+
+  .item {
+    flex: 0 1 auto;
+  }
+
+  .attend>label {
+    margin: 0;
+  }
+
+  .attend-parent {
+    width: 82.7%;
+    margin-bottom: 5px;
+    transform: translateX(14%);
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+  }
+
+  .attend-join {
+    min-height: 42px;
+    width: 93.5%;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    text-indent: 15px;
+  }
+</style>

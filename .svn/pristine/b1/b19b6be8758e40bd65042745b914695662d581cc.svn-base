@@ -1,0 +1,696 @@
+<template>
+  <div class="app-container">
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
+          :thead="thead"
+          :actionBar="actionBar"></list>
+
+    <!-- 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="15vh">
+      <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-ruleForm">
+        <!--<el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px" class="demo-ruleForm">-->
+        <!--<el-row :gutter="20">-->
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="姓名" prop="user_name">
+              <el-input size="medium" v-model="addForm.user_name" :disabled="dialogType=='edit'"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="性别" prop="user_sex">
+              <el-radio-group v-model="addForm.user_sex">
+                <el-radio label="男"></el-radio>
+                <el-radio label="女"></el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="民族" prop="user_nation">
+              <el-input size="medium" v-model="addForm.user_nation"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="出生日期" prop="user_birth">
+              <el-date-picker
+                v-model="addForm.user_birth"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_birth, 'user_birth')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="身份证" prop="user_card">
+              <el-input size="medium" v-model="addForm.user_card"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="学历" prop="user_education">
+              <el-input size="medium" v-model="addForm.user_education"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="家庭住址" prop="user_address">
+              <el-input size="medium" v-model="addForm.user_address"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系电话" prop="user_telephone">
+              <el-input size="medium" v-model="addForm.user_telephone"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="入党日期" prop="user_in_date">
+              <el-date-picker
+                v-model="addForm.user_in_date"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_in_date,'user_in_date')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="转正日期" prop="user_become_date">
+              <el-date-picker
+                v-model="addForm.user_become_date"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_become_date,'user_become_date')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="派出单位" prop="user_dispatched_unit">
+              <el-input size="medium" v-model="addForm.user_dispatched_unit"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="原单位" prop="user_origin_unit">
+              <el-input size="medium" v-model="addForm.user_origin_unit"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="原单位所在党组织" prop="user_origin_organization_name">
+              <el-input size="medium" v-model="addForm.user_origin_organization_name"></el-input>
+              <!--<el-select size="medium" v-model="addForm.user_origin_organization_name" placeholder="请选择党组织">-->
+              <!--<el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"-->
+              <!--:value="String(com.id)">-->
+              <!--</el-option>-->
+              <!--</el-select>-->
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="保障组别" prop="user_temp_team">
+              <el-input size="medium" v-model="addForm.user_temp_team"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="现所在临时党组织" prop="user_organization_id">
+            <!-- <el-input size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织" ></el-input>-->
+            <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织">-->
+              <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织"-->
+                         <!--:disabled="dialogType=='edit'">-->
+                <!--<el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"
+                           :value="String(com.id)">
+                </el-option>-->
+              <!--</el-select>-->
+              <el-tree :check-strictly='true' :data="data" show-checkbox=""  :default-expand-all="true" node-key="id" ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick" :default-checked-keys='keys'>
+							</el-tree>
+            </el-form-item>
+
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="党内职务" prop="user_job">
+              <el-input size="medium" v-model="addForm.user_job"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
+        <!--<el-form-item label="设置社区" prop="communitySelect" v-if="username=='admin'">-->
+        <!--<el-select size="medium" v-model="addForm.communitySelect" placeholder="请选择社区">-->
+        <!--<el-option v-for="com in communityList" :key="com.id" :label="com.community_name"-->
+        <!--:value="com.id">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-form-item>-->
+
+        <el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  // import {getList2, getDetail} from '@/api/member';
+  import http from '@/api/http';
+  import list from '@/components/TableList';
+  import {Message, MessageBox} from 'element-ui'
+
+  export default {
+    components: {
+      list
+    },
+    data() {
+      return {
+      	keys:[],
+      	i:0,
+        /** *************** 引用的表格的  start *************** **/
+        listLoading: true,
+        // 列表头部的功能区--key为搜索的字段名
+        // topBar: {
+        //   useNewBtn: {btnName: '新增', btnClass: '', btnType: 'success', keys: [], fun: this.newRole},
+        //   useSearch: {key: 'user_name', btnName: '搜索', searchTipCon: '请输入名字'}
+        // },
+        topBar: [
+          {name: '新增', type: 'success', class: '', fun: this.newRole},
+          {
+            name: '导入',
+            type: 'primary',
+            isUpLoad: true,
+            url:'https://jbh.shyunhua.com/user_import',
+            maxSize: '',
+            limit: 100,
+            showList: false,
+            fun: this.importData
+          },
+          {name: '搜索', key: 'user_name', searchTipCon: '请输入名字', class: ''},
+          {
+            name: '筛选',
+            key: 'user_organization_id',
+            plugType: 'cascader',
+            dataUrl: this.URL + '/organization',
+            searchTipCon: '筛选',
+            class: ''
+          },
+        ],
+        // 表格头- 是否可选
+        canSelect: false,
+        // 表格头- 索引序号
+        indexBar: {name: '序号', key: 'auto', width: '60'},
+        // 表格头 - 字段内容
+        thead: [
+          // {name: '账号名称', key: 'username', width: ''},
+          // {name: '所属社区', key: 'community_name', width: ''},
+
+          {name: "姓名", key: 'user_name', width: '100'},
+          {name: "性别", key: 'user_sex', width: '70'},
+          // {name: "身份号", key:'aaaaaa', width: '100},
+          // {name: "出生日", key:'aaaaaa', width: '100},
+          // {name: "学历", key:'aaaaaa', width: '100},
+          {name: "联系电话", key: 'user_telephone', width: '150'},
+          // {name: "入党日期", key:'aaaaaa', width: '100},
+          // {name: "转正日期", key:'aaaaaa', width: '100},
+          //{name: "派出单位", key:'aaaaaa', width: '100},
+          //{name: "原单位", key:'aaaaaa', width: '100},
+          //{name: "原职务", key:'aaaaaa', width: '100},
+          {name: "保障组别", key: 'user_temp_team', width: 'auto'},
+          {name: "党内职务", key: 'user_job', width: 'auto'},
+          // {name: "原所在党支部", key:'aaaaaa', width: '100},
+          {name: "现所在临时党组织", key: 'user_organization_name', width: 'auto'},
+          {
+            name: "状态",
+            key: 'user_status',
+            filterCon: [{key: 1, value: '在岗'}, {key: 2, value: '离岗'}, {key: 3, value: '离岗'}],
+            width: 'auto'
+          },
+
+        ],
+        update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
+        // 表格头 - 最右边的功能区
+        actionBar: [
+          {name: '编辑', fun: this.edit, type: 'success'},
+          // {name: '删除', fun: this.delete, type: 'danger'}
+        ],
+        /** *************** 引用的表格的  end *************** **/
+
+        /** *************** 弹窗的  start *************** **/
+        showDialog: false, //
+        dialogTitle: '', // 弹窗标题
+        dialogType: '', // 弹窗类型  用来区分新增或编辑
+
+        // 新增弹出表单
+        addForm: {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
+        // 表单验证规则
+        rules: {
+          // 名称
+          user_name: [
+            {required: true, message: '请输入姓名', trigger: 'blur'},
+            {min: 2, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur'}
+          ],
+          // 性别
+          user_sex: [
+            {required: true, message: '请选择性别', trigger: 'change'}
+          ],
+          // 身份证
+          user_card: [
+            {required: true, message: '请输入身份证', trigger: 'blur'}
+          ],
+          // 出生日期
+          user_birth: [
+            {required: true, message: '请选择出生日期', trigger: 'blur'}
+          ],
+          // 学历
+          user_education: [
+            {required: true, message: '请输入学历', trigger: 'blur'}
+          ],
+          // 联系电话
+          user_telephone: [
+            {required: true, message: '请输入联系电话', trigger: 'blur'}
+          ],
+          // 入党日期
+          user_in_date: [
+            {required: true, message: '请选择入党日期', trigger: 'blur'}
+          ],
+          // 转正日期
+          user_become_date: [
+            {required: true, message: '请选择转正日期', trigger: 'blur'}
+          ],
+          // 派出单位
+          user_dispatched_unit: [
+            {required: true, message: '请输入派出单位', trigger: 'blur'}
+          ],
+          // 原单位
+          user_origin_unit: [
+            {required: true, message: '请输入原单位', trigger: 'blur'}
+          ],
+          // 职务
+          user_job: [
+            {required: true, message: '请输入职务', trigger: 'blur'}
+          ],
+          // 原党组织id
+          user_origin_organization_name: [
+            {required: true, message: '请选择原党组织', trigger: 'blur'}
+          ],
+          // 党组织id
+          user_organization_id: [
+            {required: true, message: '请选择党组织', trigger: 'blur'}
+          ],
+          // // 保障组职务
+          // user_temp_job: [
+          //   {required: true, message: '请输入保障组职务', trigger: 'blur'}
+          // ],
+          // 保障组别
+          user_temp_team: [
+            {required: true, message: '请输入保障组别', trigger: 'blur'}
+          ],
+          // 转出状态
+          user_status: [
+            {required: true, message: '请选择转出状态', trigger: 'blur'}
+          ],
+          // 家庭住址
+          user_address: [
+            {required: true, message: '请输入家庭住址', trigger: 'blur'}
+          ],
+          // 民族
+          user_nation: [
+            {required: true, message: '请输入民族', trigger: 'blur'}
+          ],
+
+
+          // user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          // user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+          // user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          // user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+          // user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+          // user_phone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+          // user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          // user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+          // user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          // user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+          // user_job: '',  // varchar(50) DEFAULT NULL COMMENT '职务',
+          // user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          // user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '党组织id',
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          // user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          // user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+          // user_address: '',  // 家庭住址
+          // user_nation: '',  // 民族
+        },
+        // 党组织列表
+        organizationList: [],
+        // 社区列表
+        communityList: [],
+        /** *************** 弹窗的  end *************** **/
+        url: '/user',
+
+        // 需要转换为时间戳的日期字段
+        dateFonts: ['user_birth', 'user_in_date', 'user_become_date'],
+				data2: [],
+        defaultProps: {
+          children: 'children',
+          label: 'label'
+        },
+      }
+
+    },
+    created() {
+      this.init();
+    },
+    activated() {
+      this.init();
+    },
+		computed:{
+			data(){
+
+				let arr=[];
+				for(var i=0;i<this.organizationList.length;i++){
+					arr.push({
+						id:this.organizationList[i].id,
+						label:this.organizationList[i].organization_name,
+						children:[],
+					});
+					if(this.organizationList[i].child.length>0){
+						for(var j=0;j<this.organizationList[i].child.length;j++){
+									arr[i].children.push({
+				            id:this.organizationList[i].child[j].id,
+				            label:this.organizationList[i].child[j].organization_name,
+
+									});
+						}
+				}
+				}
+				this.data2 = arr;
+				return this.data2;
+			}
+		},
+    methods: {
+      init() {
+        // 党组织列表
+        http.get('/organization').then(res => {
+          if (res.code == 0) {
+            this.organizationList = res.data.data;
+//          let arr=[];
+//				for(var i=0;i<this.organizationList;i++){
+//					debugger;
+//					arr.push({
+//						id:this.organizationList[i].id,
+//						label:this.organizationList[i].organization_name
+//					});
+//				}
+//				this.data2 = arr;
+//				console.log('this.data2:::', this.data2);
+          }
+        });
+        // // 获取社区列表
+        // http.get('/community').then(res => {
+        //   if (res.code == 0) {
+        //     this.communityList = res.data;
+        //   }
+        // });
+        // if (this.storage.getStorage('uinfo').length > 1) {
+        //   this.community_id = JSON.parse(this.storage.getStorage('uinfo')).community_id;
+        //   // this.addForm.communitySelect = this.community_id;
+        //   this.username = JSON.parse(this.storage.getStorage('uinfo')).username;
+        // } else {
+        //   this.community_id = -1;
+        //   this.disableComm = false;
+        // }
+        // this.url = this.username == 'admin' ? '/account?type=1' : `/account?type=1&community_id=${this.community_id}`;
+      },
+			handleClick(data,checked, node) {
+
+            this.i++;
+            if(this.i%2==0){
+                if(checked){
+                    this.$refs.treeForm.setCheckedNodes([]);
+                    this.$refs.treeForm.setCheckedNodes([data]);
+//                  this.addForm =;
+//										console.log(data)
+                    //交叉点击节点
+                }else{
+                    this.$refs.treeForm.setCheckedNodes([]);
+                    //点击已经选中的节点，置空
+                }
+            }
+        },
+      /** 导入数据 **/
+      importData(res) {
+      	//debugger;
+      // console.log('kkkkk')
+        if(res.code == 0) {
+        	Message({
+              message: `导入成功`
+            });
+        }else{
+        	Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              type: 'error',
+              duration: 1500
+            });
+        }
+      },
+      addChange(a,b){
+      	debugger;
+      },
+      /** 新建 **/
+      newRole(e, d) {
+        this.showDialog = true;
+        this.dialogTitle = '党员信息';
+        this.dialogType = 'new';
+        this.initForm();
+      },
+      /** 编辑账号 **/
+      edit(e, d) {
+      	
+    	this.keys=[]
+			//	let _this=this;
+			//console.log('hhhh')
+				let tree = this.$refs.treeForm;
+        this.getData(`${this.URL}${this.url}/${d.id}`, '', 'get', res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            res.data = this.dateFontsFiter(this.dateFonts, res.data);
+            this.addForm = res.data;
+            this.showDialog = true;
+            this.dialogTitle = '编辑信息';
+            this.dialogType = 'edit';
+
+//						_this.$refs.treeForm.setCheckedKeys([res.data.user_organization_id]);
+//						tree.setCurrentKey(res.data.user_organization_id);
+							console.log(res.data.user_organization_id)
+
+							tree.setCheckedKeys([res.data.user_organization_id]);
+//							this.keys[0]=res.data.user_organization_id;
+//            console.log(this.keys)
+//						console.log(res.data.user_organization_id)
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+      },
+      /** 删除 **/
+      delete(e, d) {
+        MessageBox.confirm('您确定删除吗？', '删除', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 逻辑删除
+          this.sendData(`${this.url}/${d.id}`, {user_status: 3}, 'put', res => {
+            if (res.code == 0) {
+              Message({
+                message: '删除成功！！！',
+                type: 'warning',
+                duration: 1500
+              });
+              this.update++;
+            }
+          });
+          // 物理删除
+          // this.sendData(`${this.url}/${d.id}`, '', 'delete', res => {
+          //   if (res.code == 0) {
+          //     Message({
+          //       message: '删除成功！！！',
+          //       // type: 'error',
+          //       duration: 1500
+          //     });
+          //     this.update++;
+          //   }
+          // });
+        })
+      },
+      /** 取消 **/
+      resetAddForm(e, d) {
+        this.showDialog = false;
+        this.initForm();
+      },
+      /** 初始化表单 **/
+      initForm() {
+        this.addForm = {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '党组织id',
+        };
+      },
+      // 确定
+      submitAddForm(formName, type) {
+
+        let _this = this, sendType = 'get', url = this.urls.user;
+        // // 需要转换为时间戳的日期字段
+        // arr = ['user_birth', 'user_in_date', 'user_become_date'];
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+         // this.addForm.user_organization_id==[]
+//    		console.log(this.addForm.user_organization_id);
+//    		console.log(Number(_this.$refs.treeForm.getCheckedKeys()));
+          this.addForm.user_organization_id = Number(_this.$refs.treeForm.getCheckedKeys());
+          	//console.log(Number(_this.$refs.treeForm.getCheckedKeys()));
+            if (type == 'new') {
+              sendType = 'post';
+              // url = '/account';
+            } else if (type == 'edit') {
+              sendType = 'put';
+              url = url + '/' + _this.addForm.id;
+            }
+            // 日期转换为时间戳
+            this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm);
+
+            _this.sendData(url, this.addForm, sendType, res => {
+              if (res.code == 0) {
+                Message({
+                  message: type == 'new' ? '新增成功！！！' : '修改成功！！！',
+                  type: 'success',
+                  duration: 1500
+                });
+                this.showDialog = false;
+                this.initForm();
+                this.update++;
+              }
+            });
+          }
+
+        });
+      },
+      // 发送数据
+      sendData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      // 获取数据
+      getData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      /** 时间 转为13位时间戳 **/
+      formatTime(time, tar) {
+        let t = this.dateformat.timeStamp(time, 13);
+        if (tar) {
+          this.addForm[tar] = t;
+        }
+        return t;
+      },
+
+      /** 将指定的日期转为时间戳
+       * 接收字段名 和 总数据
+       * **/
+      dateFontsFiter(arr, tar) {
+        for (let i in arr) {
+          if (typeof(tar[arr[i]]) !== 'number' && isNaN(Number(tar[arr[i]]))) {
+            tar[arr[i]] = this.formatTime(tar[arr[i]]);
+          } else {
+            tar[arr[i]] = this.formatTime(Number(tar[arr[i]]) ? Number(tar[arr[i]]) : '');
+          }
+        }
+        return tar;
+      },
+
+
+    }
+  }
+</script>
+<style lang="scss" scoped>
+
+
+</style>

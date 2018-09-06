@@ -1,0 +1,1148 @@
+<template>
+  <div class="app-container">
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
+          :thead="thead"
+          :actionBar="actionBar"></list>
+
+    <!-- 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="5vh" width="60%">
+
+      <el-form :model="addForm" ref="addForm" label-width="135px" class="demo-ruleForm">
+        <!--<el-form :model="addForm" :rules="rules" ref="addForm" label-width="135px" class="demo-ruleForm">-->
+        <!--<el-row :gutter="20">-->
+        <p class="review-search">
+          <el-input size="medium" v-model="searchCon" placeholder="请输入身份证号码" clearable style="width:40%;"></el-input>
+          <el-button size="medium" type="primary" @click="_searchCon(searchCon)" icon="el-icon-search">搜索</el-button>
+          <!--<el-button size="medium" type="success" @click="searchCon='',_searchCon()" v-show="searchCon">返回</el-button>-->
+          <!--<el-button size="medium" type="success" @click="searchCon='',_goBack()" v-show="showGoBack">返回</el-button>-->
+          <!--<el-button class="file-out" size="medium" type="primary" @click="_fileOut()">导出</el-button>-->
+
+        </p>
+        <!--<div id="fileExport">-->
+        <!--&lt;!&ndash;<div class="review-title">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="review-left">&ndash;&gt;-->
+        <!--&lt;!&ndash;<i class="fa fa-id-card"></i>&ndash;&gt;-->
+        <!--&lt;!&ndash;<span>基本情况</span>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="review-right">&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;<i class="fa fa-plus" @click="EventAdd"></i>&ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<strong>姓名:</strong>{{addForm.user_name}}&ndash;&gt;-->
+        <!--</div>-->
+        <!-- 基本情况 -->
+        <div class="review-box info">
+          <div class="review-title">
+            <div class="review-left">
+              <i class="fa fa-id-card"></i>
+              <span>基本情况</span>
+            </div>
+            <div class="review-right">
+              <!--<i class="fa fa-plus" @click="EventAdd"></i>-->
+            </div>
+          </div>
+          <el-row>
+            <el-col :span="14">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="姓名" prop="user_name">
+                    <el-input size="medium" v-model="addForm.user_name" :disabled="true"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="性别" prop="user_sex">
+                    <el-radio-group v-model="addForm.user_sex">
+                      <el-radio label="男"></el-radio>
+                      <el-radio label="女"></el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="出生日期" prop="user_birth">
+                <el-date-picker
+                  v-model="addForm.user_birth"
+                  type="datetime"
+                  @change="formatTime(addForm.user_birth, 'user_birth')"
+                  format="yyyy - MM - dd"
+                  placeholder="选择日期时间">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+
+          </el-row>
+
+
+          <el-row>
+            <el-col :span="14">
+              <el-form-item label="原单位" prop="user_origin_unit">
+                <el-input size="medium" v-model="addForm.user_origin_unit"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="派出单位" prop="user_dispatched_unit">
+                <el-input size="medium" v-model="addForm.user_dispatched_unit"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="14">
+              <el-form-item label="原单位所在党组织" prop="user_origin_organization_name">
+                <el-input size="medium" v-model="addForm.user_origin_organization_name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="保障组别" prop="user_temp_team">
+                <el-input size="medium" v-model="addForm.user_temp_team"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="14">
+              <el-form-item label="现所在临时党组织" prop="user_organization_id">
+                <!--<el-input size="medium" v-model="addForm.user_organization_id" ></el-input>-->
+                <el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织">
+                  <el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"
+                             :value="String(com.id)">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="党内职务" prop="user_job">
+                <el-input size="medium" v-model="addForm.user_job"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+
+          <el-row>
+            <el-col :span="14">
+              <el-form-item label="进保障组时间" prop="user_temp_in_date">
+                <el-date-picker
+                  v-model="addForm.user_temp_in_date"
+                  type="datetime"
+                  format="yyyy - MM - dd"
+                  @change="formatTime(addForm.user_temp_in_date,'user_temp_in_date')"
+                  placeholder="选择日期时间">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="出保障组时间" prop="user_temp_out_date">
+                <el-date-picker
+                  v-model="addForm.user_temp_out_date"
+                  type="datetime"
+                  format="yyyy - MM - dd"
+                  @change="formatTime(addForm.user_temp_out_date,'user_temp_out_date')"
+                  placeholder="选择日期时间">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+
+        <!-- 关键事件记录 -->
+        <div class="review-box event">
+          <div class="review-title">
+            <div class="review-left">
+              <i class="fa fa-bookmark-o"></i>
+              <span>关键事件记录</span>
+            </div>
+            <!--<p style="font-size:0.9rem;color:#888;margin:0;font-weight:normal;">新增或修改后记得在页面底部点击 <strong>确定保存</strong> 按钮</p>-->
+            <div class="review-right" @click="EventAddEdit('new','','')">
+              <i class="fa fa-plus"></i>
+              <span>新增</span>
+            </div>
+          </div>
+          <ul class="event-list">
+            <li v-for="(hs,idx) in EventTempInfo.history" :key="hs.id" @mouseenter="mouseenter(hs,this)"
+                @mouseleave="mouseleave(hs,this)">
+              <div class="event-title">
+                <div class="event-title-left">
+                  <p><strong>时间：</strong>{{dateformat.format(new Date(hs.date), 'yyyy - MM - dd')}}</p>
+                  <p><strong>记录人：</strong>{{hs.author}}</p>
+                </div>
+                <span class="event-icons" v-show="hs.showIcon">
+                  <i class="fa fa-edit" @click="EventAddEdit('edit', hs, idx)"></i>
+                  <i class="fa fa-trash-o" @click="EventDel(hs, idx)"></i>
+                </span>
+              </div>
+              <div class="event-con">
+                <strong>事件：</strong>
+                <p>{{hs.event}}</p>
+              </div>
+            </li>
+
+            <!--<li>-->
+            <!--<div class="event-title">-->
+            <!--<div class="event-title-left">-->
+            <!--<p><strong>时间：</strong>2018-11-31</p>-->
+            <!--<p><strong>记录人：</strong>张三</p>-->
+            <!--</div>-->
+            <!--<s class="event-icons">-->
+            <!--<i class="fa fa-arrow-up"></i>-->
+            <!--<i class="fa fa-arrow-up"></i>-->
+            <!--</s>-->
+            <!--</div>-->
+            <!--<div class="event-con">-->
+            <!--<strong>事件：</strong>-->
+            <!--<p>jwpgjpowjegpojoiasdoifgjiowjegioj结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒 叫我额估计结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒-->
+            <!--叫我额估计结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒 叫我额估计结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒 叫我额估计结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒-->
+            <!--叫我额估计结果我哦忘记哦诶过奇偶较为欧冠奇偶我我鸡尾酒 叫我额估计</p>-->
+            <!--</div>-->
+            <!--</li>-->
+          </ul>
+          <div class="event-add" v-show="EventTempInfo.history.length==0 || EventTempInfo.show">
+            <div class="event-add-top">
+              <p>
+                <strong>时间</strong>
+                <!--<el-input size="small" v-model="EventTempInfo.date" :disabled="true"></el-input>-->
+                <el-date-picker
+                  size="small"
+                  v-model="EventTempInfo.date"
+                  type="datetime"
+                  @change="formatTime(EventTempInfo.date, 'events', 'date')"
+                  placeholder="选择日期时间">
+                </el-date-picker>
+              </p>
+              <p>
+                <strong>记录人</strong>
+                <el-input size="small" v-model="EventTempInfo.author"></el-input>
+              </p>
+              <p style="float:right;">
+                <el-button size="small" style="background-color: #e6a23c; color:#fff; margin-right:1rem;"
+                           @click="submitEventAdd">保存
+                </el-button>
+              </p>
+            </div>
+            <div class="event-add-con">
+              <strong>事件</strong>
+              <el-input type="textarea" :autosize="{ minRows: 4}" v-model="EventTempInfo.event"></el-input>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- 个人小结 -->
+        <div class="review-box Summary">
+          <div class="review-title">
+            <div class="review-left">
+              <i class="fa fa-tags"></i>
+              <span>个人小结</span>
+            </div>
+            <div class="review-right">
+              <!--<i class="fa fa-plus" @click="EventAdd"></i>-->
+            </div>
+          </div>
+          <el-input type="textarea" :autosize="{ minRows: 6}" v-model="examine.examine_summarize"></el-input>
+        </div>
+
+
+        <!-- 评价 -->
+        <div class="review-box Summary">
+          <div class="review-title">
+            <div class="review-left">
+              <i class="fa fa-user-o"></i>
+              <span>评价</span>
+            </div>
+            <div class="review-right">
+              <!--<i class="fa fa-plus" @click="EventAdd"></i>-->
+            </div>
+          </div>
+          <el-input type="textarea" :autosize="{ minRows: 6}" v-model="examine.examine_assess"></el-input>
+
+        </div>
+        <!--</div>-->
+
+
+        <el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定保存</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="详情" :visible.sync="showDetailDialog" center top="5vh" width="60%">
+      <el-button class="file-out" size="medium" type="primary" @click="_fileOut()">导出</el-button>
+      <div id="fileExport">
+        <!--<div class="review-title">-->
+        <!--<div class="review-left">-->
+        <!--<i class="fa fa-id-card"></i>-->
+        <!--<span>基本情况</span>-->
+        <!--</div>-->
+        <!--<div class="review-right">-->
+        <!--&lt;!&ndash;<i class="fa fa-plus" @click="EventAdd"></i>&ndash;&gt;-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<strong>姓名:</strong>{{addForm.user_name}}-->
+        <table style="border-collapse: collapse; text-align:center;width:100%;">
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; color:#f00;background-color:#f3d19e;" colspan="4"><strong>党员综合评价表</strong>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>姓名</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_name}}</td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>姓别</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_sex}}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>原单位</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_origin_unit}}</td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>出生日期</strong></td>
+            <!--<td style="border:1px solid #666; padding:0.5rem;width:500px;" >{{detailData.user_birth}}</td>-->
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">
+              {{detailData.user_birth&&detailData.user_birth.length>9?dateformat.format(new
+              Date(isNaN(Number(detailData.user_birth))?detailData.user_birth:Number(detailData.user_birth)),
+              'yyyy-MM-dd'):''}}
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>派出单位</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_dispatched_unit}}</td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>党内职务</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_job}}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>原单位所在党组织</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">
+              {{detailData.user_origin_organization_name}}
+            </td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>保障组别</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.user_temp_team}}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>现所在临时党组织</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">{{detailData.organization_name}}</td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>进保障组时间</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">
+              {{detailData.user_temp_in_date&&detailData.user_temp_in_date.length>9?dateformat.format(new
+              Date(Number(detailData.user_temp_in_date)), 'yyyy-MM-dd'):''}}
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>出保障组时间</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">
+              {{detailData.user_temp_out_date&&detailData.user_temp_out_date.length>9?dateformat.format(new
+              Date(Number(detailData.user_temp_out_date)), 'yyyy-MM-dd'):''}}
+            </td>
+            <td style="border:1px solid #666; padding:0.5rem; width:300px;"><strong>考评日期</strong></td>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px;">
+              {{detailData.examine_date&&detailData.examine_date.length>9?dateformat.format(new
+              Date(Number(detailData.examine_date)), 'yyyy-MM-dd'):''}}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem;color:#f00;background-color:#f3d19e;" colspan="4"><strong>关键事件记录</strong>
+            </td>
+          </tr>
+          <!--<tr>-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:300px;" ><strong>时间</strong></td>-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:300px;" ><strong>记录人</strong></td>-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:500px;" colspan="2"><strong>事件</strong></td>-->
+          <!--</tr>-->
+          <!--<tr v-for="(hs,idx) in EventTempInfo.history" :key="hs.id" v-if="EventTempInfo.history.length>0">-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:300px;" >{{dateformat.format(new Date(hs.date), 'yyyy - MM - dd')}}</td>-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:300px;" >{{hs.author}}</td>-->
+          <!--<td style="border:1px solid #666; padding:0.5rem;width:500px;text-align:left;" colspan="2">{{hs.event}}</td>-->
+          <!--</tr>-->
+          <tr v-for="(hs,idx) in EventTempInfo.history" :key="hs.id" v-if="EventTempInfo.history.length>0">
+            <td style="border:1px solid #666; padding:0.5rem;width:500px; text-align:left;" colspan="4">
+              <div style="margin-bottom:10px;"><strong>时间：</strong>{{dateformat.format(new Date(hs.date),
+                'yyyy-MM-dd')}} <strong style="margin-left:30px;">记录人：</strong>{{hs.author}}
+              </div>
+              <div>{{hs.event}}</div>
+            </td>
+          </tr>
+          <tr v-else>
+            <td style="border:1px solid #666; padding:0.5rem;" colspan="4">暂无</td>
+          </tr>
+
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; color:#f00;background-color:#f3d19e;" colspan="4"><strong>个人小结</strong>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px; text-align:left;" colspan="4">
+              {{detailData.examine_summarize}}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem; color:#f00;background-color:#f3d19e;" colspan="4"><strong>评价</strong>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #666; padding:0.5rem;width:500px; text-align:left;" colspan="4">
+              {{detailData.examine_assess}}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </el-dialog>
+
+  </div>
+</template>
+
+<script>
+  // import {getList2, getDetail} from '@/api/member';
+  import http from '@/api/http';
+  import list from '@/components/TableList';
+  import {Message, MessageBox} from 'element-ui';
+  import Vue from 'vue';
+  import $ from '../../utils/fileExport/jqueryExport';
+  import saveAs from '../../utils/fileExport/filesaverExport';
+  import '../../utils/fileExport/jquery.wordexport';
+
+  export default {
+    components: {
+      list
+    },
+    data() {
+      return {
+      	 
+        /** *************** 引用的表格的  start *************** **/
+        listLoading: true,
+        // 列表头部的功能区--key为搜索的字段名
+				topBar: [
+          {name: '发起考评', type: 'success', class: '', fun: this.newRole},
+         	{name: '搜索', key: 'key', searchTipCon: '请输入名字/党组织', class: ''}
+   					
+        ],
+      
+        // 表格头- 是否可选
+        canSelect: false,
+        // 表格头- 索引序号
+        indexBar: {name: '序号', key: 'auto', width: '60'},
+        // 表格头 - 字段内容
+        thead: [
+          // {name: '账号名称', key: 'username', width: ''},
+          // {name: '所属社区', key: 'community_name', width: ''},
+
+          {name: "党员名称", key: 'user_name'},
+          {name: "身份号", key: 'user_card'},
+          {name: "所在党组织或支部", key: 'organization_name'},
+          {name: "考评日期", key: 'examine_date', width: '120', format: 'yyyy - MM - dd'},
+
+        ],
+        update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
+        // 表格头 - 最右边的功能区
+        actionBar: [
+          {name: '详情', fun: this.showDetaile, type: 'primary'},
+          {name: '编辑', fun: this.edit, type: 'success'},
+          {name: '删除', fun: this.delete, type: 'danger'}
+        ],
+        /** *************** 引用的表格的  end *************** **/
+
+        /** *************** 弹窗的  start *************** **/
+        showDialog: false, //
+        dialogTitle: '', // 弹窗标题
+        dialogType: '', // 弹窗类型  用来区分新增或编辑
+
+        // 新增弹出表单
+        addForm: {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_id: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
+        // 表单验证规则
+        rules: {
+          // 名称
+          user_name: [
+            {required: true, message: '请输入姓名', trigger: 'blur'},
+            {min: 2, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur'}
+          ],
+          // 性别
+          user_sex: [
+            {required: true, message: '请选择性别', trigger: 'change'}
+          ],
+          // 身份证
+          user_card: [
+            {required: true, message: '请输入身份证', trigger: 'blur'}
+          ],
+          // 出生日期
+          user_birth: [
+            {required: true, message: '请选择出生日期', trigger: 'blur'}
+          ],
+          // 学历
+          user_education: [
+            {required: true, message: '请输入学历', trigger: 'blur'}
+          ],
+          // 联系电话
+          user_telephone: [
+            {required: true, message: '请输入联系电话', trigger: 'blur'}
+          ],
+          // 入党日期
+          user_in_date: [
+            {required: true, message: '请选择入党日期', trigger: 'blur'}
+          ],
+          // 转正日期
+          user_become_date: [
+            {required: true, message: '请选择转正日期', trigger: 'blur'}
+          ],
+          // 派出单位
+          user_dispatched_unit: [
+            {required: true, message: '请输入派出单位', trigger: 'blur'}
+          ],
+          // 原单位
+          user_origin_unit: [
+            {required: true, message: '请输入原单位', trigger: 'blur'}
+          ],
+          // 职务
+          user_job: [
+            {required: true, message: '请输入职务', trigger: 'blur'}
+          ],
+          // 原党组织id
+          user_origin_organization_id: [
+            {required: true, message: '请选择原党组织', trigger: 'blur'}
+          ],
+          // 党组织id
+          user_organization_id: [
+            {required: true, message: '请选择党组织', trigger: 'blur'}
+          ],
+          // // 保障组职务
+          // user_temp_job: [
+          //   {required: true, message: '请输入保障组职务', trigger: 'blur'}
+          // ],
+          // 保障组别
+          user_temp_team: [
+            {required: true, message: '请输入保障组别', trigger: 'blur'}
+          ],
+          // 转出状态
+          user_status: [
+            {required: true, message: '请选择转出状态', trigger: 'blur'}
+          ],
+          // 家庭住址
+          user_address: [
+            {required: true, message: '请输入家庭住址', trigger: 'blur'}
+          ],
+          // 民族
+          user_nation: [
+            {required: true, message: '请输入民族', trigger: 'blur'}
+          ],
+
+
+          // user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          // user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+          // user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          // user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+          // user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+          // user_phone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+          // user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          // user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+          // user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          // user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+          // user_job: '',  // varchar(50) DEFAULT NULL COMMENT '职务',
+          // user_origin_organization_id: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          // user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '党组织id',
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          // user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          // user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+          // user_address: '',  // 家庭住址
+          // user_nation: '',  // 民族
+        },
+        // 党组织列表
+        organizationList: [],
+        /** 发送到后台保存的总数据 **/
+        examine: {
+          // CREATE TABLE `examine` (
+          id: '', // int(11) NOT NULL AUTO_INCREMENT COMMENT '考评id',
+          user_id: '', // int(11) DEFAULT NULL COMMENT '用户id',
+          examine_summarize: '', // text COMMENT '个人小结',
+          examine_assess: '', // text COMMENT '评价',
+          examine_key: '', // text COMMENT '关键事件',
+          examine_date: '', // varchar(20) DEFAULT NULL COMMENT '考评日期',
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='考评表';
+          user_organization_id: '', // 现在临时党组织id
+          user_temp_in_date: '',
+          user_temp_out_date: '',
+        },
+        /** *************** 弹窗的  end *************** **/
+        url: '/examine',
+        searchCon: '',
+
+        // 需要转换为时间戳的日期字段
+        dateFonts: ['user_birth', 'user_temp_in_date', 'user_temp_out_date'],
+
+        /******************* 关键事件记录  start *******************/
+        EventTempInfo: {
+          show: false,  // 是否显示编辑的面板
+          status: '',   // new 或者 edit 的状态
+          index: '',    // edit 状态下的索引
+          oldData: {},  // 编辑前的数据
+          // 关键事件记录
+          // events: {
+          history: [
+            // {
+            //   id: 1,
+            //   date: 1234567891234,
+            //   author: 'admin',
+            //   event: '后给我二极管跑挤我碰见过我就告破叫我碰见我今儿个破文件额颇高就我二极管文件的公婆家未破管家婆文件大概看是的估计万科普工接口万科攻破无可个安慰过看',
+            //   showIcon: false
+            // },
+            // {
+            //   id: 2,
+            //   date: 1234567891234,
+            //   author: 'admin2',
+            //   event: 'owiejgojvcoiwjfiowjeoifjskdlfjwoiejgf',
+            //   showIcon: false
+            // },
+          ],
+          date: '',
+          author: '',
+          event: '',
+          showIcon: false,
+          // }
+
+        },
+        /******************* 关键事件记录  end *******************/
+
+        /** 详情 **/
+        showDetailDialog: false,
+        detailData: {}
+      }
+    },
+    created() {
+      this.init();
+    },
+    activated() {
+      this.init();
+    },
+    computed: {
+      newUserInfo: {
+        get: function () {
+          this.examine.user_id = this.addForm.id;
+          this.examine.examine_key = JSON.stringify(this.EventTempInfo.history);
+          this.examine.examine_date = this.EventTempInfo.status == 'new' ? new Date().getTime() : (this.addForm.examine_date ? this.addForm.examine_date : new Date().getTime());
+          // 可修改的三条字段
+          this.examine.user_organization_id = this.addForm.user_organization_id;
+          this.examine.user_temp_in_date = this.addForm.user_temp_in_date;
+          this.examine.user_temp_out_date = this.addForm.user_temp_out_date;
+        }
+      }
+    },
+
+    methods: {
+      init() {
+        // 党组织列表
+        http.get('/organization').then(res => {
+          if (res.code == 0) {
+            this.organizationList = res.data.data;
+          }
+        });
+      },
+      mouseenter(obj) {
+        obj.showIcon = true;
+      },
+      mouseleave(obj) {
+        obj.showIcon = false;
+      },
+
+      /********************* 关键事件记录 start *********************/
+      EventAddEdit(type, obj, idx) {
+        this.EventTempInfo.show = true;
+        this.EventTempInfo.status = type == 'new' ? 'new' : 'edit';
+        this.EventTempInfo.index = type == 'new' ? '' : idx;
+        this.EventTempInfo.oldData = type == 'new' ? '' : obj;
+
+        this.EventTempInfo.author = type == 'new' ? '' : obj.author;
+        this.EventTempInfo.date = type == 'new' ? '' : obj.date;
+        this.EventTempInfo.event = type == 'new' ? '' : obj.event;
+      },
+      EventDel(obj, idx) {
+        let arr = JSON.parse(JSON.stringify(this.EventTempInfo.history));
+        MessageBox.confirm('您确定删除吗？', '删除', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          arr.forEach((ele, ids) => {
+            if (idx == ids && ele.event == obj.event) {
+              arr.splice(idx, 1);
+            }
+          });
+          this.EventTempInfo.history = arr;
+        });
+      },
+      submitEventAdd(obj) {
+        let _this = this;
+        if (this.EventTempInfo.status == 'new') {
+          if (!_this.EventTempInfo.author ||
+            !_this.EventTempInfo.date ||
+            !_this.EventTempInfo.event) {
+            Message({
+              message: `请填写完整的信息！！！`,
+              type: 'warning',
+              duration: 1500
+            });
+            return false;
+          }
+          this.$nextTick(() => {
+            _this.EventTempInfo.history.push({
+              author: _this.EventTempInfo.author,
+              date: _this.EventTempInfo.date,
+              event: _this.EventTempInfo.event,
+              showIcon: false,
+            });
+          });
+        } else {
+          // this.$nextTick(() => {
+          _this.EventTempInfo.history.forEach((ele, idx) => {
+            if (idx == this.EventTempInfo.index && ele.event == _this.EventTempInfo.oldData.event) {
+              _this.EventTempInfo.history[idx].author = _this.EventTempInfo.author;
+              _this.EventTempInfo.history[idx].date = _this.EventTempInfo.date;
+              _this.EventTempInfo.history[idx].event = _this.EventTempInfo.event;
+              _this.EventTempInfo.history[idx].showIcon = false;
+              Vue.set(_this.EventTempInfo.history, idx, _this.EventTempInfo.history[idx]);
+            }
+          });
+          // });
+
+        }
+        this.EventTempInfo.show = false;
+      },
+      /********************* 关键事件记录 end *********************/
+
+      /** 新建 **/
+      newRole(e, d) {
+        this.showDialog = true;
+        this.dialogTitle = '党员考评';
+        this.dialogType = 'new';
+        this.initForm();
+        this.EventTempInfo.status = this.EventTempInfo.history.length > 0 ? 'edit' : 'new';
+      },
+      /** 编辑 **/
+      edit(e, d) {
+        this.searchCon = '';
+        this.getData(`${this.URL}${this.url}/${d.id}`, '', 'get', res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            this.addForm = JSON.parse(JSON.stringify(res.data));
+            this.addForm.id = this.addForm.user_id; //修正form的id
+            this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm); //格式化时间
+            this.addForm.user_organization_id = String(this.addForm.organization_id);
+            this.showDialog = true;
+            this.dialogTitle = '编辑信息';
+            this.dialogType = 'edit';
+            this.EventTempInfo.history = JSON.parse(res.data.examine_key);
+            this.examine.examine_summarize = res.data.examine_summarize;
+            this.examine.examine_assess = res.data.examine_assess;
+            this.examine.id = res.data.id;
+            this.EventTempInfo.status = this.EventTempInfo.history.length > 0 ? 'edit' : 'new';
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+      },
+      /** 删除 **/
+      delete(e, d) {
+        MessageBox.confirm('您确定删除吗？', '删除', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 物理删除
+          this.sendData(`${this.url}/${d.id}`, '', 'delete', res => {
+            if (res.code == 0) {
+              Message({
+                message: '删除成功！！！',
+                // type: 'error',
+                duration: 1500
+              });
+              this.update++;
+            }
+          });
+        })
+      },
+      /** 取消 **/
+      resetAddForm(e, d) {
+        this.showDialog = false;
+        this.initForm();
+      },
+      /** 搜索 **/
+      _searchCon(con) {
+        if (con) {
+          this.getData(`/user?user_card=${con}`, '', 'get', res => {
+            if (res.data.data.length > 0) {
+              // this.addForm = res.data.data[0];
+              // this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm);
+              // 日期转换为时间戳
+              this.addForm = JSON.parse(JSON.stringify(res.data.data[0]));
+              // this.addForm.id = this.addForm.user_id; //修正form的id
+              this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm); //格式化时间
+              // this.addForm.user_organization_id = String(this.addForm.organization_id);
+              // this.showDialog = true;
+              // this.dialogTitle = '编辑信息';
+              // this.dialogType = 'edit';
+              // this.EventTempInfo.history = JSON.parse(res.data.examine_key);
+              // this.examine.examine_summarize = res.data.examine_summarize;
+              // this.examine.examine_assess = res.data.examine_assess;
+              // this.examine.id = res.data.id;
+            } else {
+              Message({
+                message: '未查到此身份证信息 ！！！',
+                type: 'warning',
+                duration: 2000
+              });
+            }
+          });
+        } else {
+          Message({
+            message: '请输入要搜索的身份证号！！！',
+            type: 'warning',
+            duration: 1500
+          });
+        }
+      },
+      /** 初始化表单 **/
+      initForm() {
+        this.addForm = {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_id: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '党组织id',
+        };
+        this.examine = {
+          // CREATE TABLE `examine` (
+          id: '', // int(11) NOT NULL AUTO_INCREMENT COMMENT '考评id',
+          user_id: '', // int(11) DEFAULT NULL COMMENT '用户id',
+          examine_summarize: '', // text COMMENT '个人小结',
+          examine_assess: '', // text COMMENT '评价',
+          examine_key: '', // text COMMENT '关键事件',
+          examine_date: '', // varchar(20) DEFAULT NULL COMMENT '考评日期',
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='考评表';
+          user_organization_id: '', // 现在临时党组织id
+          user_temp_in_date: '',
+          user_temp_out_date: '',
+        };
+        this.EventTempInfo = {
+          show: false,  // 是否显示编辑的面板
+          status: '',   // new 或者 edit 的状态
+          index: '',    // edit 状态下的索引
+          oldData: {},  // 编辑前的数据
+          // 关键事件记录
+          history: [],
+          date: '',
+          author: '',
+          event: '',
+          showIcon: false,
+        };
+      },
+      // 确定
+      submitAddForm(formName, type) {
+        let aa = this.newUserInfo;
+        let _this = this, sendType = 'get', url = this.url;
+        // // 需要转换为时间戳的日期字段
+        // arr = ['user_birth', 'user_in_date', 'user_become_date'];
+        this.$refs[formName].validate((valid) => {
+          let ids = JSON.parse(JSON.stringify(this.examine.id));
+          if (valid) {
+            if (type == 'new') {
+              sendType = 'post';
+            } else if (type == 'edit') {
+              sendType = 'put';
+              url = url + '/' + ids;
+            }
+            delete this.examine.id;
+            if (!this.examine.user_id) {
+              Message({
+                message: '请先用身份证搜索个人信息！！！',
+                type: 'warning',
+                duration: 2000
+              });
+              return false;
+            }
+            _this.sendData(url, this.examine, sendType, res => {
+              if (res.code == 0) {
+                Message({
+                  message: type == 'new' ? '新增成功！！！' : '修改成功！！！',
+                  type: 'success',
+                  duration: 1500
+                });
+                this.showDialog = false;
+                this.initForm();
+                this.update++;
+              }
+            });
+          }
+
+        });
+      },
+      // 发送数据
+      sendData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      // 获取数据
+      getData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      /** 时间 转为13位时间戳
+       * 最终解析为 this.addForm.tar[.tar2]
+       * **/
+      formatTime(time, tar, tar2) {
+        let t = this.dateformat.timeStamp(time, 13);
+        if (tar && tar2) {
+          this.addForm[tar][tar2] = t;
+          // this.addForm[tar] = t;
+        } else if (tar) {
+          this.addForm[tar] = t;
+        } else if (tar2) {
+          this.addForm[tar2] = t;
+        }
+        return t;
+      },
+
+      /** 将指定的日期转为时间戳
+       * 接收字段名 和 总数据
+       * **/
+      dateFontsFiter(arr, tar) {
+        for (let i in arr) {
+          if (typeof(tar[tar[i]]) !== 'number') {
+            tar[arr[i]] = this.formatTime(tar[arr[i]]);
+          }
+        }
+        return tar;
+      },
+
+
+      /*********************************** 详情页 *****************************/
+      showDetaile(e, d) {
+        this.getData(`${this.URL}${this.url}/${d.id}`, '', 'get', res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            this.detailData = JSON.parse(JSON.stringify(res.data));
+            this.EventTempInfo.history = JSON.parse(res.data.examine_key);
+            this.showDetailDialog = true;
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+      },
+      /** 导出功能 **/
+      _fileOut(e) {
+        $('#fileExport').wordExport('考评表-' + this.detailData.user_name + '-' + this.dateformat.format(new Date(Number(this.detailData.examine_date)), 'yyyy-MM-dd'));
+      }
+
+
+    }
+  }
+</script>
+<style lang="scss" scoped>
+  /** 头部搜索栏 **/
+  .review-search {
+    margin-top: 0;
+  }
+
+  /** 板块 **/
+  .review-box {
+    margin-bottom: 1.5rem;
+    .el-date-editor.el-input, .el-date-editor.el-input__inner {
+      width: 100% !important;
+    }
+
+  }
+
+  /** 标题栏 **/
+  .review-title {
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid #aaa;
+    margin-bottom: 1rem;
+    cursor: default;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: SimHei;
+    display: flex;
+    justify-content: space-between;
+    i {
+      color: #cf010c;
+      margin-right: 0.2rem;
+    }
+    .review-right {
+      color: #cf010c;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 1rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 0.2rem;
+      &:hover {
+        background-color: #cf010c;
+        color: #fff;
+        transition: background-color 0.25s;
+      }
+      i {
+        margin: 0;
+        color: inherit;
+      }
+    }
+  }
+
+  /** 关键事件记录 **/
+  .event {
+    /* 列表 */
+    .event-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      color: #888;
+      strong {
+        color: #666;
+      }
+      li {
+        box-sizing: border-box;
+        padding: 0.8rem;
+        &:hover {
+          background-color: #f7f7f7;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+      }
+      p {
+        margin: 0;
+      }
+      strong {
+        display: inline-block;
+        width: 4rem;
+      }
+      /* 小标题 */
+      .event-title {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 0.8rem;
+        .event-title-left {
+          display: inherit;
+          justify-content: space-between;
+          width: 45%;
+        }
+        .event-icons {
+          color: #cf010c;
+          i {
+            margin: 0 0.1rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 3rem;
+            &:hover {
+              color: #fff;
+              background-color: #cf010c;
+              transition: background-color 0.25s;
+            }
+          }
+        }
+      }
+      /* 内容 */
+      .event-con {
+        display: flex;
+        /*justify-content: space-between;*/
+        p {
+          width: calc(100% - 4rem);
+        }
+      }
+    }
+    /* 添加内容的部分 */
+    .event-add {
+      box-sizing: border-box;
+      padding: 0.5rem 0.8rem;
+      .event-add-top {
+        p {
+          display: inline-block;
+          strong {
+            margin-right: 0.8rem;
+          }
+          .el-input {
+            width: calc(100% - 4rem) !important;
+          }
+        }
+      }
+      .event-add-con {
+        display: flex;
+        align-items: baseline;
+        strong {
+          margin-right: 1rem;
+        }
+        .el-textarea {
+          width: calc(100% - 4rem);
+        }
+      }
+    }
+
+  }
+
+  .file-out {
+    position: absolute;
+    right: 4rem;
+    top: 0.7rem;
+  }
+
+</style>

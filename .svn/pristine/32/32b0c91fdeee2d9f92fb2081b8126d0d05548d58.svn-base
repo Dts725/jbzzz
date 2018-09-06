@@ -1,0 +1,25 @@
+<template>
+  <div id="app">
+    <router-view></router-view>
+    <img class="bg" src="../static/body_bj.jpg" alt="">
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'App'
+  }
+</script>
+<style>
+  .bg{
+    width:100%;
+    height: 100%;
+    position: fixed;
+    top:0;
+    left: 0;
+    z-index: -1;
+  }
+  .el-dialog-H{
+    height: 600px;
+  }
+</style>
