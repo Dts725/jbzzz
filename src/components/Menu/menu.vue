@@ -1,0 +1,249 @@
+<template>
+  <div class="menu-container">
+    <el-menu default-active="2" class="el-menu-vertical-demo" @open="_handleOpen" @close="_handleClose" :default-openeds="['0']"
+             @select="_selected"
+             background-color="rgba(255,255,255, 0)" text-color="#333" active-text-color="#cf010c" v-if="menus&& menus.length>0">
+      <div class="menu-items" v-for="(item, key) in menus" :key="key">
+        <el-submenu v-if="item.children && item.children.length>0" :index="item.name" index="0">
+          <template slot="title">
+            <!--<svg-icon :icon-class="item.icon?item.icon:'table'"></svg-icon>-->
+            <i :class="'fa fa-'+(item.icon?item.icon:'th-large')"></i>
+            {{item.name}}
+          </template>
+          <!-- 第二层 -->
+          <div class="menu-item" v-for="it in item.children" v-if="item.children&& item.children.length>0" >
+            <el-submenu :index="it.name" v-if="it.children && it.children.length>0">
+              <template slot="title">
+                <!--<svg-icon :icon-class="it.icon?it.icon:'table'"></svg-icon>-->
+                <i :class="'fa fa-'+(it.icon?it.icon:'th-large')"></i>
+                {{it.name}}
+              </template>
+              <!-- 第三层 -->
+              <div class="menu-it" v-for="i in it.children" v-if="it.children&& it.children.length>0">
+                <el-submenu :index="i.name" v-if="i.children && i.children.length>0">
+                  <template slot="title">
+                    <!--<svg-icon :icon-class="i.icon?i.icon:'table'"></svg-icon>-->
+                    <i :class="'fa fa-'+(i.icon?i.icon:'th-large')"></i>
+                    {{i.name}}
+                  </template>
+                  <!-- 第四层 -->
+                  <div class="menu-chd" v-for="chd in i.children" v-if="i.children&& i.children.length>0">
+                    <el-submenu :index="chd.name" v-if="chd.children && chd.children.length>0">
+                      <template slot="title">
+                        <!--<svg-icon :icon-class="chd.icon?chd.icon:'table'"></svg-icon>-->
+                        <i :class="'fa fa-'+(chd.icon?chd.icon:'th-large')"></i>
+                        {{chd.name}}
+                      </template>
+                      <el-menu-item :url="ch.url" v-for="ch in chd.children" :index="ch.name">{{ch.name}}
+                      </el-menu-item>
+                    </el-submenu>
+                    <el-menu-item :url="chd.url" v-else :index="chd.name">
+                      <!--<svg-icon :icon-class="chd.icon?chd.icon:'table'"></svg-icon>-->
+                      <i :class="'fa fa-'+(chd.icon?chd.icon:'th-large')"></i>
+                      <span slot="title">{{chd.name}}</span>
+                    </el-menu-item>
+                  </div>
+                </el-submenu>
+                <el-menu-item :url="i.url" v-else :index="i.name">
+                  <!--<svg-icon :icon-class="i.icon?i.icon:'table'"></svg-icon>-->
+                  <i :class="'fa fa-'+(i.icon?i.icon:'th-large')"></i>
+                  <span slot="title">{{i.name}}</span>
+                </el-menu-item>
+              </div>
+            </el-submenu>
+            <el-menu-item :url="it.url" v-else :index="it.name">
+              <!--<svg-icon :icon-class="it.icon?it.icon:'table'"></svg-icon>-->
+              <i :class="'fa fa-'+(it.icon?it.icon:'th-large')"></i>
+              <span slot="title">{{it.name}}</span>
+            </el-menu-item>
+            
+          </div>
+        </el-submenu>
+        <el-menu-item :url="item.url" v-else :index="item.name">
+          <!--<svg-icon :icon-class="item.icon?item.icon:'table'"></svg-icon>-->
+          <i :class="'fa fa-'+(item.icon?item.icon:'th-large')"></i>
+          <span slot="title">{{item.name}}</span>
+        </el-menu-item>
+       
+      </div>
+      
+    </el-menu>
+    
+    <p v-else>暂无数据</p>
+    
+	
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "menus",
+    props: {
+      menus: {
+        type: Array,
+        default: () => {
+          // return [
+          //   {
+          //     name: '导航一',
+          //     icon: 'tree',
+          //     url: 'nav1',
+          //     children: [
+          //       {
+          //         name: '导航1-1',
+          //         icon: 'table',
+          //         url: 'nav1-1'
+          //       },
+          //       {
+          //         name: '导航1-2',
+          //         icon: 'tree',
+          //         url: '',
+          //         children: [
+          //           {
+          //             name: '导航1-2-1',
+          //             icon: 'tree',
+          //             url: 'nav1-2-1'
+          //           },
+          //           {
+          //             name: '导航1-2-2',
+          //             icon: 'tree',
+          //             url: 'nav1-2-2'
+          //           },
+          //         ]
+          //       }
+          //     ]
+          //   },
+          //   {
+          //     name: '导航二',
+          //     icon: 'table',
+          //     url: 'nav2',
+          //     children: []
+          //   },
+          //   {
+          //     name: '导航三',
+          //     icon: 'tree',
+          //     url: 'nav3',
+          //     children: []
+          //   },
+          //   {
+          //     name: '导航五',
+          //     icon: 'tree',
+          //     url: 'nav5',
+          //     children: [
+          //       {
+          //         name: '导航-5-1',
+          //         icon: 'tree',
+          //         url: '',
+          //         children: [
+          //           {
+          //             name: '导航5-1',
+          //             icon: 'tree',
+          //             url: '',
+          //             children: [
+          //               {
+          //                 name: '导航5-1-1',
+          //                 icon: 'tree',
+          //                 url: '',
+          //                 children: [
+          //                   {
+          //                     name: '导航5-1-1-1',
+          //                     icon: 'tree',
+          //                     url: 'nav5-1-1-1',
+          //                     children: []
+          //                   },
+          //                   {
+          //                     name: '导航5-1-1-2',
+          //                     icon: 'tree',
+          //                     url: 'nav5-1-1-2',
+          //                     children: []
+          //                   },
+          //                 ]
+          //               },
+          //               {
+          //                 name: '导航5-1-2',
+          //                 icon: 'tree',
+          //                 url: '',
+          //                 children: [
+          //                   {
+          //                     name: '导航5-1-2-1',
+          //                     icon: 'tree',
+          //                     url: 'nav5-1-2-1',
+          //                     children: []
+          //                   },
+          //                   {
+          //                     name: '导航5-1-2-2',
+          //                     icon: 'tree',
+          //                     url: 'nav5-1-2-2',
+          //                     children: []
+          //                   },
+          //                 ]
+          //               },
+          //             ]
+          //           },
+          //           {
+          //             name: '导航5-2',
+          //             icon: 'table',
+          //             url: 'nav5-2',
+          //             children: []
+          //           },
+          //         ]
+          //       },
+          //       {
+          //         name: '导航-5-2',
+          //         icon: 'table',
+          //         url: 'nav-5-2',
+          //         children: []
+          //       },
+          //     ]
+          //   },
+          // ]
+          return [
+            {
+              name: '导航一',
+              icon: 'tree',
+              url: 'nav1',
+              children: []
+            },
+            {
+              name: '导航2',
+              icon: '',
+              url: 'nav2'
+            },
+           
+          ]
+        }
+      }
+    },
+    data() {
+      return {
+//    	 dialogVisible:false,
+//    	 dialogVisible1:false,
+      }
+    },
+    methods: {
+      _handleOpen(key, keyPath) {
+        // console.log(key, keyPath);
+        this.$emit('open', {key: key, path: keyPath});
+      },
+      _handleClose(key, keyPath) {
+        // console.log(key, keyPath);
+        this.$emit('close', {key: key, path: keyPath});
+      },
+      _selected(key, keyPath, me) {
+        // console.log(key, keyPath, 'url:::', me.$el.getAttribute('url'));
+        this.$emit('selected', {key: key, path: keyPath, url: me.$el.getAttribute('url')});
+      },
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+  .menu-container {
+    i {
+      margin-right: 0.5rem !important;
+      color: inherit;
+    }
+  }
+  
+  
+</style>
+
