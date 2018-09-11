@@ -4,7 +4,7 @@ import Router from 'vue-router'
 // in development-env not use lazy-loading, because lazy-loading too many pages will cause webpack hot update too slow. so only in production use lazy-loading;
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
 
-Vue.use(Router);
+Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
@@ -22,11 +22,11 @@ import Layout from '../views/layout/Layout'
   }
  **/
 export const constantRouterMap = [{
-  path: '/login',
-  component: () =>
-    import('@/views/login/index'),
-  hidden: true
-},
+    path: '/login',
+    component: () =>
+      import('@/views/login/index'),
+    hidden: true
+  },
   {
     path: '/404',
     component: () =>
@@ -37,230 +37,238 @@ export const constantRouterMap = [{
   {
     path: '/',
     component: Layout,
-    redirect: '/appointment/table',
-    // name: 'Dashboard',
+    redirect: '/partyMember',
     hidden: true,
-    meta: {
-      title: '预约管理',
-      icon: 'sitemap'
-    },
     children: [{
-      path: 'dashboard',
-      component: () =>
-        import('@/views/dashboard/index')
-    }]
-  },
-
-  {
-    path: '/appointment',
-    component: Layout,
-    redirect: '/appointment/table',
-    name: 'Appointment',
-    meta: {
-      title: '预约管理',
-      icon: 'clock-o'
-    },
-    children: [{
-      path: 'table',
-      name: 'Table',
+      path: 'member',
+      name: 'member',
       meta: {
-        title: '预约管理',
+        title: '党员管理',
         icon: 'clock-o'
       },
       component: () =>
-        import('@/views/dashboard/index'),
+        import('@/views/partyMember/member')
     }]
   },
+
   {
-    path: '/team',
+    path: '/partyMember',
     component: Layout,
-    redirect: '/team/table',
-    name: 'Team',
+    // redirect: '/partyMember/member',
     meta: {
-      title: '团队管理',
+      title: '党员及党组织管理',
       icon: 'sitemap'
     },
     children: [{
-      path: 'table',
-      name: 'Teamc',
-      meta: {
-        title: '团队管理',
-        icon: 'sitemap'
-      },
-      component: () =>
-        import('@/views/table/index'),
-    }]
-  },
-  {
-    path: '/field',
-    component: Layout,
-    redirect: '/field/tree',
-    name: 'Field',
-    meta: {
-      title: '场地管理',
-      icon: 'map-marker'
-    },
-    children: [
-      {
-        path: 'tree',
-        name: 'Tree',
+        path: 'member',
+        name: 'member',
         meta: {
-          title: '场地管理',
-          icon: 'map-marker'
+          title: '党员管理',
+          icon: 'clock-o'
         },
         component: () =>
-          import('@/views/tree/index'),
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    meta: {
-      title: '用户管理',
-      icon: 'user-circle-o'
-    },
-    children: [{
-      path: 'index',
-      name: 'Form',
-      meta: {
-        title: '全部用户',
-        icon: 'users'
-      },
-      component: () =>
-        import('@/views/form/index'),
-    },
-      {
-        path: 'leader',
-        name: 'leader',
+          import('@/views/partyMember/member')
+      }, {
+        path: 'organization',
+        name: 'organization',
         meta: {
-          title: '领导',
-          icon: 'user'
+          title: '党组织管理',
+          icon: 'clock-o'
         },
         component: () =>
-          import('@/views/form/leader'),
-      },
-      {
-        path: 'worker',
-        name: 'worker',
+          import('@/views/partyMember/organization')
+      }, {
+        path: 'relationship',
+        name: 'relationship',
         meta: {
-          title: '工作人员',
+          title: '信息变更',
           icon: 'id-badge'
         },
         component: () =>
-          import('@/views/form/worker'),
+          import('@/views/partyMember/relationship')
       },
       {
-        path: 'resident',
-        name: 'resident',
+        path: 'relationship11',
+        name: 'relationship11',
         meta: {
-          title: '普通居民',
-          icon: 'id-card'
+          title: '当组织管理',
+          icon: 'id-badge'
         },
         component: () =>
-          import('@/views/form/resident'),
+          import('@/views/partyMember/relationship11')
+      },
+      {
+        path: 'branch',
+        name: 'branch',
+        meta: {
+          title: '党组织管理 - 党支部',
+          icon: 'clock-o'
+        },
+        component: () =>
+          import('@/views/partyMember/branch')
       }
     ]
   },
   {
-    path: '/transact',
+    path: '/review',
     component: Layout,
-    redirect: '/transact/index',
+    redirect: '/review/review',
     meta: {
-      title: '业务',
-      icon: 'file-text'
-    },
-    children: [{
-      path: 'index',
-      name: 'Transact',
-      meta: {
-        title: '业务管理',
-        icon: 'file-text'
-      },
-      component: () =>
-        import('@/views/transact/index'),
-    }]
-  },
-
-  {
-    path: '/active',
-    component: Layout,
-    redirect: '/active/index',
-    meta: {
-      title: '活动',
-      icon: 'flag'
-    },
-    children: [{
-      path: 'index',
-      name: 'index',
-      meta: {
-        title: '活动管理',
-        icon: 'flag'
-      },
-      component: () =>
-        import('@/views/active/index'),
-    }]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/role',
-    meta: {
-      title: '系统管理',
-      icon: 'gear'
-    },
-    children: [
-      {
-        path: 'role',
-        name: 'role',
-        meta: {
-          title: '角色管理',
-          icon: 'smile-o'
-        },
-        component: () =>
-          import('@/views/system/role'),
-      },
-      {
-        path: 'community',
-        name: 'community',
-        meta: {
-          title: '社区管理',
-          icon: 'comments'
-        },
-        component: () =>
-          import('@/views/system/community'),
-      },
-      {
-        path: 'backstage',
-        name: 'backstage',
-        meta: {
-          title: '后台账号',
-          icon: 'key'
-        },
-        component: () =>
-          import('@/views/system/backstage'),
-      }
-    ]
-  },
-  {
-    path: '/workers',
-    component: Layout,
-    redirect: '/workers/workers',
-    meta: {
-      title: '办公账号',
+      title: '党员综合考评',
       icon: 'desktop'
     },
     children: [{
-      path: 'workers',
-      name: 'workers',
+      path: 'review',
+      name: 'review',
       meta: {
-        title: '办公账号',
+        title: '党员考评',
         icon: 'desktop'
       },
       component: () =>
-        import('@/views/workers/workers'),
+        import('@/views/review/review')
     }]
+  },
+  {
+    path: '/dataCount',
+    component: Layout,
+    redirect: '/dataCount/dataCount',
+    meta: {
+      title: '数据统计',
+      icon: 'desktop'
+    },
+    children: [{
+      path: 'dataCount',
+      name: 'dataCount',
+      meta: {
+        title: '数据统计',
+        icon: 'desktop'
+      },
+      component: () =>
+        import('@/views/dataCount/dataCount')
+    }]
+  },
+  {
+    path: '/relationship',
+    component: Layout,
+    redirect: '/relationship/index',
+    meta: {
+      title: '信息变更',
+      icon: 'id-badge'
+    },
+    children: [{
+      path: 'index',
+      name: 'relationship',
+      meta: {
+        title: '信息变更',
+        icon: 'id-badge'
+      },
+      component: () =>
+        import('@/views/relationship/index')
+    }]
+  },
+  {
+    path: '/framework',
+    component: Layout,
+    redirect: '/framework/framework',
+    meta: {
+      title: '党组织架构',
+      icon: 'desktop'
+    },
+    children: [{
+        path: 'frameworkFirst',
+        name: 'frameworkFirst',
+        meta: {
+          title: '党组织架构',
+          icon: 'desktop'
+        },
+        component: () =>
+          import('@/views/framework/childrenRouter/frameworkFirst')
+      },
+      {
+        path: 'frameworkTwo',
+        name: 'frameworkTwo',
+        meta: {
+          title: '党组织架构',
+          icon: 'desktop'
+        },
+        component: () =>
+          import('@/views/framework/childrenRouter/frameworkTwo')
+      },
+      {
+        path: 'frameworkThree',
+        name: 'frameworkThree',
+        meta: {
+          title: '党组织架构',
+          icon: 'desktop'
+        },
+        component: () =>
+          import('@/views/framework/childrenRouter/frameworkThree')
+      }
+    ]
+
+  },
+  {
+    path: '/contacts',
+    component: Layout,
+    redirect: '/contacts/contacts',
+    meta: {
+      title: '指挥部联系人',
+      icon: 'desktop'
+    },
+    children: [{
+      path: 'contacts',
+      name: 'contacts',
+      meta: {
+        title: '指挥部联系人',
+        icon: 'desktop'
+      },
+      component: () =>
+        import('@/views/contacts/contacts')
+    }]
+  },
+  {
+    path: '/quanxian',
+    component: Layout,
+    redirect: '/quanxian/quanxian',
+    meta: {
+      title: '权限管理',
+      icon: 'calendar-minus-o'
+    },
+    children: [{
+      path: 'quanxian',
+      name: 'relationship',
+      meta: {
+        title: '权限管理',
+        icon: 'calendar-minus-o'
+      },
+      component: () =>
+        import('@/views/quanxian/quanxian')
+    }]
+  },
+  {
+    path: '/activeManage/initiateActive',
+    component: Layout,
+    redirect: '/activeManage/initiateActive',
+    meta: {
+      title: '活动',
+      icon: 'comments'
+    },
+    children: [{
+      path: '/activeManage/initiateActive',
+      name: 'initiateActive',
+      meta: {
+        title: '党组织活动',
+        icon: 'flag'
+      },
+      component: () =>
+        import('@/views/activeManage/initiateActive')
+    }]
+  },
+  {
+    path: '/test',
+    component: () =>
+      import('@/views/test'),
+    hidden: true
   },
 
   {
@@ -268,7 +276,7 @@ export const constantRouterMap = [{
     redirect: '/404',
     hidden: true
   }
-];
+]
 
 export default new Router({
   mode: 'history', // 后端支持可开

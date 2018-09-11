@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-cloak>
     <router-view></router-view>
     <img class="bg" src="../static/body_bj.jpg" alt="">
   </div>
@@ -11,6 +11,10 @@
   }
 </script>
 <style>
+
+[v-cloak]  {
+  display: none !important;
+}
   .bg{
     width:100%;
     height: 100%;

@@ -28,7 +28,10 @@
 			</el-dialog>
     </div>
     <div class="main-container">
-      <navbar></navbar>
+    <div v-show= "true">
+      <navbar ></navbar>
+
+    </div>
       <app-main></app-main>
     </div>
     <!--</div>-->
