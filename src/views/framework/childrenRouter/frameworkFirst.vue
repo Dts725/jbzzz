@@ -15,10 +15,8 @@
     },
     data() {
       return {
-        data: {
-          name1: ["牵头部门", "党支部", "党支部书记", "副书记", "委员"],
-          dangyuang: ["党员哈哈哈", "党员不吗哈哈哈m", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员", "党员哈哈哈"]
-        }
+        data: null,
+
       }
     },
     created() {
@@ -30,9 +28,8 @@
 
     methods : {
       init () {
-        http.get('/organization?id='+ this.$route.query.partyId).then(res => {
-          console.log(res)
-          console.log("111111111111111111111111111111")
+        http.get('/organization/'+ this.$store.state.nav.id.id).then(res => {
+            this.data = res.data;
         })
       }
     }

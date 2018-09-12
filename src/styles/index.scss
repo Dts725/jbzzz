@@ -240,7 +240,7 @@ ul {
 }
 
 .attend-oval-margin {
-  margin-bottom: 10%;
+  margin-bottom: 8%;
 }
 
 .attend-oval-bg {
@@ -260,13 +260,15 @@ ul {
 
 .attend-oval-party {
   border-radius: 100px;
-  // margin-left: 2rem;
+  margin-left: 2rem;
   background-color: #d40e19;
   padding:01.2rem 0.6rem;
-  min-height: 3rem;
+  min-height: 8rem;
   margin-top: 3rem;
   -webkit-writing-mode: vertical-lr;
   writing-mode: vertical-lr;
+   writing-mode: tb-lr;
+   /*IE浏览器的从左向右 从右向左是 writing-mode: tb-rl；*/
   cursor: pointer;
 }
 
@@ -296,7 +298,7 @@ ul {
   width: 2px;
   height: 100%;
   left: 50%;
-  transform: translate(-50%, 4.5%);
+  transform: translate(-50%, 4%);
   z-index: -1;
 }
 
@@ -307,15 +309,21 @@ ul {
   transform: translateX(50%);
 }
 .attend-line-party-border {
-  border-top: 2px solid #d40e19;
+  width: 100%;
+  height: 2px;
+  padding: 0 2.35rem 0 4.35rem;
+  background-clip:content-box;
+ background-color: #d40e19;
 }
 .attend-line-center {
-  height: 3rem;
   width: 100%;
-  top: 0rem;
+  height: 2.5rem;
+  margin-left: 1rem;
+  top: 0px;
   left: 50%;
   border-left: 2px solid #d40e19;
-  transform: translateX(-1px);
+  border-top: 2px solid #d40e19;
+  transform: translate(-1px);
   z-index: 101;
 }
 
@@ -324,3 +332,16 @@ ul {
   height: 2rem;
   background-color: #d40e19;
 }
+ul {
+  margin: 0;
+  box-sizing: border-box;
+}
+li{
+  box-sizing: border-box;
+}
+p{
+  padding: 0;
+  margin: 0;
+}
+
+

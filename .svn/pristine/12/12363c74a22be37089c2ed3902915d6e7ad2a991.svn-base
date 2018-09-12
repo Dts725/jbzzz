@@ -1,0 +1,19 @@
+const nav = {
+  state: {
+    flag: true,
+    id: ''
+  },
+
+
+  mutations: {
+    BREAD_NAV: (state, msg) => {
+      state.flag = msg;
+    },
+    BREAD_SID_ID: (state, msg) =>{
+      state.id = msg;
+    }
+  }
+
+
+}
+export default nav

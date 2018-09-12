@@ -3,14 +3,15 @@
     <div class="top-center pa ">
 
     </div>
-    <div class="body">
-      <ul class="flex-space-nowarp party attend-line-party-border overflow-auto">
-
-        <li v-for="(el ,index) in data" :key="index" class="pr flex" @click="router(el.id,el.child.length)">
+    <div class="body pr">
+      <div class="attend-line-party-border pa"></div>
+      <ul class="flex-space-nowarp party  padd20 overflow-auto">
+        <li v-for="(el ,index) in data" :key="index" class="pr flex" @click="router(el,el.child.length)">
           <div class="attend-line-center pa"></div>
           <p class="attend-oval-party attend-oval-color attend-oval">{{el.organization_name}}</p>
         </li>
       </ul>
+
     </div>
   </div>
 </template>
@@ -26,19 +27,7 @@ export default {
   },
   data() {
     return {
-      data: {
-        name1: [],
-        dangyuang: [
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部",
-          "工程项目组临时支部"
-        ]
-      },
+      data: null,
       datas: null
     };
   },
@@ -58,10 +47,12 @@ export default {
 
     //点击跳转路由
     router(id,flag) {
+
+      this.$store.commit('BREAD_SID_ID',id)
       if(flag) {
-        this.$router.push({path :"/framework/framework/frameworkThree",query : {partyId : id}});
+        this.$router.push("/framework/framework/frameworkThree");
       } else {
-        this.$router.push({path:'/framework/framework/frameworkFirst',query : {partyId : id}});
+        this.$router.push('/framework/framework/frameworkFirst');
       }
 
     }
@@ -70,9 +61,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-ul {
-  padding: 0;
-}
+  .padd20 {
+    padding: 0 20px 20px;
+  }
 
 .top-center {
   width: 2px;
@@ -86,7 +77,10 @@ ul {
   margin-top: 100px;
 }
 
-// .party>li:nth-last-of-type(1)>div {
-//   width: 0;
-// }
+ .party>li:nth-last-of-type(1)>div {
+    width: 0px;
+    // margin-left: 0;
+  }
+
+
 </style>

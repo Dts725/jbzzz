@@ -1,0 +1,364 @@
+<template>
+  <div class="app-wrapper" :class="classObj">
+    <div class="logoTitle">
+      <newLogoQuit></newLogoQuit>
+    </div>
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"></div>
+
+    <!--<div class="app-con">-->
+    <!--<sidebar class="sidebar-container"></sidebar>-->
+    <div class="menu-con">
+		    <menus class="sidebar-container" :menus="menus" @selected="selected">
+		    </menus>
+		    <!--<div class='tr'>
+		    	<span @click="dialogVisible = true" class="ou">市委组织部党建指导员    欧晓明</span>
+		    	<span @click="dialogVisible1 = true">市委组织部党建指导员    卫华韵</span>
+		    </div>-->
+		    <div class='tr'>
+		    	<span class="kong"></span>
+		    	<span>党建指导员</span>
+		    	<span @click="dialogVisible = true" class="ou">欧晓明</span>
+		    	<span @click="dialogVisible1 = true" class="wei">卫华韵</span>
+		    </div>
+		    <el-dialog
+				  :visible.sync="dialogVisible"
+				  width="840px"
+				  :before-close="handleClose" class='biaodan'>
+				  <img src="../../../static/22.jpg"/>
+			</el-dialog>
+			<el-dialog
+				  :visible.sync="dialogVisible1"
+				  width="840px"
+				  :before-close="handleClose" class='biaodan'>
+				  <img src="../../../static/11.jpg"/>
+			</el-dialog>
+    </div>
+    <div class="main-container">
+      <navbar></navbar>
+      <app-main></app-main>
+    </div>
+    <!--</div>-->
+  </div>
+</template>
+
+<script>
+  import {Navbar, Sidebar, AppMain, newLogoQuit} from "./components";
+  import ResizeMixin from "./mixin/ResizeHandler";
+  import menus from "../../components/Menu/menu";
+  import http from "@/api/http";
+
+  export default {
+    name: "layout",
+    components: {
+      Navbar,
+      Sidebar,
+      AppMain,
+      newLogoQuit,
+      menus
+    },
+    mixins: [ResizeMixin],
+    data() {
+      return {
+        menus: [],
+        dialogVisible:false,
+      	dialogVisible1:false,
+      }
+    },
+    computed: {
+      sidebar() {
+        return this.$store.state.app.sidebar;
+      },
+      device() {
+        return this.$store.state.app.device;
+      },
+      classObj() {
+        return {
+          hideSidebar: !this.sidebar.opened,
+          withoutAnimation: this.sidebar.withoutAnimation,
+          mobile: this.device === "mobile"
+        };
+      }
+    },
+    mounted() {
+      this.menus = [
+        {
+          id: 1,
+          name: "基本信息管理",
+          icon: "flag",
+          url: "nav1",
+          children: [
+          {
+              pid: 1,
+              name: "党组织管理",
+              icon: "list-ul",
+              url: "/partyMember/organization"
+            },
+            {
+              pid: 1,
+              name: "党员管理",
+              icon: "users",
+              url: "/partyMember/member"
+            },
+            
+            {
+              pid: 1,
+              name: "党员变更",
+              icon: "id-badge",
+              url: "/partyMember/relationship"
+            },
+            {
+              pid: 1,
+              name: "党组织变更",
+              icon: "id-badge",
+              url: "/partyMember/relationship11"
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "党组织架构",
+          icon: "sitemap",
+          url: "/framework/framework",
+          children: []
+        },
+        // {
+        //   id: 3,
+        //   name: "信息变更",
+        //   icon: "id-badge",
+        //   url: "/relationship/index",
+        //   children: []
+        // },
+        {
+          id: 4,
+          name: "党组织活动",
+          icon: "comments",
+          url: "/activeManage/initiateActive"
+        },
+        {
+          id: 5,
+          name: "党员综合评价",
+          icon: "file-text",
+          url: "/review/review",
+          children: []
+        },
+        {
+          id: 6,
+          name: "数据导出",
+          icon: "share-square-o",
+          url: "/",
+          children: []
+        },
+        {
+          id: 7,
+          name: "数据统计",
+          icon: "window-restore",
+          url: "/dataCount",
+          children: []
+        },
+        {
+          id: 8,
+          name: "党建指导员",
+          icon: "user-circle-o",
+          url: "/contacts",
+          children: []
+        },
+       	{
+          id: 9,
+          name: "权限管理",
+          icon: "calendar-minus-o",
+          url: "/quanxian",
+          children: []
+        },
+        
+        // {
+        //   id: 7,
+        //   name: "测试专用",
+        //   icon: "window-restore",
+        //   url: "/test",
+        //   children: []
+        // }
+      ];
+      // let roleId = '', uinfo = '';
+      // if (this.storage.getStorage('uinfo')) {
+      //   uinfo = JSON.parse(this.storage.getStorage('uinfo'));
+      //   roleId = uinfo.role_id ? uinfo.role_id : '';
+      // }
+      // http.get(this.urls.role + '/' + roleId).then(res => {
+      //   if (res.code == 0) {
+      //     if (!roleId && uinfo.username == 'admin') { // 超级管理员
+      //       this.menus = res.data.all_menu_ids;
+      //     } else {
+      //       this.menus = res.data.menu_ids;
+      //     }
+      //   } else {
+      //     console.log('获取角色信息失败：：：', res);
+      //   }
+      // });
+
+      // console.log('routes:::', this.$router.options.routes);
+      // let arr = this.$router.options.routes;
+      // this.menus = [];
+      // for (let i of arr) {
+      //   if (!i.hidden) {
+      //     // debugger;
+      //     let obj = {
+      //       name: i.meta ? i.meta.title : '',
+      //       icon: i.meta ? i.meta.icon : '',
+      //       target: i.path,
+      //       children: []
+      //     };
+      //     if (i.children && i.children.length > 1) {
+      //       for (let j of i.children) {
+      //         obj.children.push({
+      //           name: j.meta ? j.meta.title : '',
+      //           icon: j.meta ? j.meta.icon : '',
+      //           target: `${i.path}/${j.path}`,
+      //           children: j.children && j.children.length > 0 ? j.children : []
+      //         });
+      //       }
+      //     } else {
+      //       obj.name = i.children[0].meta.title;
+      //       obj.icon = i.children[0].meta.icon;
+      //     }
+      //     this.menus.push(obj);
+      //   }
+      // }
+      // console.log('this.menus:::', this.menus);
+    },
+    methods: {
+      handleClickOutside() {
+        this.$store.dispatch("CloseSideBar", {withoutAnimation: false});
+      },
+      selected(obj) {
+        console.log(obj);
+        if (obj.url) {
+          this.$router.push(obj.url);
+        }
+      }
+    }
+  };
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+  @import "src/styles/mixin.scss";
+
+  .app-wrapper {
+    @include clearfix;
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .drawer-bg {
+    background: #000;
+    opacity: 0.3;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+  }
+
+  /*tatc*/
+  #app .sidebar-container {
+    top: 80px;
+  }
+
+  #app .main-container {
+    margin-top: 81px;
+  }
+
+  .logoTitle {
+    z-index: 1000;
+    font-size: 26px;
+    text-align: center;
+    color: white;
+    /*background-color: #2f92f8;*/
+    /*padding: 20px 0;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background-image: url('../../../static/header.jpg');
+    background-size: cover;
+  }
+
+  /*.app-con{*/
+  /*width: 100%;*/
+  /*height: 100%;*/
+  /*margin-top:69px;*/
+  /*}*/
+
+  /*tatc*/
+
+  .menu-con {
+    padding-top: 2rem;
+  }
+  /*.tr{
+  	text-align: center;
+  	position:fixed;
+  	bottom:10px;
+  	left: 10px;
+  	height: 100px;
+  	width: 200px;
+  	z-index:2000;
+  	color: red;
+  	font-size:14px;
+  	border: 1px solid black;
+  	span{
+  		border-bottom:1px solid transparent; 		
+  	&:hover{
+  		cursor:pointer;
+			border-bottom:1px solid #FF0000; 		
+  	}
+  	}
+  }
+  .ou{
+  	display: block;
+  	margin-top: 20px;
+  	margin-bottom: 20px;
+  }*/
+  .tr{
+  	text-align: center;
+  	position:fixed;
+  	bottom:10px;
+  	left: 10px;
+  /*	//padding-top: 25px;*/
+  	height: 160px;
+  	width: 200px;
+  	z-index:2000;
+  	color: white;
+  	background: red;
+  	font-size:18px;
+  	border: 1px solid black;
+  	/*span{
+  		border-bottom:1px solid transparent; 		
+  	&:hover{
+  		cursor:pointer;
+			border-bottom:1px solid #FF0000; 		
+  	}
+  	}*/
+  }
+  
+  .ou{
+  	display: block;
+  	margin-top: 5px;
+  	margin-bottom:5px;
+  	&:hover{
+  		cursor:pointer;
+  	}
+  }
+  .wei{
+  	&:hover{
+  		cursor:pointer;
+  	}
+  }
+  .kong{
+  	background: peachpuff;
+  	display: block;
+  	height: 40px;
+  	width: 198px;
+  	margin-bottom: 25px;
+  }
+</style>

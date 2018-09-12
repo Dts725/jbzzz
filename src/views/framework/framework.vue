@@ -3,7 +3,7 @@
 
 
     <div>
-      <p class="fz25">党组织架构图</p>
+      <p class="fz25">{{this.$store.state.nav.id.organization_name}}</p>
       <img src="../../../static/framework_top.png" alt="">
     </div>
       <!-- <div class="childrenRouter">
@@ -82,6 +82,9 @@
       createdActive() {
         this.$store.commit('BREAD_NAV', false)
         let clientHeight, clientWidth;
+          this.$store.commit('BREAD_SID_ID',{
+          id: 0,
+          organization_name : '组织部'});
 
         try {
           clientHeight = document.body.offsetHeight;
@@ -119,9 +122,9 @@
     background-size: 100% 100%;
     p{
       position: absolute;
-      top: 5%;
+      top: 8.5%;
       left: 46%;
-      // transform: translateX(-50% -50%);
+
        color: #f9cc2a;
       z-index: 101;
     }
@@ -176,7 +179,6 @@
     left: 10%;
     width: 80%;
     height: 80%;
-    overflow: auto;
     z-index: 101;
   }
 

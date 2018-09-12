@@ -11,7 +11,7 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item label="组织名称" prop="organization_name">
+            <el-form-item label="组织名称" prop="organization">
               <el-input v-model="addForm.organization_name"></el-input>
             </el-form-item>
           </el-col>
@@ -24,18 +24,18 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item label="书记名称" prop="organization_secretary_name">
-              <el-input v-model="addForm.organization_secretary_name"></el-input>
+            <el-form-item label="书记名称" prop="organization_secretary">
+              <el-input v-model="addForm.organization_secretary" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="书记电话" prop="organization_secretary_phone">
-              <el-input v-model="addForm.organization_secretary_phone"></el-input>
+            <el-form-item label="副书记" prop="organization_deputy_secretary">
+              <el-input v-model="addForm.organization_deputy_secretary  " disabled></el-input>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-row>
+        <!--<el-row>
           <el-col :span="12">
             <el-form-item label="联系人" prop="organization_contact_name">
               <el-input v-model="addForm.organization_contact_name"></el-input>
@@ -46,14 +46,10 @@
               <el-input v-model="addForm.organization_contact_phone"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row>-->
 
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="副书记" prop="organization_deputy_secretary_name">
-              <el-input v-model="addForm.organization_deputy_secretary_name"></el-input>
-            </el-form-item>
-          </el-col>
+
           <el-col :span="12">
             <el-form-item label="成立时间" prop="organization_date">
               <!--<el-input v-model="addForm.organization_date"></el-input>-->
@@ -70,7 +66,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="委员" prop="organization_commissioner">
-              <el-input v-model="addForm.organization_commissioner"></el-input>
+              <el-input v-model="addForm.organization_commissioner" disabled></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -81,6 +77,8 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+
 
     <!-- 弹窗 党员表 -->
     <el-dialog :title="memberDialogTitle" :visible.sync="showMemberDialog" center :top="memberDialogTop">
@@ -103,7 +101,7 @@
 
   export default {
     components: {
-      list
+      list,
     },
     data() {
       return {
@@ -125,12 +123,12 @@
         // 表格头 - 字段内容
         thead: [
           {name: "组织名称", key: 'organization_name', width: 'auto'},
-          {name: "书记名称", key: 'organization_secretary_name', width: '110'},
-          {name: "书记电话", key: 'organization_secretary_phone', width: 'auto'},
-          {name: "联系人", key: 'organization_contact_name', width: '110'},
-          {name: "联系电话", key: 'organization_contact_phone', width: 'auto'},
+          {name: "书记名称", key: 'organization_secretary', width: '110'},
+          // {name: "书记电话", key: 'organization_secretary_phone', width: 'auto'},
+//        {name: "联系人", key: 'organization_contact_name', width: '110'},
+//        {name: "联系电话", key: 'organization_contact_phone', width: 'auto'},
           {name: "成立日期", key: 'organization_date', width: '120', format: 'yyyy - MM - dd'},
-          {name: "党员人数", key: 'sum', width: '90'},
+          {name: "党员人数", key: 'sum', width: '90', canClick: true, class: 'hover'},
           {name: "目前的状态", key:'organization_status', width: '90',filterCon:[{key:1,value:'正常'},{key:2,value:'已解散'}]}
         ],
         update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
@@ -158,9 +156,9 @@
           pid: '',  // int(11) DEFAULT NULL COMMENT '组织父id',
           organization_name: '',  // varchar(50) DEFAULT NULL COMMENT '组织名称',
           organization_part: '',  // varchar(50) DEFAULT NULL COMMENT '牵头部门',
-          organization_secretary_name: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
+          organization_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
           organization_secretary_phone: '',  // varchar(50) DEFAULT NULL COMMENT '书记电话',
-          organization_deputy_secretary_name: '',  // varchar(50) DEFAULT NULL COMMENT '副书记',
+          organization_deputy_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '副书记',
           organization_contact_name: '',  // varchar(50) DEFAULT NULL COMMENT '联系人',
           organization_contact_phone: '',  // varchar(50) DEFAULT NULL COMMENT '联系人电话',
           organization_commissioner: '',  // varchar(255) DEFAULT NULL COMMENT '委员',
@@ -178,26 +176,26 @@
             {required: true, message: '请输入牵头部门', trigger: 'blur'},
             {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
           ],
-          organization_secretary_name: [
-            {required: true, message: '请输入书记名字', trigger: 'blur'}
-          ],
-          organization_deputy_secretary_name: [
-            {required: true, message: '请输入副书记名字', trigger: 'blur'}
-          ],
-          organization_contact_name: [
-            {required: true, message: '请输入联系人', trigger: 'blur'}
-          ],
-          organization_contact_phone: [
-            {required: true, message: '请输入联系人电话', trigger: 'blur'}
-          ],
-          organization_secretary_phone: [
-            {required: true, message: '请输入书记电话', trigger: 'blur'}
-          ],
-          organization_commissioner: [
-            {required: true, message: '请输入委员', trigger: 'blur'}
-          ],
+          // organization_secretary: [
+          //   {required: true, message: '请输入书记名字', trigger: 'blur'}
+          // ],
+          // organization_deputy_secretary_name: [
+          //   {required: true, message: '请输入副书记名字', trigger: 'blur'}
+          // ],
+          // organization_contact_name: [
+          //   {required: true, message: '请输入联系人', trigger: 'blur'}
+          // ],
+          // organization_contact_phone: [
+          //   {required: true, message: '请输入联系人电话', trigger: 'blur'}
+          // ],
+          // organization_secretary_phone: [
+          //   {required: true, message: '请输入书记电话', trigger: 'blur'}
+          // ],
+          // organization_commissioner: [
+          //   {required: true, message: '请输入委员', trigger: 'blur'}
+          // ],
           organization_date: [
-            {required: true, message: '请输入成立时间', trigger: 'change'}
+            {required: false, message: '请输入成立时间', trigger: 'change'}
           ]
         },
 
@@ -232,20 +230,16 @@
         //   }
         // });
         // // 获取社区列表
-        // http.get('/community').then(res => {
-        //   if (res.code == 0) {
-        //     this.communityList = res.data;
-        //   }
-        // });
-        // if (this.storage.getStorage('uinfo').length > 1) {
-        //   this.community_id = JSON.parse(this.storage.getStorage('uinfo')).community_id;
-        //   // this.addForm.communitySelect = this.community_id;
-        //   this.username = JSON.parse(this.storage.getStorage('uinfo')).username;
-        // } else {
-        //   this.community_id = -1;
-        //   this.disableComm = false;
-        // }
-        // this.url = this.username == 'admin' ? '/account?type=1' : `/account?type=1&community_id=${this.community_id}`;
+//         http.get('/community').then(res => {
+//           if (res.code == 0) {
+//             this.communityList = res.data;
+//           }
+//         });
+
+					let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+					let username = JSON.parse(this.storage.getStorage('uinfo')).username;
+          //console.log(user_organization_id)
+          this.url = username == 'admin' ? '/organization' : `/organization?organization_id=${community_id}`;
       },
       /** 单元格点击事件 **/
       cellClick(obj) {
@@ -285,7 +279,11 @@
             // 日期转换为时间戳
             res.data = this.dateFontsFiter(this.dateFonts, res.data);
             // res.data.organization_date = this.dateformat.format(new Date(Number(res.data.organization_date)));
+
             this.addForm = res.data;
+            this.addForm.organization_secretary = res.data.organization_secretary.map(x => x.user_name).join(",");
+            this.addForm.organization_deputy_secretary = res.data.organization_deputy_secretary.map(x => x.user_name).join(",");
+            this.addForm.organization_commissioner = res.data.organization_commissioner.map(x => x.user_name).join(",");
             this.showDialog = true;
             this.dialogTitle = '编辑信息';
             this.dialogType = 'edit';
@@ -304,24 +302,32 @@
 //    	debugger;
 //    	console.log(d),
 //console.log(d.organization_status)
-        MessageBox.confirm('您确定解散吗？', '解散', {
+if(d.organization_status==2){
+	Message({
+                message: '该组织已解散',
+                // type: 'error',
+                duration: 1500,
+
+              })
+}else{
+	MessageBox.confirm('您确定解散吗？', '解散', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
+       }).then(() => {
           this.sendData(`${this.url}/${d.id}`, {organization_name:d.organization_name,organization_status:2}, 'put', res => {
             if (res.code == 0) {
-            
+
               Message({
                 message: '解散成功！！！',
                 // type: 'error',
                 duration: 1500,
-         				
+
               });
               this.update++;
             }
           });
-        })
+        })}
       },
       /** 取消 **/
       resetAddForm(e, d) {
@@ -335,7 +341,7 @@
           // pid: '',  // int(11) DEFAULT NULL COMMENT '组织父id',
           organization_name: '',  // varchar(50) DEFAULT NULL COMMENT '组织名称',
           organization_part: '',  // varchar(50) DEFAULT NULL COMMENT '牵头部门',
-          organization_secretary_name: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
+          organization_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
           organization_secretary_phone: '',  // varchar(50) DEFAULT NULL COMMENT '书记电话',
           organization_deputy_secretary_name: '',  // varchar(50) DEFAULT NULL COMMENT '副书记',
           organization_contact_name: '',  // varchar(50) DEFAULT NULL COMMENT '联系人',
@@ -349,16 +355,16 @@
         let _this = this, sendType = 'get', url = this.urls.organization;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (!this.validates.validatPhone(this.addForm.organization_contact_phone) ||
-              !this.validates.validatPhone(this.addForm.organization_secretary_phone)
-            ) {
-              Message({
-                message: '请填写正确的手机号 ！！！',
-                type: 'err',
-                duration: 1500
-              });
-              return false;
-            }
+            // if (!this.validates.validatPhone(this.addForm.organization_contact_phone) ||
+            //   !this.validates.validatPhone(this.addForm.organization_secretary_phone)
+            // ) {
+            //   Message({
+            //     message: '请填写正确的手机号 ！！！',
+            //     type: 'err',
+            //     duration: 1500
+            //   });
+            //   return false;
+            // }
             if (type == 'new') {
               sendType = 'post';
               delete _this.addForm.id;
@@ -374,7 +380,14 @@
             // }
             // 日期转换为时间戳
             this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm);
-            _this.sendData(url, this.addForm, sendType, res => {
+
+            let data = {
+              organization_date : this.addForm.organization_date,
+              organization_name : this.addForm.organization_name,
+              organization_part : this.addForm.organization_part,
+              organization_status : this.addForm.organization_status,
+            }
+            _this.sendData(url,data, sendType, res => {
               if (res.code == 0) {
                 Message({
                   message: type == 'new' ? '新增成功！！！' : '修改成功！！！',

@@ -3,23 +3,206 @@
 
     <div class="pr">
       <div class="pa attend-oval-bg attend-line" el="attendComment"></div>
-      <ul class="flex-clounm-between">
-        <li v-for="(el,index) in propsData.name1" :key="index">
-          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{el}}</p>
+      <ul class="flex-clounm-between padd20">
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">组织部{{propsData.organization_part}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{propsData.organization_name}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">党支部书记:{{propsData.organization_secretary.join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">副书记:{{propsData.organization_deputy_secretary.map(x => x.user_name).join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">委员:{{propsData.organization_commissioner.map(x => x.user_name).join(",")}}</p>
         </li>
       </ul>
 
     </div>
-    <div>
-      <ul class="flex-space-nowarp party attend-line-party-border overflow-auto">
+    <div class="mg-top30 pr">
+            <div class="attend-line-party-border pa "></div>
+      <ul class="flex-space-nowarp party padd20  overflow-auto">
 
-        <li v-for="(el ,index) in propsData.dangyuang" :key="index" class="pr flex">
+        <li v-for="(el ,index) in propsData.organization_partner" :key="index" class="pr flex" >
+        <!-- <li v-for="(el ,index) in data" :key="index" class="pr flex"> -->
           <div class="attend-line-center pa"></div>
-          <p class="attend-oval-party attend-oval-color attend-oval">{{el}}</p>
+          <p class="attend-oval-party attend-oval-color attend-oval">{{el.user_name}}</p>
         </li>
       </ul>
       <slot name="party"></slot>
     </div>
+
+
+
+    <!-- 弹窗start -->
+    <!-- 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="15vh">
+      <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-ruleForm">
+        <!--<el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px" class="demo-ruleForm">-->
+        <!--<el-row :gutter="20">-->
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="姓名" prop="user_name">
+              <el-input size="medium" v-model="addForm.user_name" :disabled="dialogType=='edit'"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="性别" prop="user_sex">
+              <el-radio-group v-model="addForm.user_sex">
+                <el-radio label="男"></el-radio>
+                <el-radio label="女"></el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="民族" prop="user_nation">
+              <el-input size="medium" v-model="addForm.user_nation"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="出生日期" prop="user_birth">
+              <el-date-picker
+                v-model="addForm.user_birth"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_birth, 'user_birth')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="身份证" prop="user_card">
+              <el-input size="medium" v-model="addForm.user_card"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="学历" prop="user_education">
+              <el-input size="medium" v-model="addForm.user_education"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="家庭住址" prop="user_address">
+              <el-input size="medium" v-model="addForm.user_address"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系电话" prop="user_telephone">
+              <el-input size="medium" v-model="addForm.user_telephone"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="入党日期" prop="user_in_date">
+              <el-date-picker
+                v-model="addForm.user_in_date"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_in_date,'user_in_date')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="转正日期" prop="user_become_date">
+              <el-date-picker
+                v-model="addForm.user_become_date"
+                type="datetime"
+                size="medium"
+                format="yyyy - MM - dd"
+                @change="formatTime(addForm.user_become_date,'user_become_date')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="派出单位" prop="user_dispatched_unit">
+              <el-input size="medium" v-model="addForm.user_dispatched_unit"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="原单位" prop="user_origin_unit">
+              <el-input size="medium" v-model="addForm.user_origin_unit"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="原单位所在党组织" prop="user_origin_organization_name">
+              <el-input size="medium" v-model="addForm.user_origin_organization_name"></el-input>
+              <!--<el-select size="medium" v-model="addForm.user_origin_organization_name" placeholder="请选择党组织">-->
+              <!--<el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"-->
+              <!--:value="String(com.id)">-->
+              <!--</el-option>-->
+              <!--</el-select>-->
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="保障组别" prop="user_temp_team">
+              <el-input size="medium" v-model="addForm.user_temp_team"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="现所在临时党组织" prop="user_organization_id">
+            <!-- <el-input size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织" ></el-input>-->
+            <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织">-->
+              <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织"-->
+                         <!--:disabled="dialogType=='edit'">-->
+                <!--<el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"
+                           :value="String(com.id)">
+                </el-option>-->
+              <!--</el-select>-->
+              <el-tree :check-strictly='true' :data="data1" show-checkbox=""  :default-expand-all="true" node-key="id" ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick" :default-checked-keys='keys'>
+							</el-tree>
+            </el-form-item>
+
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="党内职务" prop="user_job">
+              <el-input size="medium" v-model="addForm.user_job"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
+        <!--<el-form-item label="设置社区" prop="communitySelect" v-if="username=='admin'">-->
+        <!--<el-select size="medium" v-model="addForm.communitySelect" placeholder="请选择社区">-->
+        <!--<el-option v-for="com in communityList" :key="com.id" :label="com.community_name"-->
+        <!--:value="com.id">-->
+        <!--</el-option>-->
+        <!--</el-select>-->
+        <!--</el-form-item>-->
+
+        <!-- <el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item> -->
+      </el-form>
+    </el-dialog>
+
+    <!-- 弹窗end -->
   </div>
 </template>
 
@@ -34,18 +217,39 @@
       }
     },
     data() {
-      return {};
+      return {
+        data : ['党员','党员','党员','党员'],
+        infoaddForm : null,
+        dialogTitle : "详细信息"
+      };
     },
-    activated() {}
+    activated() {
+
+    },
+    methods : {
+      detailsInfo (item) {
+        this.dialogTitle = item;
+        http.get('/user/' + 1486).then(res =>{
+          this.inaddFormfo = res.data;
+        })
+      }
+    }
   };
 </script>
 
 <style lang="scss" scoped>
-  ul {
-    padding: 0;
+  .padd20 {
+    padding: 0 20px 20px;
   }
 
   .party>li:nth-last-of-type(1)>div {
-    // width: 0;
+    width: 0px;
+    // margin-left: -0.5rem;
+  }
+  // .party>li:nth-last-of-type(1)>p {
+  //  margin-right: 3rem;
+  // }
+  .mg-top30 {
+    margin-top: 12px;
   }
 </style>
