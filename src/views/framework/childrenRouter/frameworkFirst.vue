@@ -16,6 +16,7 @@
     data() {
       return {
         data: null,
+        showDialog: false
 
       }
     },
@@ -25,11 +26,18 @@
     activated() {
       this.init();
     },
+    deactivated() {
+      this.showDialog = false
 
-    methods : {
-      init () {
-        http.get('/organization/'+ this.$store.state.nav.id.id).then(res => {
-            this.data = res.data;
+    },
+    beforeDestroy() {
+      this.showDialog = false
+
+    },
+    methods: {
+      init() {
+        http.get('/organization/' + this.$store.state.nav.id.id).then(res => {
+          this.data = res.data;
         })
       }
     }

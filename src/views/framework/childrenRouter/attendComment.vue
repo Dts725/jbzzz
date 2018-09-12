@@ -26,7 +26,7 @@
             <div class="attend-line-party-border pa "></div>
       <ul class="flex-space-nowarp party padd20  overflow-auto">
 
-        <li v-for="(el ,index) in propsData.organization_partner" :key="index" class="pr flex" >
+        <li v-for="(el ,index) in propsData.organization_partner" :key="index" class="pr flex"  @click="detailsInfo(el)">
         <!-- <li v-for="(el ,index) in data" :key="index" class="pr flex"> -->
           <div class="attend-line-center pa"></div>
           <p class="attend-oval-party attend-oval-color attend-oval">{{el.user_name}}</p>
@@ -37,16 +37,17 @@
 
 
 
-    <!-- 弹窗start -->
+  <div>
+      <!-- 弹窗start -->
     <!-- 弹出框 -->
-    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="15vh">
+    <el-dialog :title="dialogTitle"  :visible.sync="showDialog" center top="15vh" :modal= false   >
       <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-ruleForm">
         <!--<el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px" class="demo-ruleForm">-->
         <!--<el-row :gutter="20">-->
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" prop="user_name">
-              <el-input size="medium" v-model="addForm.user_name" :disabled="dialogType=='edit'"></el-input>
+              <el-input size="medium" v-model="addForm.user_name"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -165,17 +166,8 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item label="现所在临时党组织" prop="user_organization_id">
-            <!-- <el-input size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织" ></el-input>-->
-            <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织">-->
-              <!--<el-select size="medium" v-model="addForm.user_organization_id" placeholder="请选择党组织"-->
-                         <!--:disabled="dialogType=='edit'">-->
-                <!--<el-option v-for="com in organizationList" :key="com.id" :label="com.organization_name"
-                           :value="String(com.id)">
-                </el-option>-->
-              <!--</el-select>-->
-              <el-tree :check-strictly='true' :data="data1" show-checkbox=""  :default-expand-all="true" node-key="id" ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick" :default-checked-keys='keys'>
-							</el-tree>
+            <el-form-item label="现所在临时党组织" prop="organization_name">
+                    <el-input size="medium" v-model="addForm.organization_name"></el-input>
             </el-form-item>
 
           </el-col>
@@ -204,6 +196,7 @@
 
     <!-- 弹窗end -->
   </div>
+  </div>
 </template>
 
 <script>
@@ -214,23 +207,65 @@
       propsData: {
         type: Object,
         default: null
-      }
+      },
+      // showDialog : {
+      //   type : Boolean,
+      //   default : false,
+      // },
     },
     data() {
       return {
         data : ['党员','党员','党员','党员'],
-        infoaddForm : null,
-        dialogTitle : "详细信息"
+        dialogTitle : "详细信息",
+        showDialog : false,
+
+        // 新增弹出表单
+        addForm: {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
       };
+    },
+    created() {
+
     },
     activated() {
 
     },
     methods : {
       detailsInfo (item) {
-        this.dialogTitle = item;
-        http.get('/user/' + 1486).then(res =>{
-          this.inaddFormfo = res.data;
+        this.showDialog = true;
+        this.dialogTitle = item.user_name;
+        http.get('/user/' + item.id).then(res =>{
+          this.addForm= res.data;
         })
       }
     }
