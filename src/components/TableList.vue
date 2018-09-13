@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <!------------------------ 顶部功能区 ------------------------>
+    <!-- ---------------------- 顶部功能区 ---------------------- -->
     <el-header class="header">
       <div class="top-bars" v-for="btn in topBar" :key="btn.name">
         <!-- 搜索框 -->
@@ -238,7 +238,7 @@
       }
     },
     mounted() {
-    	
+
       let _this = this;
       // if (/undefined/.test(this.url)) {
       //   Message({

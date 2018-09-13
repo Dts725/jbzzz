@@ -447,7 +447,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    
+
      <!--<el-dialog title="详情" :visible.sync="showDetailDialog" center top="5vh" width="60%">
       <el-button class="file-out" size="medium" type="primary" @click="_fileOut()">导出</el-button>-->
       <div id="fileExport" style="visibility: hidden;">
@@ -569,7 +569,7 @@
 
    <!-- </el-dialog>-->
 
-    
+
    <!-- {{shaixuan}}-->
   </div>
 </template>
@@ -627,6 +627,16 @@
             showList: false,
             fun: this.importData
           },
+          //   {
+          //   name: '导出',
+          //   type: 'primary',
+          //   isUpLoad: true,
+          //   url: 'https://jbh.shyunhua.com/user_import',
+          //   maxSize: '',
+          //   limit: 100,
+          //   showList: false,
+          //   fun: this.importData
+          // },
 //        {
 //          name: '模板导入下载',
 //          type: 'danger',
@@ -976,7 +986,7 @@
     },
     activated() {
       this.init();
-      
+
     },
 		computed:{
 			data(){
@@ -1012,7 +1022,7 @@
           this.examine.user_temp_out_date = this.addForm.user_temp_out_date;
         }
      }
-			
+
 		},
 //		computed: {
 //    newUserInfo: {
@@ -1040,7 +1050,7 @@
             this.organizationList = res.data.data;
             let arr = [];
             for(var i=0;i<this.organizationList.length;i++){
-            
+
 								arr.push({
 									id:this.organizationList[i].id,
 									value:this.organizationList[i].organization_name,
@@ -1050,7 +1060,7 @@
             this.topBar[3].selected = [];
             this.topBar[4].selected = [];
             this.topBar[5].selected = [];
-            
+
 //          debugger;
 //          this.shaixuan = arr;
           // console.log(this.shaixuan)
@@ -1104,7 +1114,7 @@
       mouseleave(obj) {
         obj.showIcon = false;
       },
-			
+
 			handleClick(data,checked, node) {
             this.i++;
             if(this.i%2==0){
@@ -1599,6 +1609,8 @@
       },
       /** 导出功能 **/
       _fileOut(e) {
+
+        console.log(e);
       //	debugger;
     this.showDetailDialog = true;
        $('#fileExport').wordExport('考评表-' + this.detailData.user_name + '-' + this.dateformat.format(new Date(Number(this.detailData.user_in_date)), 'yyyy-MM-dd'));
@@ -1761,7 +1773,7 @@
 	/*background: white;*/
 	position: absolute;
 	right: 30px;
-	
+
 }
 </style>
 
