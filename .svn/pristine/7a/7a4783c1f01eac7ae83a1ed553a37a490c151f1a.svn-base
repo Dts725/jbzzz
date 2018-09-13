@@ -1,0 +1,180 @@
+<template>
+  <div class=" contian">
+
+    <div class="pr">
+      <div class="pa attend-oval-bg attend-line "></div>
+      <ul class="flex-clounm-between padd20">
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">市商务委党组</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">市商务委推进办临时党总支</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">党总支书记:{{data.organization_secretary.map(x => x.user_name).join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">副书记:{{data.organization_deputy_secretary.map(x => x.user_name).join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">委员:{{data.organization_commissioner.map(x => x.user_name).join(",")}}</p>
+        </li>
+
+      </ul>
+
+    </div>
+    <div class="mg-top30 pr">
+      <div class="party-scoped pa "></div>
+      <ul class="flex-space-nowarp party padd20  overflow-auto" style="height :100%;">
+
+        <!-- <li v-for="(el ,index) in data.child" :key="index" class="pr flex" style="max-width:50%;" @click="detailsInfo(el.id,index)"> -->
+        <li class="pr flex" >
+          <div class="attend-line-center-scoped pa"></div>
+          <p class="attend-oval-party-scoped attend-oval-color  ">餐饮服务保障组临时党支部</p>
+
+          <!-- <div v-if ="1 === flag" class="active-party " > -->
+          <div class="active-party ">
+            <framework :props-data="partyDataFood" :show-party="false"></framework>
+
+          </div>
+        </li>
+
+        <li class="pr flex" >
+          <div class="attend-line-center-scoped pa"></div>
+          <p class="attend-oval-party-scoped attend-oval-color">商务委推进办临时党支部</p>
+
+          <!-- <div v-if ="2 === flag" class="active-party " > -->
+          <div class="active-party">
+            <framework :props-data="partyDataShop" :show-party="false"></framework>
+          </div>
+        </li>
+
+      </ul>
+
+
+    </div>
+
+  </div>
+</template>
+
+<script>
+  import framework from "./attendComment";
+  import http from "@/api/http";
+  export default {
+    name: "frameworkThree",
+    components: {
+      framework
+    },
+    created() {
+      this.init();
+      this.detailsInfo(32);
+      this.detailsInfo(22);
+      this.detailsInfo(26);
+    },
+
+    data() {
+      return {
+        data: null,
+        partyData: null,
+        flag: false,
+        partyDataFood : null, //餐饮部
+        partyDataShop : null //商委部
+
+      };
+    },
+    methods: {
+      init() {
+        http.get("/organization/" + this.$store.state.nav.id.id).then(res => {
+          this.data = res.data;
+        });
+      },
+
+      //二级党员组织
+      detailsInfo(el) {
+
+        http.get("/organization/" + el).then(res => {
+          switch (el) {
+            case 32:
+              this.partyData = res.data;
+              break;
+            case 26:
+              this.partyDataFood = res.data;
+
+              break;
+            case 22:
+            this.partyDataShop = res.data;
+              break;
+
+
+            default:
+              break;
+          }
+
+        });
+      },
+
+      // 商务委推进办临时党支部
+
+    }
+  };
+</script>
+
+<style lang="scss" scoped>
+  .padd20 {
+    padding: 0 20px 20px;
+  }
+
+  .party>li:nth-last-of-type(1)>div:nth-of-type(1){
+      width: 0;
+    // margin-left: -0.5rem;
+  }
+
+  // .party>li:nth-last-of-type(1)>p {
+  //  margin-right: 3rem;
+  // }
+  .party li {
+    width: 50%;
+  }
+
+  .mg-top30 {
+    margin-top: 12px;
+  }
+
+  .attend-oval-party-scoped {
+    border-radius: 100px;
+    // margin-left: -1.rem;
+    width: 50%;
+    background-color: #d40e19;
+    padding: 0.6rem 1.2rem;
+    margin-top: 3rem;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+  }
+
+  .attend-line-center-scoped {
+    width: 100%;
+    height: 2.5rem;
+    // margin-left: 1rem;
+    top: 0px;
+    left: 50%;
+    border-left: 4px solid #d40e19;
+    border-top: 4px solid #d40e19;
+    transform: translate(-1px);
+    z-index: 101;
+  }
+
+  .party-scoped {
+    width: 100%;
+    height: 4px;
+    padding: 0 26% 0 26%;
+    background-clip: content-box;
+    background-color: #d40e19;
+  }
+
+  .active-party {
+    margin-top: 120px;
+  }
+</style>

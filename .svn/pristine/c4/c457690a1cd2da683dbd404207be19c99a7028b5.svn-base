@@ -1,0 +1,135 @@
+<template>
+  <div class=" contian fz18">
+
+    <div class="pr">
+      <div class="pa attend-oval-bg attend-line" el="attendComment"></div>
+      <ul class="flex-clounm-between padd20">
+        <li v-show="showParty">
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">组织部{{propsData.organization_part}}</p>
+        </li>
+        <li v-show="showParty">
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{propsData.organization_name}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">党支部书记:{{propsData.organization_secretary.map(x => x.user_name).join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">副书记:{{propsData.organization_deputy_secretary.map(x => x.user_name).join(",")}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">委员:{{propsData.organization_commissioner.map(x => x.user_name).join(",")}}</p>
+        </li>
+      </ul>
+
+    </div>
+    <div class="mg-top30 pr">
+            <div class="attend-line-party-border pa "></div>
+      <ul class="flex-space-nowarp party padd20  overflow-auto">
+
+        <li v-for="(el ,index) in propsData.organization_partner" :key="index" class="pr flex"  @click="detailsInfo(el)">
+        <!-- <li v-for="(el ,index) in data" :key="index" class="pr flex"> -->
+          <div class="attend-line-center pa"></div>
+          <p class="attend-oval-party attend-oval-color attend-oval">{{el.user_name}}</p>
+        </li>
+      </ul>
+      <slot name="party"></slot>
+    </div>
+
+    <div v-show="showDialog">
+      <info :dialog-title ="dialogTitle" :show-dialog ="showDialog" :add-form ="addForm"></info>
+    </div>
+
+
+  </div>
+</template>
+
+<script>
+  import http from '@/api/http';
+  import info from '../../../components/detailsinfo'
+  export default {
+    name: "framework",
+    props: {
+      propsData: {
+        type: Object,
+        default: null
+      },
+      showParty : {
+        type : Boolean,
+        default : true
+      }
+    },
+    components : {
+      info
+    },
+    data() {
+      return {
+        data : ['党员','党员','党员','党员'],
+        dialogTitle : "详细信息",
+        showDialog : false,
+
+        // 新增弹出表单
+        addForm: {
+          id: '',  // int(11) NOT NULL,
+          user_name: '',  // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '',  // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '',  // 民族
+          user_birth: '',  // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '',  // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '',  // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '',  // 家庭住址
+          user_telephone: '',  // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '',  // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '',  // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '',  // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '',  // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '',  // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
+      };
+    },
+  created () {
+    this.showDialog = false;
+  },
+    methods : {
+      detailsInfo (item) {
+        this.showDialog = true;
+        this.dialogTitle = item.user_name;
+        http.get('/user/' + item.id).then(res =>{
+          this.addForm= res.data;
+        })
+      }
+    }
+  };
+</script>
+
+<style lang="scss" scoped>
+  .padd20 {
+    padding: 0 20px 20px;
+  }
+
+  .party>li:nth-last-of-type(1)>div {
+    width: 0px;
+    // margin-left: -0.5rem;
+  }
+  // .party>li:nth-last-of-type(1)>p {
+  //  margin-right: 3rem;
+  // }
+  .mg-top30 {
+    margin-top: 12px;
+  }
+</style>
