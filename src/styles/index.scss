@@ -276,12 +276,18 @@ div {
 .attend-oval-party {
   border-radius: 100px;
   margin-left: 2rem;
-  width: 38px;
+
   background-color: #d40e19;
   padding:1.2rem 0.6rem;
   min-height: 8rem;
   margin-top: 3rem;
-
+  width: 37.19px;
+  // overflow: hidden;
+  // text-overflow:ellipsis;
+  // white-space: nowrap;
+  // -webkit-writing-mode: vertical-lr;
+  //   writing-mode:vertical-rl;
+  //   writing-mode: tb-rl;
    /*IE浏览器的从左向右 从右向左是 writing-mode: tb-rl；*/
   cursor: pointer;
 }

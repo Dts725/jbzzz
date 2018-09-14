@@ -177,7 +177,7 @@ export const constantRouterMap = [{
     children: [{
         path: 'framework',
         name: 'framework',
-      redirect: '/framework/framework/index',
+      redirect: '/framework/framework',
         meta: {
           title: '党组织架构',
           icon: 'desktop'

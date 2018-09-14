@@ -1,15 +1,6 @@
 <template>
-      <div id="fileExport" style="visibility: hidden;">
-        <!--<div class="review-title">-->
-        <!--<div class="review-left">-->
-        <!--<i class="fa fa-id-card"></i>-->
-        <!--<span>基本情况</span>-->
-        <!--</div>-->
-        <!--<div class="review-right">-->
-        <!--&lt;!&ndash;<i class="fa fa-plus" @click="EventAdd"></i>&ndash;&gt;-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<strong>姓名:</strong>{{addForm.user_name}}-->
+      <div  style="visibility: hidden;">
+
         <table style="border-collapse: collapse; text-align:center;width:100%;" >
           <tr>
             <td style="border:1px solid #666; padding:0.5rem; color:#f00;background-color:#f3d19e;" colspan="4"><strong>党员综合评价表</strong>
@@ -119,9 +110,20 @@
 </template>
 
 <script>
+
 export default {
+
+  props : {
+    detailData  : {
+      type : Object,
+      default : {}
+    }
+  },
+  name : 'world',
   data () {
-    
+    return {
+      
+    }
   }
 }
 </script>

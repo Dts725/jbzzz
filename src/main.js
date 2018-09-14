@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 // import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
+import '@/styles/animate.css' // global css
 import '../static/font-awesome-4.7.0/css/font-awesome.min.css'
 
 import App from './App'
@@ -17,7 +18,7 @@ import $ from 'jquery'
 import dateformat from './utils/W.dateformat'
 import validates from './utils/W.validate'
 import storage from './utils/W.storage'
-
+// import 'vue2-animate/dist/vue2-animate.min.css';
 import '@/icons' // icon
 import '@/permission' // permission control
 // import '@/utils/clickTS'

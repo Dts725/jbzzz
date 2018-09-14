@@ -4,7 +4,9 @@
     <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
           :thead="thead"
           :actionBar="actionBar"></list>
-
+      <!-- <div id="fileExport">
+        <world :detail-data="detailData"><world>
+      </div> -->
     <!-- 弹出框 -->
     <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="15vh">
       <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-ruleForm">
@@ -450,7 +452,7 @@
 
      <!--<el-dialog title="详情" :visible.sync="showDetailDialog" center top="5vh" width="60%">
       <el-button class="file-out" size="medium" type="primary" @click="_fileOut()">导出</el-button>-->
-      <div id="fileExport" style="visibility: hidden;">
+      <div  style="visibility: hidden;">
         <!--<div class="review-title">-->
         <!--<div class="review-left">-->
         <!--<i class="fa fa-id-card"></i>-->
@@ -583,9 +585,12 @@
   import $ from '../../utils/fileExport/jqueryExport';
   import saveAs from '../../utils/fileExport/filesaverExport';
   import '../../utils/fileExport/jquery.wordexport';
+  import world from '@/components/World/World';
+
   export default {
     components: {
-      list
+      list,
+      world
     },
     data() {
       return {
@@ -627,16 +632,6 @@
             showList: false,
             fun: this.importData
           },
-          //   {
-          //   name: '导出',
-          //   type: 'primary',
-          //   isUpLoad: true,
-          //   url: 'https://jbh.shyunhua.com/user_import',
-          //   maxSize: '',
-          //   limit: 100,
-          //   showList: false,
-          //   fun: this.importData
-          // },
 //        {
 //          name: '模板导入下载',
 //          type: 'danger',
@@ -1609,8 +1604,6 @@
       },
       /** 导出功能 **/
       _fileOut(e) {
-
-        console.log(e);
       //	debugger;
     this.showDetailDialog = true;
        $('#fileExport').wordExport('考评表-' + this.detailData.user_name + '-' + this.dateformat.format(new Date(Number(this.detailData.user_in_date)), 'yyyy-MM-dd'));

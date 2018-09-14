@@ -43,7 +43,7 @@
 					  <p>面貌：{{detailNames.mianmao}}</p>
 					  <p>邮箱：{{detailNames.mail}}</p>
 				  </div>
-				  
+
 			</el-dialog>
     </div>
     <div class="main-container">
@@ -114,7 +114,7 @@
 							$('.menu-items').eq(6).css({'display':'none'});
 							$('.menu-items').eq(7).css({'display':'none'})
 							})
-							
+
 
 		    };
       this.init();
@@ -179,7 +179,7 @@
           id: 2,
           name: "党组织架构",
           icon: "sitemap",
-          url: "/framework/framework",
+          url: "/framework/framework/index",
           children: []
         },
         // {
@@ -217,7 +217,7 @@
           children: []
         },
 //      if(JSON.parse(this.storage.getStorage('uinfo')).username=='admin'){
-//  		
+//
 //  	}
         {
           id: 8,
@@ -291,7 +291,7 @@
     methods: {
 //  	init(){
 //  		if(JSON.parse(this.storage.getStorage('uinfo')).username!='admin'){
-//        	
+//
 //							$('.menu-items').eq(6).css({'display':'none'});
 //							$('.menu-items').eq(7).css({'display':'none'})
 //
@@ -309,13 +309,13 @@
       getDeatil1(e, d) {
       	//debugger;
       	// console.log('fgfg')
-      	
+
         this.getData(`${this.URL}/contacts/${e}`, '', 'get', res => {
           if (res.code == 0) {
             // 日期转换为时间戳
             //debugger;
-            
-            
+
+
 
             this.dialogVisible1=true;
             //debugger;
@@ -381,7 +381,7 @@
       },
 
     },
-    
+
   };
 </script>
 
