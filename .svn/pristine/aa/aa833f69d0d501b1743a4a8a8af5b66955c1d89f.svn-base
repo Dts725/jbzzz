@@ -1,0 +1,134 @@
+<template>
+  <div>
+    <div class="pr">
+      <div class="pa attend-oval-bg attend-line" el="attendComment"></div>
+      <ul class="flex-clounm-between padd20 pr  ">
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{data.organization_part}}</p>
+        </li>
+      </ul>
+
+    </div>
+    <div class="body-party pr">
+      <div class="attend-line-party-border pa"></div>
+      <ul class="flex-space-nowarp party  padd20 overflow-auto">
+        <li v-for="(el ,index) in data.organization_partner" :key="index" class="pr flex" @click="getUser(el)">
+          <div class="attend-line-center pa"></div>
+          <p class="attend-oval-party attend-oval-color attend-oval ">{{el.user_name}}</p>
+        </li>
+      </ul>
+
+    </div>
+	    <div v-show="showDialog">
+	      <info :dialog-title="dialogTitle" :show-dialog="showDialog" :add-form="addForm"></info>
+	    </div>
+  </div>
+</template>
+
+<script>
+  import framework from './attendComment'
+  import http from "@/api/http";
+  import info from '../../../components/detailsinfo';
+  
+	
+ 
+
+
+  export default {
+    name: "frameworkTwo",
+    components: {
+      info
+    },
+    created() {
+      this.init();
+    },
+    data() {
+      return {
+        data : null,
+        dialogTitle: "详细信息",
+        showDialog: false,
+
+        // 新增弹出表单
+        addForm: {
+          id: '', // int(11) NOT NULL,
+          user_name: '', // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: '', // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: '', // 民族
+          user_birth: '', // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: '', // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: '', // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: '', // 家庭住址
+          user_telephone: '', // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: '', // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: '', // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: '', // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: '', // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: '', // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: '', // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_name: '', // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: '', // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: '', // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
+      }
+    },
+    methods: {
+      init() {
+        http.get('/organization/' + this.$store.state.nav.id.id).then(res => {
+          this.data = res.data;
+        })
+      },
+      // 商务委推进办临时党支部
+      getUser(item) {
+        this.showDialog = true;
+        this.dialogTitle = item.user_name;
+        http.get('/user/' + item.id).then(res => {
+          this.addForm = res.data;
+        })
+      }
+    },
+
+
+  }
+</script>
+
+<style lang="scss" scoped>
+  .padd20 {
+    padding: 0 20px 20px;
+  }
+
+  .top-center {
+    width: 4px;
+    height: 2rem;
+    top: -2rem;
+    left: 50%;
+    transform: translate(-2px);
+    background-color: #d40e19;
+  }
+
+  .body-party {
+    // margin-top: 100px;
+  }
+
+  .party>li:nth-last-of-type(1)>div {
+    width: 0px;
+    // margin-left: 0;
+  }
+  .fade-enter-active, .fade-leave-active {
+          transition: opacity .5s
+        }
+        .fade-enter, .fade-leave-active {
+          opacity: 0
+        } 
+</style>

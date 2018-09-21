@@ -1,12 +1,28 @@
 <template>
   <div class="pr">
-      <div class="top-line"></div>
+    <div class="top-line"></div>
     <div class="body-party pr">
-      <div class="attend-line-party-border pa"></div>
+      <div class="attend-line-scoped pa"></div>
       <ul class="flex-space-nowarp party  padd20 overflow-auto">
-        <li v-for="(el ,index) in data" :key="index" class="pr flex" @click="router(el,el.id)">
-          <div class="attend-line-center pa"></div>
-          <p class="attend-oval-party attend-oval-color attend-oval ">{{el.organization_name}}</p>
+        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click="router(el,el.id)">
+          <div class="flex-center line-scoped-top ">
+            <div class="heng-line pa" :class="{'heng-line-left': (index === 0) ,'heng-line-right' : (index === data.length-1) }"></div>
+            <div class="attend-line-center-scoped pa"></div>
+            <div class=" attend-oval-color div-warp  collection-scoped flex-center-items" ref="input1">
+              <span class="attend-oval-scoped">{{el.organization_name}}</span>
+            </div>
+          </div>
+
+          <div v-if="el.organization_type === '1' && el.child.length">
+            <div class="child-line attend-oval-bg"></div>
+            <div class="child-div attend-oval-bg"></div>
+            <ul class="flex-between child-ul">
+              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color">
+                <div class="child-div-two pa attend-oval-bg"></div>
+                <span class="child-span">{{item.organization_name}}</span>
+              </li>
+            </ul>
+          </div>
         </li>
       </ul>
 
@@ -18,6 +34,17 @@
 import framework from "./attendComment";
 import http from "@/api/http";
 
+// import router from '../../../router/'
+
+// window.onresize = function() {
+//             let el = this.$refs.line[0].offsetLeft;
+//             // let ds  = el.querySelector(".div-warp").offsetLeft;
+//       console.log(el);
+//       console.log("999999999999999999999999");
+
+//       let d = querySelector(".attend-line-scoped");
+//       d.style.padding = l + "px 0px" + 100 + "px";
+// };
 export default {
   name: "index",
   components: {
@@ -30,33 +57,110 @@ export default {
     };
   },
   created() {
+    // this.size();
     this.init();
   },
-  // activated() {
-  //   this.init();
-  // },
+  activated() {
+    // this.size();
+    this.init();
+  },
+  beforeUpdate() {
+    let _this = this;
 
+    this.$nextTick().then(function() {
+      let el = document.getElementsByClassName("collection-scoped");
+
+      for (var i = 0; i < el.length; i++) {
+        if (i == 0) {
+          document.querySelector(".attend-line-scoped").style.paddingLeft =
+            el[i].offsetLeft + 100 + "px";
+        }
+        if (i === el.length - 1) {
+          document.querySelector(".attend-line-scoped").style.paddingRight =
+            el[i].offsetWidth+"px";
+        }
+      }
+    });
+  },
+  //computed:{
+  //			donghua1(){
+  //				let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+  //				let index=Math.floor(Math.random()*arr.length);
+  //				//return arr[index];
+  //			return this.str=arr[index];
+  //			}
+  //		},
   methods: {
     init() {
       this.$store.commit("BREAD_SID_ID", {
         id: 0,
         organization_name: "进博一线党组织"
       });
-      http.get("/organization").then(res => {
-        this.data = res.data.data;
+      http.get("/organization?organization_status=1").then(res => {
+        //获取child
+        let list,
+          data = [],
+          tmp = res.data.data;
+        list = res.data.data.map(x => {
+          if (x.child.length) {
+            return x.child;
+          } else {
+            return 0;
+          }
+        });
+        //获取ID
+        let id = list.map(x => {
+          if (Array.isArray(x)) {
+            data = x.map(y => {
+              return y.id;
+            });
+          }
+        });
+
+        // 去重
+
+        data.map(x => {
+          tmp.map((el, index) => {
+            if (el.id === x) {
+              console.log("进来了");
+              tmp.splice(index, 1);
+            }
+          });
+        });
+        //    	debugger
+        this.data = tmp;
       });
     },
 
+
     //点击跳转路由
     router(id, flag) {
+      let arr = [
+        "animated zoomIn",
+        "animated fadeIn",
+        "animated bounceInDown",
+        "animated fadeInDown",
+        "animated fadeInUpBig",
+        "animated flipInX",
+        "animated rotateIn",
+        "animated slideInUp",
+        "animated slideInDown"
+      ];
+      let index = Math.floor(Math.random() * arr.length);
+      //return arr[index];
+      this.str = arr[index];
+      this.$store.commit("donghua", this.str);
+
+      //			debugger
       this.$store.commit("BREAD_SID_ID", id);
-      if (flag === 22 || flag === 26) {
-        this.$router.push("/framework/framework/frameworkThree");
-      } else if( flag ==23){
+      if (flag === 80 || flag === 75 || flag === 78) {
+        this.$router.push({
+          path: "/framework/framework/frameworkThree"
+        });
+      } else if (flag == 72) {
         this.$router.push("/framework/framework/frameworkTwo");
       } else {
         this.$router.push("/framework/framework/frameworkFirst");
-
       }
     }
   }
@@ -68,6 +172,16 @@ export default {
   padding: 0 20px 20px;
 }
 
+.div-warp {
+  margin-top: 80px;
+  height: 76px;
+  padding: 10px 15px;
+  background-color: #d40e19;
+  width: 160px;
+  border-radius: 10px;
+  margin-top: 80px;
+}
+
 .top-center {
   width: 4px;
   height: 2rem;
@@ -76,23 +190,117 @@ export default {
   transform: translate(-2px);
   background-color: #d40e19;
 }
+
 .body-party {
   // margin-top: 100px;
 }
 
-.party > li:nth-last-of-type(1) > div {
+.party > li {
+  margin-right: 2%;
+}
+
+.party
+  > li:nth-last-of-type(1)
+  > div:nth-of-type(1)
+  .attend-line-center-scoped {
   width: 0px;
   // margin-left: 0;
 }
+
+.heng-line {
+  border-top: 4px solid #d40e19;
+  width: 120%;
+}
+
+.heng-line-left {
+  border-top: 4px solid #d40e19;
+  width: 100%;
+  left: 50%;
+}
+
+.heng-line-right {
+  border-top: 4px solid #d40e19;
+  width: 50%;
+  left: 0;
+}
+
 .top-line {
   width: 4px;
   height: 30px;
   position: relative;
-  top : 0;
+  top: 0;
   left: 50%;
   transform: translate(-2px);
   z-index: 102;
   background-color: #d40e19;
+}
 
+.attend-line-scoped {
+  width: 100%;
+  height: 4px;
+  padding: 0 5rem 0 7.35rem;
+  background-clip: content-box;
+  background-color: #d40e19;
+}
+
+.attend-oval-scoped {
+  height: auto;
+}
+
+.attend-line-center-scoped {
+  height: 2.5rem;
+  margin-left: 1rem;
+  top: 0px;
+  left: 50%;
+  border-left: 4px solid #d40e19;
+  border-top: 4px solid #d40e19;
+  transform: translateX(-2px);
+  z-index: 101;
+  // width: 140%;
+  margin-left: -2px;
+}
+
+.child-li {
+  height: 76px;
+  padding: 10px 15px;
+  background-color: #d40e19;
+  width: 160px;
+  border-radius: 10px;
+  margin: 100px 30px 0 0px;
+  // margin-top: 100px;
+  // margin-right: 30px;
+}
+
+.child-div {
+  width: 100%;
+  height: 4px;
+  padding: 0 78px 0 78px;
+  background-clip: content-box;
+  // background-color: green;
+  margin: 40px auto -10px;
+}
+
+.child-div-two {
+  top: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 40px;
+  // background-color: yellow;
+}
+
+.child-line {
+  height: 30px;
+  width: 4px;
+  margin: 40px auto -40px;
+  // background-color: orange;
+}
+
+.child-ul {
+  padding: 0px;
+}
+
+.child-ul > li:nth-last-of-type(1) {
+  margin: 100px 0 0 0px;
 }
 </style>

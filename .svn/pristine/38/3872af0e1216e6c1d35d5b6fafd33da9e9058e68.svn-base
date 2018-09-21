@@ -1,0 +1,126 @@
+<template>
+  <div class="pr">
+      <div class="top-line"></div>
+    <div class="body-party pr">
+      <div class="attend-line-party-border pa"></div>
+      <ul class="flex-space-nowarp party  padd20 overflow-auto">
+        <li v-for="(el ,index) in data" :key="index" class="pr flex" @click="router(el,el.id)">
+          <div class="attend-line-center pa"></div>
+          <p class="attend-oval-party attend-oval-color attend-oval ">{{el.organization_name}}</p>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</template>
+
+<script>
+import framework from "./attendComment";
+import http from "@/api/http";
+
+// import router from '../../../router/'
+
+// router.beforeEach((to,from,next) => {
+//     console.log(to);
+//     console.log(this.$store);
+
+//     if (to.fullPath === '/framework/framework/frameworkFirst' || '/framework/framework/frameworkTwo' || '/framework/framework/frameworkThree') {
+//        to.meta.title = this.$store.state.nav.id.organization_name;
+//       //  to.meta.title = '9999999999999999999999999';
+//     }
+//     next();
+// })
+export default {
+  name: "index",
+  components: {
+    framework
+  },
+  data() {
+    return {
+      data: null,
+      datas: null
+    };
+  },
+  created() {
+    this.init();
+  },
+  // activated() {
+  //   this.init();
+  // },
+//computed:{
+//			donghua1(){
+//				let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+//				let index=Math.floor(Math.random()*arr.length);
+//				//return arr[index];
+//			return this.str=arr[index];
+//			}
+//		},
+  methods: {
+    init() {
+      this.$store.commit("BREAD_SID_ID", {
+        id: 0,
+        organization_name: "进博一线党组织"
+      });
+      http.get("/organization").then(res => {
+//    	debugger
+        this.data = res.data.data;
+      });
+    },
+
+    //点击跳转路由
+    router(id, flag) {
+    	let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+			let index=Math.floor(Math.random()*arr.length);
+				//return arr[index];
+			this.str=arr[index];
+			this.$store.commit('donghua',this.str);
+			console.log(this.str)
+//			debugger
+    	this.$store.commit("BREAD_SID_ID", id);
+      if (flag === 22 || flag === 26) {
+
+        this.$router.push({path :"/framework/framework/frameworkThree"});
+      } else if( flag ==23){
+        this.$router.push("/framework/framework/frameworkTwo");
+      } else {
+        this.$router.push("/framework/framework/frameworkFirst");
+
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.padd20 {
+  padding: 0 20px 20px;
+}
+
+.top-center {
+  width: 4px;
+  height: 2rem;
+  top: -2rem;
+  left: 50%;
+  transform: translate(-2px);
+  background-color: #d40e19;
+}
+.body-party {
+  // margin-top: 100px;
+}
+
+.party > li:nth-last-of-type(1) > div {
+  width: 0px;
+  // margin-left: 0;
+}
+.top-line {
+  width: 4px;
+  height: 30px;
+  position: relative;
+  top : 0;
+  left: 50%;
+  transform: translate(-2px);
+  z-index: 102;
+  background-color: #d40e19;
+
+}
+</style>

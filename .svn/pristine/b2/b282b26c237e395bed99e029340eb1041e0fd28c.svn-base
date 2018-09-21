@@ -1,0 +1,653 @@
+<template>
+  <div class="app-container">
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
+          :thead="thead" :actionBarWidth="actionBarWidth" @cellClick="cellClick"
+          :actionBar="actionBar"></list>
+
+    <!-- 弹出框 -->
+    <el-dialog class="organization-dialog" :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog"
+               center>
+      <el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px" class="demo-ruleForm">
+        <!--<el-row :gutter="20">-->
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="组织名称" prop="organization">
+              <el-input v-model="addForm.organization_name" :disabled="sure"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="牵头部门" prop="organization_part">
+              <el-input v-model="addForm.organization_part"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="书记名称" prop="organization_secretary">
+              <el-input v-model="addForm.organization_secretary" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="副书记" prop="organization_deputy_secretary">
+              <el-input v-model="addForm.organization_deputy_secretary  " disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="成立时间" prop="organization_date">
+              <el-date-picker
+                v-model="addForm.organization_date"
+                type="datetime"
+                @change="formatTime(addForm.organization_date, 'organization_date')"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="党组织类型" prop="organization_type">
+              <el-select size="medium" v-model="addForm.organization_type" placeholder="党内职务">
+                <el-option label="党总支" value="1"></el-option>
+                <el-option label="党支部" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="委员" prop="organization_commissioner">
+              <el-input v-model="addForm.organization_commissioner" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if='addForm.organization_type=="2" && dialogType=="edit"'>
+            <el-form-item label="上级组织" prop="id">
+              <el-input size="medium" v-model="addForm.pid_organization_name" :disabled='true'
+                        v-if="dialogType=='edit'"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24" v-if='addForm.organization_type=="1"'>
+            <el-form-item label="党支部" prop="id">
+              <!--<el-tree :check-strictly='true' :data="data" show-checkbox="true" :default-expand-all="true" node-key="id"-->
+                       <!--ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick"-->
+                       <!--:default-checked-keys='keys'>-->
+              <!--</el-tree>-->
+              <div class="organization-child">
+                <el-checkbox-group v-model="organization_child">
+                  <el-checkbox v-for="ck in data" :key="ck.id" :label="ck.id" style="margin:0 2rem 0 0;line-height: 1rem;height: 1rem;">{{ck.label}}</el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+
+    <!-- 弹窗 党员表 -->
+    <el-dialog :title="memberDialogTitle" :visible.sync="showMemberDialog" center :top="memberDialogTop">
+      <!--<el-table :data="memberDialogList" style="width: 100%">
+        <el-table-column prop="user_name" label="姓名" align="center" width="120"></el-table-column>
+        <el-table-column prop="user_sex" label="性别" align="center" width="60"></el-table-column>
+        <el-table-column prop="user_telephone" label="联系电话" align="center" width="auto"></el-table-column>
+        <el-table-column prop="user_temp_team" label="保障组别" align="center" width="auto"></el-table-column>
+        <el-table-column prop="user_job" label="党内职务" align="center" width="auto" :formatter="formatRole"></el-table-column>--->
+      <!--<el-table-column prop="user_organization_name" label="所在临时党组织" align="center" width="150"></el-table-column>-->
+      <!--<el-table-column prop="user_dispatched_unit" label="派出单位" align="center" width="150"></el-table-column>
+
+    </el-table>-->
+      <list :url="URL+url3" :update="update" :canSelect="canSelect" :indexBar="indexBar"
+            :thead="thead1" :actionBarWidth="actionBarWidth" @cellClick="cellClick"
+      ></list>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import http from '@/api/http';
+  import list from '@/components/TableList';
+  import {Message, MessageBox} from 'element-ui'
+  import $ from 'jquery'
+
+  export default {
+    components: {
+      list,
+    },
+
+    data() {
+      return {
+        options: [{
+          value: '1',
+          label: '党总支'
+        }, {
+          value: '2',
+          label: '党支部'
+        }],
+//     	tit:false,
+        sure: false,
+        /** *************** 引用的表格的  start *************** **/
+        listLoading: true,
+        // 列表头部的功能区--key为搜索的字段名
+        topBar: [
+          {name: '新增', type: 'success', class: '', fun: this.newRole},
+          {name: '搜索', key: 'organization_name', searchTipCon: '请输入名称', class: ''},
+        ],
+        // topBar: {
+        //   useNewBtn: {btnName: '新增', btnClass: '', btnType: 'success', keys: [], fun: this.newRole},
+        //   useSearch: {key: 'organization_name', btnName: '搜索', searchTipCon: '请输入名称'}
+        // },
+        // 表格头- 是否可选
+        canSelect: false,
+        // 表格头- 索引序号
+        indexBar: {name: '序号', key: 'auto', width: '100'},
+        thead1: [
+          {name: "姓名", key: 'user_name', width: 'auto'},
+          {name: "性别", key: 'user_sex', width: 'auto'},
+          {name: "联系电话", key: 'user_phone', width: '120'},
+          // {name: "书记电话", key: 'organization_secretary_phone', width: 'auto'},
+//        {name: "联系人", key: 'organization_contact_name', width: '110'},
+//        {name: "联系电话", key: 'organization_contact_phone', width: 'auto'},
+          {name: "保障组别", key: 'user_temp_team_name', width: '150'},
+          {
+            name: "党内职务",
+            key: 'user_job',
+            width: '110',
+            filterCon: [{key: 1, value: '书记'}, {key: 2, value: '副书记'}, {key: 3, value: '委员'}, {key: 4, value: '党员'}]
+          },
+          {name: "派出单位", key: 'user_dispatched_unit', width: '150'}
+        ],
+        // 表格头 - 字段内容
+        thead: [
+          {name: "组织名称", key: 'organization_name', width: 'auto'},
+          {
+            name: "党组织类型",
+            key: 'organization_type',
+            width: 'auto',
+            filterCon: [{key: '1', value: '党总支'}, {key: '2', value: '党支部'}]
+          },
+          {name: "书记名称", key: 'organization_secretary_name', width: '110'},
+          // {name: "书记电话", key: 'organization_secretary_phone', width: 'auto'},
+//        {name: "联系人", key: 'organization_contact_name', width: '110'},
+//        {name: "联系电话", key: 'organization_contact_phone', width: 'auto'},
+          {name: "成立日期", key: 'organization_date', width: '120', format: 'yyyy - MM - dd'},
+          {name: "党员人数", key: 'sum', width: '90', canClick: true, class: 'hover'},
+          {
+            name: "目前的状态",
+            key: 'organization_status',
+            width: '90',
+            filterCon: [{key: 1, value: '正常'}, {key: 2, value: '已解散'}]
+          }
+        ],
+        update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
+        //update: 0,
+        // 表格头 - 最右边的功能区
+        actionBar: [
+          {name: '编辑', fun: this.edit, type: 'success'},
+          // {name: '删除', fun: this.delete, type: 'danger'},
+//        {name: '支部', fun: this.branch, type: 'primary'},
+          // {name: '支部详情', fun: this.branchDetail, type: 'success'}
+          {name: '解散', fun: this.delete, type: 'danger'},
+        ],
+        // 表格头 - 最右边的功能区的宽度
+        actionBarWidth: 200,
+        /** *************** 引用的表格的  end *************** **/
+
+        /** *************** 弹窗的  start *************** **/
+        showDialog: false, //
+        dialogTitle: '', // 弹窗标题
+        dialogType: '', // 弹窗类型  用来区分新增或编辑
+
+        // 新增弹出表单
+        addForm: {
+          // CREATE TABLE `organization` (
+          id: '',  // int(11) NOT NULL COMMENT '组织id',
+          pid: '',  // int(11) DEFAULT NULL COMMENT '组织父id',
+          organization_name: '',  // varchar(50) DEFAULT NULL COMMENT '组织名称',
+          organization_part: '',  // varchar(50) DEFAULT NULL COMMENT '牵头部门',
+          organization_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
+          organization_secretary_phone: '',  // varchar(50) DEFAULT NULL COMMENT '书记电话',
+          organization_deputy_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '副书记',
+          organization_type: '2',
+          organization_contact_name: '',  // varchar(50) DEFAULT NULL COMMENT '联系人',
+          organization_contact_phone: '',  // varchar(50) DEFAULT NULL COMMENT '联系人电话',
+          organization_commissioner: '',  // varchar(255) DEFAULT NULL COMMENT '委员',
+//        organization_date: '',  // varchar(20) DEFAULT NULL COMMENT '成立时间',
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='党组织表';
+        },
+        organization_child: [], // 支部列表
+
+        // 表单验证规则
+        rules: {
+          organization_name: [
+            {required: true, message: '请输党组织名字', trigger: 'blur'},
+            {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
+          ],
+          organization_part: [
+            {required: true, message: '请输入牵头部门', trigger: 'blur'},
+            {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
+          ],
+          // organization_secretary: [
+          //   {required: true, message: '请输入书记名字', trigger: 'blur'}
+          // ],
+          // organization_deputy_secretary_name: [
+          //   {required: true, message: '请输入副书记名字', trigger: 'blur'}
+          // ],
+          // organization_contact_name: [
+          //   {required: true, message: '请输入联系人', trigger: 'blur'}
+          // ],
+          // organization_contact_phone: [
+          //   {required: true, message: '请输入联系人电话', trigger: 'blur'}
+          // ],
+          // organization_secretary_phone: [
+          //   {required: true, message: '请输入书记电话', trigger: 'blur'}
+          // ],
+          // organization_commissioner: [
+          //   {required: true, message: '请输入委员', trigger: 'blur'}
+          // ],
+          organization_date: [
+            {required: false, message: '请输入成立时间', trigger: 'change'}
+          ]
+        },
+
+        /** *************** 弹窗的  end *************** **/
+        url: '/organization',
+        url2: '/user',
+        url3: '',
+        data2: [],
+        // 需要转换为时间戳的日期字段
+        dateFonts: ['organization_date'],
+        /** *************** 党组织下的党员表-弹窗  start *************** **/
+        memberDialogTitle: '',
+        showMemberDialog: false,
+        memberDialogList: [],
+        memberDialogTop: '1vh',
+        /** *************** 党组织下的党员表-弹窗  end *************** **/
+        organizationList: [],
+        options_organization: [],
+      }
+    },
+    created() {
+      this.init();
+    },
+    activated() {
+      this.init();
+    },
+    mounted() {
+      if (JSON.parse(this.storage.getStorage('uinfo')).username != 'admin') {
+        this.sure = 'true'
+      }
+    },
+    computed: {
+      data() {
+        let arr = [];
+        for (var i = 0; i < this.organizationList.length; i++) {
+          arr.push({
+            id: this.organizationList[i].id,
+            label: this.organizationList[i].organization_name,
+            children: [],
+          });
+          if (this.organizationList[i].child.length > 0) {
+            for (var j = 0; j < this.organizationList[i].child.length; j++) {
+              arr[i].children.push({
+                id: this.organizationList[i].child[j].id,
+                label: this.organizationList[i].child[j].organization_name,
+              });
+            }
+          }
+        }
+        this.data2 = arr;
+        return this.data2;
+      },
+    },
+    methods: {
+      handleClick(data, checked, node) {
+//		debugger
+        this.i++;
+        if (this.i % 2 == 0) {
+          if (checked) {
+            this.$refs.treeForm.setCheckedNodes([]);
+            this.$refs.treeForm.setCheckedNodes([data]);
+//                  this.addForm =;
+//										console.log(data)
+            //交叉点击节点
+          } else {
+            this.$refs.treeForm.setCheckedNodes([]);
+            //点击已经选中的节点，置空
+          }
+        }
+      },
+      handleClick1(data, checked, node) {
+        debugger
+      },
+      init() {
+
+        // // 获取角色列表
+        // http.get('/role').then(res => {
+        //   if (res.code == 0) {
+        //     this.roleList = res.data.data;
+        //   }
+        // });
+        // // 获取社区列表
+//         http.get('/community').then(res => {
+//           if (res.code == 0) {
+//             this.communityList = res.data;
+//           }
+//         });
+        http.get("/organization?all=1").then(res => {
+          //debugger
+          if (res.code == 0) {
+            //debugger
+            //this.organizationList = res.data.data;
+            this.options_organization = [];
+//          debugger
+            let data = res.data.data;
+            let dang = [];
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].organization_type == '2') {
+                dang.push(data[i])
+              }
+            }
+            this.organizationList = dang;
+            for (let i = 0; i < dang.length; i++) {
+              this.options_organization.push({
+                index: dang[i].id,
+                label: dang[i].organization_name
+              });
+            }
+          }
+        });
+
+        let community_id = JSON.parse(this.storage.getStorage('uinfo')).id;
+        let username = JSON.parse(this.storage.getStorage('uinfo')).username;
+        //console.log(user_organization_id)
+        this.url = username == 'admin' ? '/organization' : `/organization?organization_id=${community_id}`;
+      },
+      formatRole: function (row, column) {
+        return row.user_job == 1 ? '书记' : (row.user_job == 2 ? '副书记' : (row.user_job == 3 ? '委员' : '党员'));
+      },
+//  	formatRole1:function(row,column){
+//  		return row.organization_type == 1 ? '党总支' : row.user_job ==2 ? '党支部' : (row.user_job ==3 ? '委员' :'党员';
+//  	},
+      /** 单元格点击事件 **/
+      cellClick(obj) {
+        let tar = obj.event.target.innerText;
+        if (tar.length > 0 && tar.length < 11 && Number(tar)) {
+          this.memberDialogTitle = obj.row.organization_name;
+          this.url3 = '/user?organization_id=' + obj.row.id;
+          http.get(`/user?organization_id=${obj.row.id}`).then(res => {
+            if (res.code == 0) {
+              //debugger
+              this.memberDialogList = res.data.data;
+              if (res.data.data.length > 10) {
+                this.memberDialogTop = '1vh';
+              } else {
+                this.memberDialogTop = '15vh';
+              }
+              this.showMemberDialog = true;
+            }
+          });
+        } else {
+          return;
+        }
+        this.update++
+      },
+      /** 新建 **/
+      newRole(e, d) {
+        //this.addForm.organization_type = '2'
+//      this.showDialog = true;
+        this.dialogTitle = '新增党组织';
+        this.dialogType = 'new';
+        this.initForm();
+        if (JSON.parse(this.storage.getStorage('uinfo')).username != 'admin') {
+          this.addForm.organization_name = JSON.parse(this.storage.getStorage('uinfo')).name;
+          this.showDialog = false;
+          Message({
+            message: `您没有修改权限`,
+            // type: 'error',
+            duration: 1500
+          });
+        } else {
+          this.showDialog = true;
+        }
+      },
+      /** 支部 **/
+      branch(e, d) {
+        this.$router.push({name: 'branch', params: {id: d.id}});
+      },
+      /** 编辑 **/
+      edit(e, d) {
+        if (d.organization_type == '2') {
+          this.tit = false;
+        } else if (d.organization_type == '1') {
+          this.tit = true;
+        }
+        this.getData(`${this.URL}/organization/${d.id}`, '', 'get', res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            res.data = this.dateFontsFiter(this.dateFonts, res.data);
+            // res.data.organization_date = this.dateformat.format(new Date(Number(res.data.organization_date)));
+
+            this.addForm = res.data;
+            this.addForm.organization_secretary = res.data.organization_secretary.map(x => x.user_name).join(",");
+            this.addForm.organization_deputy_secretary = res.data.organization_deputy_secretary.map(x => x.user_name).join(",");
+            this.addForm.organization_commissioner = res.data.organization_commissioner.map(x => x.user_name).join(",");
+            this.showDialog = true;
+            this.dialogTitle = '编辑信息';
+            this.dialogType = 'edit';
+            this.organization_child = res.data.child.map(ele => ele.id);
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+        // this.showMemberDialog = false;
+      },
+      /** 解散 **/
+      delete(e, d) {
+//    	debugger;
+//    	console.log(d),
+//console.log(d.organization_status)
+        if (d.organization_status == 2) {
+          Message({
+            message: '该组织已解散',
+            // type: 'error',
+            duration: 1500,
+
+          })
+        } else {
+          MessageBox.confirm('您确定解散吗？', '解散', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.sendData(`${this.url}/${d.id}`, {
+              organization_name: d.organization_name,
+              organization_status: 2
+            }, 'put', res => {
+              if (res.code == 0) {
+
+                Message({
+                  message: '解散成功！！！',
+                  // type: 'error',
+                  duration: 1500,
+
+                });
+                this.update++;
+              }
+            });
+          })
+        }
+      },
+      /** 取消 **/
+      resetAddForm(e, d) {
+        this.showDialog = false;
+        this.initForm();
+      },
+      /** 初始化表单 **/
+      initForm() {
+        this.addForm = {
+          id: '',  // int(11) NOT NULL COMMENT '组织id',
+          // pid: '',  // int(11) DEFAULT NULL COMMENT '组织父id',
+          organization_name: '',  // varchar(50) DEFAULT NULL COMMENT '组织名称',
+          organization_part: '',  // varchar(50) DEFAULT NULL COMMENT '牵头部门',
+          organization_secretary: '',  // varchar(50) DEFAULT NULL COMMENT '书记',
+          organization_secretary_phone: '',  // varchar(50) DEFAULT NULL COMMENT '书记电话',
+          organization_deputy_secretary_name: '',  // varchar(50) DEFAULT NULL COMMENT '副书记',
+          organization_contact_name: '',  // varchar(50) DEFAULT NULL COMMENT '联系人',
+          organization_contact_phone: '',  // varchar(50) DEFAULT NULL COMMENT '联系人电话',
+          organization_commissioner: '',  // varchar(255) DEFAULT NULL COMMENT '委员',
+          organization_date: '',  // varchar(20) DEFAULT NULL COMMENT '成立时间',
+          organization_type: '2'
+        }
+      },
+      // 确定
+      submitAddForm(formName, type) {
+//	debugger;
+//         let b = '';
+//         if (this.$refs.treeForm != undefined) {
+//           let a = [];
+//           a = this.$refs.treeForm.getCheckedKeys();
+//
+//           b = a.join(",")
+//         }
+//    	let a=[];
+//    	a=this.$refs.treeForm.getCheckedKeys();
+//    	console.log(aaaa)
+        let _this = this, sendType = 'get', url = this.urls.organization;
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            // if (!this.validates.validatPhone(this.addForm.organization_contact_phone) ||
+            //   !this.validates.validatPhone(this.addForm.organization_secretary_phone)
+            //   Message({
+            //     message: '请填写正确的手机号 ！！！',
+            //     type: 'err',
+            //     duration: 1500
+            //   });
+            //   return false;
+            // }
+            if (type == 'new') {
+              sendType = 'post';
+              delete _this.addForm.id;
+              delete _this.addForm.pid;
+              // url = '/account';
+            } else if (type == 'edit') {
+              sendType = 'put';
+              url = url + '/' + _this.addForm.id;
+            }
+            delete _this.addForm.child;
+            // if (typeof(this.addForm.organization_date) !== 'number') {
+            //   this.addForm.organization_date = this.formatTime(this.addForm.organization_date);
+            // }
+            // 日期转换为时间戳
+
+
+            this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm);
+            let data = {
+              organization_date: this.addForm.organization_date,
+              organization_name: this.addForm.organization_name,
+              organization_part: this.addForm.organization_part,
+              organization_status: this.addForm.organization_status,
+              organization_type: this.addForm.organization_type,
+              // child: b ? b : '',
+              child: this.organization_child.length>0 ? this.organization_child.join(',') : '',
+            };
+            //    this.url = username == 'admin' ? '/transfer' : `/transfer?organization_id=${community_id}`;
+
+//          this.url=child=b?b:'';
+            _this.sendData(url, data, sendType, res => {
+              if (res.code == 0) {
+                Message({
+                  message: type == 'new' ? '新增成功！！！' : '修改成功！！！',
+                  type: 'success',
+                  duration: 1500
+                });
+                this.showDialog = false;
+                this.initForm();
+                this.update++;
+              }
+            });
+          }
+
+        });
+      },
+//    this.url = username == 'admin' ? '/transfer' : `/transfer?organization_id=${community_id}`;
+//    ${this.URL}/organization/${d.id}
+      // 发送数据
+      sendData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      // 获取数据
+      getData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof(call) == 'function') {
+            call(res);
+          }
+        });
+      },
+      /** 时间 转为13位时间戳 **/
+      formatTime(time, tar) {
+        let t = this.dateformat.timeStamp(time, 13);
+        if (tar) {
+          this.addForm[tar] = t;
+        }
+        return t;
+      },
+      /** 将指定的日期转为时间戳
+       * 接收字段名 和 总数据
+       * **/
+      dateFontsFiter(arr, tar) {
+        for (let i in arr) {
+          if (typeof(tar[tar[i]]) !== 'number') {
+            tar[arr[i]] = this.formatTime(tar[arr[i]]);
+          }
+        }
+        return tar;
+      },
+    }
+  }
+</script>
+<style lang="scss" scoped>
+  .header {
+    .el-input {
+      width: 20%;
+    }
+  }
+
+  .pagination {
+    text-align: right;
+    margin-top: 2rem;
+  }
+
+  /*.cell{
+  	cursor:pointer;
+  }*/
+
+  .organization-dialog {
+    .el-input.is-disabled .el-input__inner {
+      background-color: #f5f5f5;
+    }
+    .organization-child{
+      border: 1px solid #ddd;
+      border-radius: 0.3rem;
+      padding: 0.5rem 1rem;
+    }
+  }
+</style>

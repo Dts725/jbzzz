@@ -1,0 +1,152 @@
+<template>
+  <el-menu class="navbar" mode="horizontal">
+    <a href="javascript:void(0)" >
+    <hamburger class="hamburger-container"  :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
+    </a>
+    <breadcrumb></breadcrumb>
+    <!-- <el-dropdown class="avatar-container" trigger="click">
+      <div class="avatar-wrapper">
+        <span v-if="username" style="cursor: default;margin-right:1rem;"><strong>用户名：</strong>{{username}}</span>
+        <span style="cursor: default;margin-right:1rem;">{{dateAndWeek}}</span>
+        <span @click="logout" style="margin-right: 0.5rem;">退出</span>
+      </div>
+      <el-dropdown-menu class="user-dropdown" slot="dropdown">
+      </el-dropdown-menu>
+    </el-dropdown> -->
+  </el-menu>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+import Breadcrumb from "@/components/Breadcrumb";
+import Hamburger from "@/components/Hamburger";
+import { getName } from "@/utils/auth";
+
+export default {
+  data() {
+    return {
+      dateTime: new Date(),
+      username: ""
+    };
+  },
+  components: {
+    Breadcrumb,
+    Hamburger
+  },
+  computed: {
+    ...mapGetters(["sidebar", "avatar"]),
+    dateAndWeek: {
+      get: function() {
+        let _this = this;
+        let showTime = "",
+          showDate = "";
+        var week = [
+          "星期天",
+          "星期一",
+          "星期二",
+          "星期三",
+          "星期四",
+          "星期五",
+          "星期六"
+        ];
+        var cd = new Date(this.dateTime);
+        showTime =
+          zeroPadding(cd.getHours(), 2) +
+          ":" +
+          zeroPadding(cd.getMinutes(), 2) +
+          ":" +
+          zeroPadding(cd.getSeconds(), 2);
+        showDate =
+          zeroPadding(cd.getFullYear(), 4) +
+          "-" +
+          zeroPadding(cd.getMonth() + 1, 2) +
+          "-" +
+          zeroPadding(cd.getDate(), 2) +
+          " " +
+          week[cd.getDay()];
+
+        function zeroPadding(num, digit) {
+          var zero = "";
+          for (var i = 0; i < digit; i++) {
+            zero += "0";
+          }
+          return (zero + num).slice(-digit);
+        }
+
+        this.dateTime = showDate + "  " + showTime;
+        return this.dateTime;
+      }
+    }
+  },
+  mounted() {
+    this.getNowTime();
+    this.username = getName("name");
+  },
+  methods: {
+
+    toggleSideBar() {
+      this.$store.dispatch("ToggleSideBar");
+    },
+    logout() {
+      this.$store.dispatch("LogOut").then(() => {
+        location.reload(); // 为了重新实例化vue-router对象 避免bug
+      });
+    },
+    getNowTime() {
+      let _this = this;
+      setInterval(function() {
+        _this.dateTime = new Date();
+      }, 1000);
+    }
+  }
+};
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+.navbar {
+  height: 50px;
+  line-height: 50px;
+  border-radius: 0px !important;
+  .hamburger-container {
+    line-height: 58px;
+    height: 50px;
+    float: left;
+    padding: 0 10px;
+  }
+  .screenfull {
+    position: absolute;
+    right: 90px;
+    top: 16px;
+    color: red;
+  }
+  .avatar-container {
+    height: 50px;
+    display: inline-block;
+    position: absolute;
+    right: 35px;
+
+    width: 30%;
+    text-align: right;
+    .avatar-wrapper {
+      cursor: pointer;
+      margin-top: 5px;
+      position: relative;
+      span:hover {
+        color: #3a8ee6;
+      }
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+      .el-icon-caret-bottom {
+        position: absolute;
+        right: -20px;
+        top: 25px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+</style>
+

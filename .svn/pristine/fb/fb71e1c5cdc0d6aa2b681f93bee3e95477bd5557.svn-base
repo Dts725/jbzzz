@@ -1,0 +1,279 @@
+<template>
+  <div class="framework-container pr" ref="frameworkSelf" id = "frameworkSelf">
+
+      <span id ='full-screen' @click="fullScreen()">全屏</span>
+
+    <div>
+      <img src="../../../static/framework_top.png" alt="">
+      <p class="tf-center fz18 ">{{this.$store.state.nav.id.organization_name}}</p>
+    </div>
+		<!--<div>
+      {{this.$store.state.nav.donghua}}
+    </div>-->
+
+    <!-- <keep-alive> -->
+    <div class="childrenRouter">
+      <transition
+			enter-active-class="animated zoomIn"
+      >
+        <router-view></router-view>
+      </transition>
+    </div>
+<!--enter-active-class="animated zoomIn"-->
+    <!-- </keep-alive> -->
+<!--enter-active-class="animated bounceInUp  rotateIn"
+-->
+<!--enter-active-class="animated bounceInDown" -->
+<!--enter-active-class="animated fadeInDown"-->
+  </div>
+</template>
+
+<script>
+// import {getList2, getDetail} from '@/api/member';
+import http from "@/api/http";
+import list from "@/components/TableList";
+import tops from "./childrenRouter/attendComment";
+import { Message, MessageBox } from "element-ui";
+
+   window.onresize = function() {
+ let clientHeight, clientWidth;
+            try {
+        clientHeight = document.body.offsetHeight;
+        clientWidth = document.body.offsetWidth;
+      } catch (error) {
+        clientHeight = document.documentElement.clientHeight;
+        clientWidth = document.documentElement.clientWidth;
+      }
+
+      document.getElementById('frameworkSelf').style.height = clientHeight - 164 + "px";
+
+                console.log('11111111111111')
+
+         }
+
+
+
+
+export default {
+  data() {
+    return {
+      fullScreenFlag: 0,
+      tar: 1,
+      transitionName: "bounceInLeft",
+      data: {
+        name1: [],
+        dangyuang: [
+          "餐饮服务保证组临时党支部",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员",
+          "党员哈哈哈"
+        ]
+      }
+      /** *************** 引用的表格的  start *************** **/
+
+      /** *************** 引用的表格的  end *************** **/
+		// computed:{
+		// 	donghua1(){
+		// 		let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+		// 		let index=Math.floor(Math.random()*arr.length);
+		// 		//return arr[index];
+		// 	return this.str=arr[index];
+		// 	}
+		// },
+      /** *************** 弹窗的  start *************** **/
+
+      /** *************** 弹窗的  end *************** **/
+    };
+  },
+  created() {
+    this.createdActive();
+    // this.onClickLists(1);
+  },
+  activated() {
+    this.createdActive();
+    // this.onClickLists(1);
+  },
+
+  methods: {
+
+    //全屏
+    fullScreen() {
+    this.createdActive();
+
+      if (!this.fullScreenFlag) {
+        var el = this.$refs.frameworkSelf;
+        var rfs =
+          el.requestFullScreen ||
+          el.webkitRequestFullScreen ||
+          el.mozRequestFullScreen ||
+          el.msRequestFullscreen;
+        if (typeof rfs != "undefined" && rfs) {
+          rfs.call(el);
+        }
+this.fullScreenFlag = 1;
+
+        return;
+      } else {
+        this.exitScreen();
+      }
+    },
+   //退出全屏
+exitScreen(){
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            }
+            else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+            else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            if(typeof cfs != "undefined" && cfs) {
+                cfs.call(el);
+            }
+
+            this.fullScreenFlag =0;
+        },
+
+    createdActive() {
+      this.$store.commit("BREAD_NAV", false);
+      let clientHeight, clientWidth;
+      this.$store.commit("BREAD_SID_ID", {
+        id: 0,
+        organization_name: "进博一线党组织"
+      });
+
+      try {
+        clientHeight = document.body.offsetHeight;
+        clientWidth = document.body.offsetWidth;
+      } catch (error) {
+        clientHeight = document.documentElement.clientHeight;
+        clientWidth = document.documentElement.clientWidth;
+      }
+
+      this.$refs.frameworkSelf.style.height = clientHeight - 164 + "px";
+      // this.$refs.frameworkSelf.style.transfrom = 'translateY( 80' + 'px)';
+      console.log(clientHeight);
+      console.log(clientWidth);
+    }
+  },
+
+  beforeDestroy() {
+    this.$store.commit("BREAD_NAV", true);
+  },
+  deactivated() {
+    this.$store.commit("BREAD_NAV", true);
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.framework-container {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: url("../../../static/framework_bg.jpg") no-repeat;
+  background-size: 100% 100%;
+  p {
+    width: 500px;
+    position: absolute;
+    top: 170px;
+    // left: 50%;
+    // transform: translateX(-50%);
+    color: #f4ed6f;
+  }
+  img {
+    margin-top: 120px;
+    // width: 80%;
+    // height: 80%;
+  }
+  .click-box {
+    width: 10%;
+    height: 40%;
+    position: absolute;
+    top: 20.5%;
+    left: 10%;
+    z-index: 100;
+    min-height: 20rem;
+    div {
+      width: 100%;
+      height: 30%;
+      background-color: #f3e8de;
+      cursor: pointer;
+      span {
+        line-height: 150px;
+      }
+    }
+  }
+}
+
+.framework-title {
+  position: absolute;
+  z-index: 101;
+  left: 8%;
+  top: 26%;
+  word-wrap: break-word;
+  width: 10px;
+  font-size: 1.5rem;
+  color: #f9cc2a;
+}
+
+.borders {
+  border: 5px solid #f9cc2a !important;
+}
+
+.red {
+  color: #d40e19;
+}
+
+.childrenRouter {
+  margin: 0 auto;
+  // padding-top: 100px;
+  width: 80%;
+  height: 80%;
+  overflow: auto;
+  z-index: 101;
+}
+#full-screen {
+
+  width: 80px;
+  height: 80px;
+  border-radius: 100px;
+  line-height: 80px;
+  color: rgb(240, 102, 11);
+  background-color: #C2E260;
+    position: fixed;
+  bottom: 80px;
+  right: 80px;
+  z-index: 103;
+}
+ #full-screen:hover {
+   background-color: #FFB981;
+   color: #fff;
+   transition: .5s;
+ }
+</style>
