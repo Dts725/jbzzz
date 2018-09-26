@@ -167,22 +167,7 @@
     data() {
       return {};
     },
-		created(){
-//			let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
-//			let username = JSON.parse(this.storage.getStorage('uinfo')).username;
-//			if (username == "admin"){
-//				
-//			}
-//			
-//			if(this.$store.state.nav.huodong==community_id){
-//				showDialog
-//			}
-//			console.log(this.$store.state.nav.huodong)
-//			debugger
-//			if(this.$store.state.nav.huodong){
-//				
-//			}
-		},
+
     mounted() {
        
     },

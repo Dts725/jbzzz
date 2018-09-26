@@ -15,9 +15,9 @@
                                     <span class="del_img" v-show="image">
                                       <i class="el-icon-circle-close" @click="deleteImg"></i>
                                     </span> -->
-
+				
         <div @click="attendFlag()">
-
+					
           <el-row>
             <el-col :span="12">
               <el-form-item label="活动名称" prop="active_name">
@@ -61,7 +61,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="党组织名" prop="active_organization_id">
-                <el-select v-model="addForm.active_organization_id" placeholder="请选择" :disabled="sure">
+                <el-select v-model="addForm.active_organization_id" placeholder="请选择" :disabled="sure" @change="zuzhiming($event)">
                   <el-option v-for="item in options_organization" :key="item.index" :label="item.label" :value="String(item.index)">
                   </el-option>
                 </el-select>
@@ -82,10 +82,24 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+	          <el-col :span="24" v-if="dialogType=='edit'">
+	              <el-form-item label="出席人" prop="active_attend_name">
+	                <el-input v-model="addForm.active_attend_name"></el-input>
+	              </el-form-item>
+	         </el-col>
+	        </el-row>
+	        <el-row>
+	          <el-col :span="24" v-if="dialogType=='edit'">
+	              <el-form-item label="缺席人" prop="active_absence_name">
+	                <el-input v-model="addForm.active_absence_name"></el-input>
+	              </el-form-item>
+	         </el-col>
+	        </el-row>
         </div>
 
-
-        <div @click='attend'>
+				
+        <div @click='attend' v-if="dialogType=='new'">
           <el-row :span="24 ">
             <el-form-item label="出席人" prop="active_attend">
               <div class="attend-join" disabled>{{checkedCities.join(",")}}</div>
@@ -97,7 +111,7 @@
         <!--出席人数具体名单-->
 
 
-        <el-row v-show="attendNum" class="attend-parent overflow-auto h8vh padding-5">
+        <el-row v-show="attendNum" class="attend-parent overflow-auto h8vh padding-5" v-if="dialogType=='new'">
           <el-col :span="24">
             <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChangeAttend">全选</el-checkbox>
             <div style="margin: 15px 0;"></div>
@@ -108,13 +122,14 @@
         </el-row>
 
 
-        <div @click='activeAbsence'>
+        <div @click='activeAbsence' v-if="dialogType=='new'">
           <el-row :span="24">
             <el-form-item label="缺席人" prop="active_absence_number">
               <div class="attend-join">{{checkedCitiesReserve.join(",")}}</div>
             </el-form-item>
           </el-row>
         </div>
+        
 
 
 
@@ -122,9 +137,9 @@
         <!--缺席人数具体名单-->
 
 
-        <el-row v-show="activeAbsenceFlag" class="attend-parent overflow-auto h8vh padding-5">
+        <el-row v-show="activeAbsenceFlag" class="attend-parent overflow-auto h8vh padding-5" v-if="dialogType=='new'">
           <el-col :span="24">
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChangeAbsence" @open ="open()">全选</el-checkbox>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChangeAbsence">全选</el-checkbox>
             <div style="margin: 15px 0;"></div>
             <el-checkbox-group v-model="checkedCitiesReserve" @change="handleCheckedCitiesChangeAbsence" class="attend ">
               <el-checkbox class="w20 item" v-for="(city,index) in activeAbsenceList" :label="city" :key="city" true-label @click.native="activeAbsenceUserId(index)"></el-checkbox>
@@ -257,9 +272,9 @@
         </el-row>
       </div>
     </el-dialog>
-
+    			
     <div id="fileExport" style="visibility: hidden;">
-
+        
         <table style="border-collapse: collapse; text-align:center;width:100%;" >
           <tr>
             <td style="border:1px solid #666; padding:0.5rem; color:#f00;background-color:#f3d19e;" colspan="4"><strong>党组织活动详情</strong>
@@ -337,6 +352,7 @@
     },
     data() {
       return {
+      	zuzhi:'',
       	options: [{
           value: '1',
           label: '三会一课'
@@ -373,7 +389,7 @@
         attendNum: false, //标记是否点中出席
         checkAll: false,
         cities: [],
-        activeAbsenceList: [], //选中元素
+        activeAbsenceList: [],
         isIndeterminate: true,
         // 列表头部的功能区--key为搜索的字段名
         topBar: [{
@@ -631,8 +647,6 @@
             trigger: "change"
           }]
         },
-        dataDetailsInfo : [],//关联出席和为出席人数
-
         // 角色列表
         roleList: [],
         // 社区列表
@@ -669,32 +683,27 @@
 		    };
     },
     methods: {
+    	zuzhiming(a){
+//		console.log(a)
+       this.zuzhi=a;
+    	},
       //	-------------------------------------选择出席
-      // 全选
       handleCheckAllChangeAttend(val, el) {
         // if (this.attendNum) {
-
-
-          console.log(this.cities)
-
         this.checkedCities = val ? this.cities : [];
         // this.addForm.active_attend_name = this.checkedCities
         // } else {
         //   this.checkedCitiesReserve = val ? this.activeAbsenceList : [];
         //   this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
         // }
-
-
-
-
         this.isIndeterminate = false;
       },
       handleCheckedCitiesChangeAttend(value) {
-        // console.log(this.checkedCities)
-        console.log(value)
+//    	console.log(value)
+//      console.log(this.checkedCities)
         // this.addForm.active_attend_name = this.checkedCities;
-
-        // console.log(this.addForm.active_attend_name)
+				
+//      console.log(this.addForm.active_attend_name)
 
         let checkedCount = value.length;
         this.checkAll = checkedCount === this.cities.length;
@@ -705,14 +714,13 @@
 
       // 选择缺席
       handleCheckAllChangeAbsence(val) {
-
+      	
         this.checkedCitiesReserve = val ? this.activeAbsenceList : [];
         // this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
         this.isIndeterminate = false;
       },
       handleCheckedCitiesChangeAbsence(value) {
-
-        console.log(value)
+//    	console.log(this.cities)
         // this.addForm.active_absence_name = this.checkedCitiesReserve.join(",");
         let checkedCount = value.length;
         this.checkAll = checkedCount === this.cities.length;
@@ -737,8 +745,8 @@
 								});
 					}
             this.topBar[2].options = arr;
-
-
+            
+            
             for (let i = 0; i < data.length; i++) {
               this.options_organization.push({
                 index: data[i].id,
@@ -746,7 +754,7 @@
               });
             }
           }
-
+          
         });
          let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
 					let username = JSON.parse(this.storage.getStorage('uinfo')).username;
@@ -793,7 +801,7 @@
 				if(JSON.parse(this.storage.getStorage('uinfo')).username!='admin'){
         	//debugger
 				this.addForm.active_organization_id=JSON.parse(this.storage.getStorage('uinfo')).name;
-		    };
+		    };        
       },
       /** 编辑 **/
       edit(e, d) {
@@ -864,7 +872,7 @@
 
         this.addForm.active_attend_name = undefined;
         this.addForm.active_absence_name = undefined;
-        // console.log(this.addForm)
+//      console.log(this.addForm)
         this.$refs[formName].validate(valid => {
           if (valid) {
             _this.addForm.photo = _this.imgList;
@@ -880,7 +888,7 @@
             delete _this.addForm.id;
             delete _this.addForm.organization_name;
            // delete _this.addForm.active_organization_id;
-           _this.addForm.active_organization_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+//         _this.addForm.active_organization_id=JSON.parse(this.storage.getStorage('uinfo')).id;
             _this.sendData(url, this.addForm, sendType, res => {
               if (res.code == 0) {
                 Message({
@@ -1036,47 +1044,33 @@
         this.activeAbsenceFlag = false;
       },
 
-      //保证出席人数和缺勤人不能同时被选择
-
-
-      selectOne () {
-        if(this.cities) {
-            this.active_attend_userID_select
-        }
-      },
-
       //出席人数
       attend() {
         this.activeAbsenceFlag = false;
         this.attendNum = !this.attendNum;
         if (this.cities.length) return;
-
-
-
-        http.get("/user").then(res => {
+//      http.get("/user").then(res => {
+//        if (res.code == 0) {
+//          let data = res.data.data;
+//          data.forEach(el => {
+//            this.cities.push(el.user_name);
+//            this.active_attend_userID.push(el.id);
+//
+//          });
+//        }
+//      });
+			http.get("/user?all=1&organization_id="+this.zuzhi).then(res => {
           if (res.code == 0) {
+//        	debugger
             let data = res.data.data;
             data.forEach(el => {
               this.cities.push(el.user_name);
               this.active_attend_userID.push(el.id);
-
             });
+            
           }
-        });
-
-
-        // if(this.activeAbsenceList.length) {
-
-        //     this.active_absence_userID_select.map(x => {
-        //         this.active_attend_userID.splice(x,1);
-        //         this.cities.splice(x,1);
-        //     })
-        // }
-        // debugger
-      },
-
-      open () {
-        console.lo
+          this.update++;
+       });
       },
 
       //缺席人数
@@ -1085,21 +1079,32 @@
 
         this.activeAbsenceFlag = !this.activeAbsenceFlag;
         if (this.activeAbsenceList.length) return;
-        http.get("/user").then(res => {
+//      http.get("/user").then(res => {
+//        if (res.code == 0) {
+//          let data = res.data.data;
+//          data.forEach(el => {
+//            this.active_absence_userID.push(el.id);
+//            this.activeAbsenceList.push(el.user_name);
+//          });
+//        }
+//      });
+				http.get("/user?all=1&organization_id="+this.zuzhi).then(res => {
           if (res.code == 0) {
+//        	debugger
             let data = res.data.data;
             data.forEach(el => {
               this.active_absence_userID.push(el.id);
               this.activeAbsenceList.push(el.user_name);
             });
+            this.update++;
           }
-        });
+       });
       },
 
       //处理上传出席userID
 
       submitAttendUserId($index) {
-        console.log($index);
+//      console.log($index);
         this.active_attend_userID_select.push($index);
       },
        /** 导出功能 **/
@@ -1111,6 +1116,7 @@
 
       //处上传缺席userID
       activeAbsenceUserId($index) {
+    	console.log(this.checkedCities)
         this.active_absence_userID_select.push($index);
       },
 

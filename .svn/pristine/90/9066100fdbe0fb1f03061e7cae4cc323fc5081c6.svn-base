@@ -24,7 +24,7 @@
 	        <!------------------------------------------------额外的----------------------------------->
         	<!--<el-col :span="12" class='zuzhi'>
                 <select class="transfer-se" id="sel" @change='biangeng' placeholder="请选择" v-model="addForm.id" >
-		              <option v-for="item in organizationList1" :key="item.organization_id" :value="item.organization_id" >{{item.organization_name}}</option>
+		              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" >{{item.organization_name}}</option>
 		            </select>
             </el-col>-->
         </el-row>
@@ -96,14 +96,9 @@
 			  <!--</el-table>
 			  <div style="margin-top: 20px">
 			    <el-button @click="toggleSelection()">取消选择</el-button>
-				    <!--<select class="transfer-se" id="sel" placeholder="请选择" v-model="ssa" @change="xuanze($event)">
-			        <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" :label="item.organization_name"></option>
-			     </select>-->
-			     
-			     <!--<el-select v-model="addForm.organization_id" placeholder="请选择" @change="xuanze($event)">
-                  <el-option v-for="item in organizationList1" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
-                  </el-option>
-           </el-select>
+				    <select class="transfer-se" id="sel" placeholder="请选择" v-model="ssa" @change="xuanze">
+			        <option v-for="item in organizationList1" :key="item.organization_id" :value="item.organization_id" :label="item.organization_name"></option>
+			     </select>
 			  </div>-->
 
 
@@ -179,7 +174,7 @@
             </el-col>
             <el-col :span="12" v-if="isShowzb == 1">
               <el-form-item label="转移到所在支部" prop="organization_id">
-                <el-select v-model="addForm.organization_id" placeholder="请选择">
+                <el-select v-model="addForm.organization_id" placeholder="请选择" >
                   <el-option v-for="item in organizationList" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
                   </el-option>
                 </el-select>
@@ -475,8 +470,8 @@
    },
 // /organization_record?organization_id=
     methods: {
-    	xuanze(value){
-  		console.log(value)
+    	xuanze(value,i){
+  		console.log(i)
     	},
     	biangeng(e){
 //  		debugger;
@@ -549,29 +544,12 @@
 //  			if(){
 //  				$('.yincang').css({'display':'none'})
 //  			}
-				tableData3: [{
-      		id:'',
-          user_name: '',
-          user_sex:'',
-          user_card:'',
-          user_phone:'',
-          user_organization_name: '',
-          organization_id:''
-        }],
+				
       	this.getData(`${this.URL}/user?user_name=${e}`, "", "get", res => {
           if (res.code == 0) {
             // 日期转换为时间戳
             res.data.data = this.dateFontsFiter(this.dateFonts, res.data.data);
             this.addForm = res.data.data[0];
-//          this.tableData3=[{
-//				      		id:,
-//				          user_name: '',
-//				          user_sex:'',
-//				          user_card:'',
-//				          user_phone:'',
-//				          user_organization_name: '',
-//				          organization_id:''
-//				        }];
             if (res.data.data.length == 1) {
               this.isShow = 1;
             } else {
@@ -593,15 +571,12 @@
 					let username = JSON.parse(this.storage.getStorage('uinfo')).username;
           //console.log(user_organization_id)
           this.url = username == 'admin' ? '/transfer' : `/transfer?organization_id=${community_id}`;
-          if(username!='admin'){
-          	http.get(`/organization?organization_id=${community_id}`).then(res => {
+         http.get(`/organization?organization_id=${community_id}`).then(res => {
 					if (res.code == 0) {
 						this.children=res.data.data[0].child;
 						} 
 //						console.log(this.children)
         });
-          }
-         
           
           
           http.get('/organization?all=1').then(res => {
@@ -896,7 +871,7 @@ _searchCon(e) {
 //      var index = this.transfer_type==1?Sel.selectedIndex:'';
 //      this.transfer.organization_id = this.transfer_type==1?Sel.options[index].value:'';
 //				this.transfer.organization_id = this.addForm.organization_id;
-				this.transfer.organization_id = this.addForm.organization_id;
+					this.transfer.organization_id = this.addForm.organization_id;
         this.$refs[formName].validate(valid => {
           if (valid) {
             if (type == "new") {
@@ -907,7 +882,7 @@ _searchCon(e) {
             }
             _this.sendData(url, this.transfer, sendType, res => {
 //          	debugger
-              if(res.code == 0) {
+              if (res.code == 0) {
                 Message({
                   // message: type == "new" ? "组织变更成功！！！" : "离岗成功！！！",
                   message: `${this.dialogTitle}成功！！！`,

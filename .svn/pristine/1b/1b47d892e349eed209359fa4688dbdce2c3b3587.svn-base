@@ -116,12 +116,22 @@ export default {
               //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
               //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
               // part.unshift(x.id);
+
+              break;
+            case "餐饮服务保障组临时党支部":
+              part.push(x.id);
+              break;
+            case "商务委推进办临时党支部":
+              part.push(x.id);
+              break;
+            default:
+              break;
           }
         });
 
 
         //二级支部数据
-        // this.$store.commit("FRAN_THREE", part);
+        this.$store.commit("FRAN_THREE", part);
         list = res.data.data.map(x => {
 
           if (x.child.length) {
@@ -182,10 +192,6 @@ export default {
 
             })
         //    	debugger
-
-    this.$store.commit("FRAN_THREE_ROUTER", data[0]);
-        this.$store.commit("FRAN_THREE", childrenId);
-
         this.data = tmp.reverse();
       });
     },
@@ -207,65 +213,62 @@ export default {
       let index = Math.floor(Math.random() * arr.length);
       //return arr[index];
       this.str = arr[index];
-//    this.$store.commit("donghua", this.str);
-			this.$store.commit('BREAD_HD',flag);
-//  			debugger
+      this.$store.commit("donghua", this.str);
+
+      //			debugger
       //			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
-      this.$store.commit("BREAD_SID_ID", id);
+      //    this.$store.commit("BREAD_SID_ID", id);
       //    let zhuanhuan=Object(JSON.parse(this.storage.getStorage('uinfo')).id);
       let zhuanhuan = JSON.parse(this.storage.getStorage("uinfo")).id;
       let username = JSON.parse(this.storage.getStorage("uinfo")).username;
       let pid = JSON.parse(this.storage.getStorage("uinfo")).pid;
+      if (pid > 0) {
+        zhuanhuan = pid;
+      }
+      //			if(zhuanhuan==122||zhuanhuan==116){
+      //				zhuanhuan=124
+      //			}
+      if (username == "admin") {
+        this.$store.commit("BREAD_SID_ID", id);
+        if (flag === this.$store.state.part.framworkerthreeRouter) {
+          this.$router.push({
+            path: "/framework/framework/frameworkThree"
+          });
+        } else if (flag == this.$store.state.part.framworkerTwo) {
+          this.$router.push("/framework/framework/frameworkTwo");
+        } else {
+          this.$router.push("/framework/framework/frameworkFirst");
+        }
+      } else {
+        //				debugger
+        if (flag == zhuanhuan) {
+          this.$store.commit("BREAD_SID_ID", id);
+          if (flag === this.$store.state.part.framworkerthreeRouter) {
+            this.$router.push({
+              path: "/framework/framework/frameworkThree"
+            });
+          } else if (flag == this.$store.state.part.framworkerTwo) {
+            this.$router.push("/framework/framework/frameworkTwo");
+          } else {
+            this.$router.push("/framework/framework/frameworkFirst");
+          }
+        } else {
+          Message({
+            message: `您没有权限查看`,
+            duration: 1500
+          });
+        }
+      }
 
-//  console.log(this.$store.state.nav.huodong)
-//  debugger
-//    if (pid > 0) {
-//      zhuanhuan = pid;
-//    }
-//    //			if(zhuanhuan==122||zhuanhuan==116){
-//    //				zhuanhuan=124
-//    //			}
-//    if (username == "admin") {
-//      this.$store.commit("BREAD_SID_ID", id);
-//      if (flag === this.$store.state.part.framworkerthreeRouter) {
-//        this.$router.push({
-//          path: "/framework/framework/frameworkThree"
-//        });
-//      } else if (flag == this.$store.state.part.framworkerTwo) {
-//        this.$router.push("/framework/framework/frameworkTwo");
-//      } else {
-//        this.$router.push("/framework/framework/frameworkFirst");
-//      }
-//    } else {
-//      //				debugger
-//      if (flag == zhuanhuan) {
-//        this.$store.commit("BREAD_SID_ID", id);
-//        if (flag === this.$store.state.part.framworkerthreeRouter) {
-//          this.$router.push({
-//            path: "/framework/framework/frameworkThree"
-//          });
-//        } else if (flag == this.$store.state.part.framworkerTwo) {
-//          this.$router.push("/framework/framework/frameworkTwo");
-//        } else {
-//          this.$router.push("/framework/framework/frameworkFirst");
-//        }
-//      } else {
-//        Message({
-//          message: `您没有权限查看`,
-//          duration: 1500
-//        });
-//      }
-//    }
-
-            if (flag === this.$store.state.part.framworkerthreeRouter) {
-              this.$router.push({
-                path: "/framework/framework/frameworkThree"
-              });
-            } else if (flag == this.$store.state.part.framworkerTwo) {
-              this.$router.push("/framework/framework/frameworkTwo");
-            } else {
-              this.$router.push("/framework/framework/frameworkFirst");
-            }
+      //    if (flag === this.$store.state.part.framworkerthreeRouter) {
+      //      this.$router.push({
+      //        path: "/framework/framework/frameworkThree"
+      //      });
+      //    } else if (flag == this.$store.state.part.framworkerTwo) {
+      //      this.$router.push("/framework/framework/frameworkTwo");
+      //    } else {
+      //      this.$router.push("/framework/framework/frameworkFirst");
+      //    }
     }
   }
 };

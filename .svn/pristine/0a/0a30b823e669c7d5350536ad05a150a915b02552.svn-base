@@ -116,12 +116,22 @@ export default {
               //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
               //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
               // part.unshift(x.id);
+
+              break;
+            case "餐饮服务保障组临时党支部":
+              part.push(x.id);
+              break;
+            case "商务委推进办临时党支部":
+              part.push(x.id);
+              break;
+            default:
+              break;
           }
         });
 
 
         //二级支部数据
-        // this.$store.commit("FRAN_THREE", part);
+        this.$store.commit("FRAN_THREE", part);
         list = res.data.data.map(x => {
 
           if (x.child.length) {
@@ -182,10 +192,6 @@ export default {
 
             })
         //    	debugger
-
-    this.$store.commit("FRAN_THREE_ROUTER", data[0]);
-        this.$store.commit("FRAN_THREE", childrenId);
-
         this.data = tmp.reverse();
       });
     },
@@ -216,7 +222,7 @@ export default {
       let zhuanhuan = JSON.parse(this.storage.getStorage("uinfo")).id;
       let username = JSON.parse(this.storage.getStorage("uinfo")).username;
       let pid = JSON.parse(this.storage.getStorage("uinfo")).pid;
-
+      
 //  console.log(this.$store.state.nav.huodong)
 //  debugger
 //    if (pid > 0) {
