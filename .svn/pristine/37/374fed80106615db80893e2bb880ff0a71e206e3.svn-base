@@ -111,11 +111,11 @@ export default {
             case "进口博览局临时党委":
               this.$store.commit("FRAM_TWO", x.id);
               break;
-            // case "市商务委推进办临时党总支":
-            //   tmp.splice(index,1);
-            //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
-            //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
-            // part.unshift(x.id);
+            case "市商务委推进办临时党总支":
+              tmp.splice(index,1);
+              tmp.splice(Math.floor(tmp.length/2 -1),0,x);
+              this.$store.commit("FRAN_THREE_ROUTER", x.id);
+            part.unshift(x.id);
 
               break;
             case "餐饮服务保障组临时党支部":
@@ -185,14 +185,11 @@ export default {
 //    let zhuanhuan=Object(JSON.parse(this.storage.getStorage('uinfo')).id);
 			let zhuanhuan=JSON.parse(this.storage.getStorage('uinfo')).id;
 			let username=JSON.parse(this.storage.getStorage('uinfo')).username;
-			let pid=JSON.parse(this.storage.getStorage('uinfo')).pid;
-			if(pid>0){
-				zhuanhuan=pid;
+			if(zhuanhuan==122||zhuanhuan==116){
+				zhuanhuan=124
 			}
-//			if(zhuanhuan==122||zhuanhuan==116){
-//				zhuanhuan=124
-//			}
 			if(username=='admin'){
+				
       this.$store.commit("BREAD_SID_ID", id);
       if (flag === this.$store.state.part.framworkerthreeRouter) {
         this.$router.push({
@@ -217,13 +214,14 @@ export default {
         this.$router.push("/framework/framework/frameworkFirst");
     }
       }else{
-      	 Message({
-		              message: `您没有权限查看`,
-		              duration: 1500
-		           });
+      	Message({
+              message: `您没有权限查看`,
+              type: 'error',
+              duration: 1500
+            });
   }
 			}
-
+      
 //    if (flag === this.$store.state.part.framworkerthreeRouter) {
 //      this.$router.push({
 //        path: "/framework/framework/frameworkThree"

@@ -10,7 +10,7 @@
           <echarts-show :echartsData="echartsData['organization']"></echarts-show>
           <div class="charts-table">
             <!--<ul>-->
-            <!--<li v-for="li in echartsData['organization'].data" :key="li.value">{{li.name}}-&#45;&#45;{{li.value}}</li>-->
+              <!--<li v-for="li in echartsData['organization'].data" :key="li.value">{{li.name}}-&#45;&#45;{{li.value}}</li>-->
             <!--</ul>-->
             <!--<el-table :data="echartsData['organization'].data.reverse()" border fit highlight-current-row>-->
             <!--<el-table-column align="center" label='编号' width="55">-->
@@ -131,8 +131,7 @@
           user_temp_team: {
             /** 柱状图1 **/
             id: 3,
-            // title: '保障组情况（单位：人）', // 标题
-            title: '保障组情况 ', // 标题
+            title: '保障组情况（单位：人）', // 标题
             type: 'Bar',
             direction: 'row', // 轴向： row横向显示，col 纵向显示
             tipsName: '人数', // 提示的标题
@@ -155,8 +154,7 @@
           user_dispatched_unit: {
             /** 柱状图2 **/
             id: 4,
-            // title: '派出单位情况（单位：人）', // 标题
-            title: '派出单位情况 ', // 标题
+            title: '派出单位情况（单位：人）', // 标题
             type: 'Bar',
             direction: 'row', // 轴向： row横向显示，col 纵向显示
             tipsName: '人数', // 提示的标题
@@ -170,13 +168,12 @@
               // {name: '进口博览局', value: 1},
             ]
           },
-          //
+          // 派出单位
           organization: {
             /** 柱状图3 **/
             id: 5,
             direction: 'row', // 轴向： row横向显示，col 纵向显示
-            // title: '党组织情况（单位：人）', // 标题
-            title: '党组织情况 ', // 标题
+            title: '党组织情况（单位：人）', // 标题
             type: 'Bar',
             tipsName: '人数', // 提示的标题
             data: [
@@ -193,8 +190,7 @@
           organization_active: {
             /** 柱状图4 **/
             id: 6,
-            // title: '党组织活动情况（单位：次）', // 标题
-            title: '党组织活动情况 ', // 标题
+            title: '党组织活动情况（单位：次）', // 标题
             type: 'Bar',
             direction: 'row', // 轴向： row横向显示，col 纵向显示
             tipsName: '次数', // 提示的标题
@@ -305,19 +301,10 @@
               arr = this.removeRepeat(arr, 'name');
               // 排序
               this.echartsData[i].data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
-              if (i == 'user_temp_team') {
-                if (/\s保障组数:.*\d+/.test(this.echartsData[i].title)) {
-                  this.echartsData[i].title = this.echartsData[i].title.replace(/\s保障组数:.*\d+/, ` 保障组数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`);
-                } else {
-                  this.echartsData[i].title = this.echartsData[i].title + ` 保障组数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`;
-                }
-              }
-              if (i == 'user_dispatched_unit') {
-                if (/\s单位数:.*\d+/.test(this.echartsData[i].title)) {
-                  this.echartsData[i].title = this.echartsData[i].title.replace(/\s单位数:.*\d+/, ` 单位数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`);
-                } else {
-                  this.echartsData[i].title = this.echartsData[i].title + ` 单位数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`;
-                }
+              if (/合计:.*\d+/.test(this.echartsData[i].title)) {
+                this.echartsData[i].title = this.echartsData[i].title.replace(/合计:.*\d+/, `合计:${this.countNum(this.echartsData[i].data)}`);
+              } else {
+                this.echartsData[i].title = this.echartsData[i].title + ` 合计:${this.countNum(this.echartsData[i].data)}`;
               }
             }
             /** 保障组名字重置 **/
@@ -332,10 +319,10 @@
             // 去重
             arr = this.removeRepeat(arr, 'name');
             this.echartsData.organization.data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
-            if (/\s组织数:.*\d+/.test(this.echartsData.organization.title)) {
-              this.echartsData.organization.title = this.echartsData.organization.title.replace(/\s组织数:.*\d+/, ` 组织数:${this.echartsData.organization.data.length} 总人数:${this.countNum(this.echartsData.organization.data)}`);
+            if (/合计:.*\d+/.test(this.echartsData.organization.title)) {
+              this.echartsData.organization.title = this.echartsData.organization.title.replace(/合计:.*\d+/, `合计:${this.countNum(this.echartsData.organization.data)}`);
             } else {
-              this.echartsData.organization.title = this.echartsData.organization.title + ` 组织数:${this.echartsData.organization.data.length} 总人数:${this.countNum(this.echartsData.organization.data)}`;
+              this.echartsData.organization.title = this.echartsData.organization.title + ` 合计:${this.countNum(this.echartsData.organization.data)}`;
             }
             arr.forEach(ele => {
               ele.value = 0;
@@ -362,10 +349,10 @@
             arr = this.removeRepeat(arr, 'name');
             this.echartsData.organization_active.data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
             // this.echartsData.organization_active.title = this.echartsData.organization_active.title + (/\s合计:.*\d+/.test(this.echartsData.organization_active.title) ? this.echartsData.organization_active.title.replace(/\s合计:.*\d+/, '') : ` 合计:${this.countNum(this.echartsData.organization_active.data)}`);
-            if (/\s组织数:.*\d+/.test(this.echartsData.organization_active.title)) {
-              this.echartsData.organization_active.title = this.echartsData.organization_active.title.replace(/\s组织数:.*\d+/, ` 组织数:${this.echartsData.organization_active.data.length} 总次数:${this.countNum(this.echartsData.organization_active.data)}`);
+            if (/合计:.*\d+/.test(this.echartsData.organization_active.title)) {
+              this.echartsData.organization_active.title = this.echartsData.organization_active.title.replace(/合计:.*\d+/, `合计:${this.countNum(this.echartsData.organization_active.data)}`);
             } else {
-              this.echartsData.organization_active.title = this.echartsData.organization_active.title + ` 组织数:${this.echartsData.organization_active.data.length} 总次数:${this.countNum(this.echartsData.organization_active.data)}`;
+              this.echartsData.organization_active.title = this.echartsData.organization_active.title + ` 合计:${this.countNum(this.echartsData.organization_active.data)}`;
             }
 
             // setTimeout(() => {

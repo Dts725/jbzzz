@@ -190,7 +190,7 @@
 //        {name: "联系人", key: 'organization_contact_name', width: '110'},
 //        {name: "联系电话", key: 'organization_contact_phone', width: 'auto'},
           {name: "成立日期", key: 'organization_date', width: '200', format: 'yyyy - MM - dd'},
-          {name: "党员人数", key: 'sum', width: '120', canClick: true, class: 'hover'},
+          {name: "党员人数", key: 'sum', width: '90', canClick: true, class: 'hover'},
           {
             name: "目前的状态",
             key: 'organization_status',

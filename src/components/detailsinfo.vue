@@ -3,7 +3,7 @@
     <!-- 弹窗start -->
     <!-- 弹出框 -->
 
-    <el-dialog :title="dialogTitle" :visible.sync="showDialog" center top="15vh" :modal='true' :append-to-body='true' class='donghua' >
+    <el-dialog :title="dialogTitle" :visible.sync="showDialog" center top="15vh" :modal='true' :append-to-body='true' class='donghua'>
       <el-form :model="addForm" ref="addForm" label-width="100px" class="demo-ruleForm disabled">
         <!--<el-form :model="addForm" :rules="rules" ref="addForm" label-width="100px" class="demo-ruleForm">-->
         <!--<el-row :gutter="20">-->
@@ -136,9 +136,9 @@
         <!--</el-form-item>-->
 
         <!-- <el-form-item class="align-right">
-            <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
-            <el-button @click="resetAddForm('addForm')">取消</el-button>
-          </el-form-item> -->
+              <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
+              <el-button @click="resetAddForm('addForm')">取消</el-button>
+            </el-form-item> -->
       </el-form>
     </el-dialog>
 
@@ -147,36 +147,46 @@
 </template>
 
 <script>
-//	import 'element-ui/lib/theme-chalk/base.css';
-export default {
-  props: {
-    dialogTitle: {
-      type: String,
-      default: "组织部"
+  //	import 'element-ui/lib/theme-chalk/base.css';
+  export default {
+    props: {
+      dialogTitle: {
+        type: String,
+        default: "组织部"
+      },
+      showDialog: {
+        type: Boolean,
+        default: false
+      },
+      addForm: {
+        type: Object,
+        default: {}
+      }
     },
-    showDialog: {
-      type: Boolean,
-      default: false
+    name: "detailsInfo",
+    data() {
+      return {};
     },
-    addForm: {
-      type: Object,
-      default: {}
-    }
-  },
-  name: "detailsInfo",
-  data() {
-    return {};
-  },
 
-};
+    mounted() {
+       
+    },
+
+    methods: {
+
+
+    }
+
+
+
+  };
 </script>
 
 <style scoped>
-.disabled {
-  pointer-events: none;
-  cursor: default;
-  opacity: 0.8;
-}
-
+  .disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.8;
+  }
 </style>
 

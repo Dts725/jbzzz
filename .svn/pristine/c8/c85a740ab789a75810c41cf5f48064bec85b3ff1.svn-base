@@ -218,7 +218,7 @@
           user_organization_name: '',
         }],
         multipleSelection: [],
-      	children:[],
+      	
       	
 				list2:[],
 				list3:[],
@@ -410,7 +410,6 @@
           organization_id:'',
           organization_name:''
         }],
-        child1:[],
         // 社区列表
         communityList: [],
         test: {
@@ -541,12 +540,7 @@
 					let username = JSON.parse(this.storage.getStorage('uinfo')).username;
           //console.log(user_organization_id)
           this.url = username == 'admin' ? '/transfer' : `/transfer?organization_id=${community_id}`;
-         http.get(`/organization?organization_id=${community_id}`).then(res => {
-					if (res.code == 0) {
-						this.children=res.data.data[0].child;
-						} 
-//						console.log(this.children)
-        });
+          
           
           
           http.get('/organization?all=1').then(res => {
@@ -563,7 +557,8 @@
             this.topBar1[0].options = arr;
           }
         });
-           
+          
+          
           
     		},
     	loadAll() {
@@ -611,10 +606,7 @@
         this.isShowzb = 1;
         this.transfer_type=1;
         this.initForm();
-        let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
-        let username=JSON.parse(this.storage.getStorage('uinfo')).username;
-        if(username=='admin'){
-        	 http.get("/organization").then(res => {
+        http.get("/organization").then(res => {
           if (res.code == 0) {
             let arr = [];
             res.data.data.forEach((element,index) => {
@@ -626,33 +618,7 @@
             this.organizationList = arr;
           }
         });
-        }else{
-        	if(this.children.length>0){
-        		 	http.get(`/organization?organization_id=${community_id}`).then(res => {
-							 if (res.code == 0) {
-							 this.child1=res.data.data[0].child;
-							 let arr = [];
-	             this.child1.forEach((element,index) => {
-	              arr[index]=({
-	                organization_id:element.id,
-	                organization_name:element.organization_name
-	              })
-	            });
-	            this.organizationList = arr;
-		          }
-	//						console.log(this.organizationList)  
-	        });
-       }else{
-		       	  Message({
-		              message: `您没有权限变更`,
-		              duration: 1500
-		            });
-	//	          return false;  
-					this.showDialog=false;
-		      }
-       
-        }
-       
+
       },
       newRole1(e, d) {
         this.showDialog = true;
@@ -662,20 +628,6 @@
         this.isShow = 1;
         this.transfer_type= 2;
         this.initForm();
-//      let username=JSON.parse(this.storage.getStorage('uinfo')).username;
-//      if(username=='admin'){
-//				this.showDialog = true;
-//      }else{
-//      	if(this.children.length>0){
-//      		this.showDialog = true;
-//     		}else{
-//		       	  Message({
-//		              message: `您没有权限修改`,
-//		              duration: 1500
-//		           });
-//					  this.showDialog=false;
-//		      }
-//      }
       },
 //    _searchCon(e) {
 //      this.getData(`${this.URL}/user?user_name=${e}`, "", "get", res => {

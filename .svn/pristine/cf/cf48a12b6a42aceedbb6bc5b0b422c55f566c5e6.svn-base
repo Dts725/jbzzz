@@ -84,7 +84,6 @@
         }
       },
       handleLogin() {
-//    	debugger
         let _this = this, dat = {};
         this.$refs.loginForm.validate(valid => {
           if (valid) {
@@ -107,9 +106,8 @@
                   type: res.data.type,
                   id:res.data.organization_id,
                   name:res.data.organization_name,
-                  pid:res.data.pid
                 };
-//              debugger
+                //debugger
                 console.log(dat.id)
                 //console.log(res.data.organization_id)
                 this.storage.setStorage('uinfo', JSON.stringify(dat));

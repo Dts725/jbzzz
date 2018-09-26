@@ -30,12 +30,11 @@
         <!-- <li v-for="(el ,index) in data.child" :key="index" class="pr flex" style="max-width:50%;" @click="detailsInfo(el.id,index)"> -->
         <li class="pr flex" >
           <div class="attend-line-center-scoped pa"></div>
-          <!-- <div class="x-line"></div> -->
           <p class="attend-oval-party-scoped attend-oval-color">{{partyDataFood.organization_name}}</p>
 
           <!-- <div v-if ="1 === flag" class="active-party " > -->
           <div class="active-party ">
-            <framework :props-data="partyDataFood" :show-party="false" :frame-work-flag="true"></framework>
+            <framework :props-data="partyDataFood" :show-party="false"></framework>
           </div>
         </li>
 
@@ -45,7 +44,7 @@
 
           <!-- <div v-if ="2 === flag" class="active-party " > -->
           <div class="active-party">
-            <framework :props-data="partyDataShop" :show-party="false" :frame-work-flag="true"></framework>
+            <framework :props-data="partyDataShop" :show-party="false"></framework>
           </div>
         </li>
 
@@ -76,7 +75,6 @@
 
     data() {
       return {
-
         data: null,
         partyData: null,
         flag: false,
@@ -159,7 +157,7 @@
     // width: 50%;
     background-color: #d40e19;
      padding: 0.6rem 4rem;
-    margin-top: 2.5rem;
+    margin-top: 3rem;
     position: absolute;
     top: 0;
     left: 50%;
@@ -190,12 +188,4 @@
   .active-party {
     margin-top: 120px;
   }
-
-.z-x-line{
-  width: 4px;
-  height: 100%;
-  left: 50%;
-  transform: translate(-50%, 9%);
-  z-index: 0;
-}
 </style>

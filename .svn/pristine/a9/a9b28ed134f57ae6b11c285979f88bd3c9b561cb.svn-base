@@ -5,8 +5,7 @@ const nav = {
       id: 0,
       organization_name: '进博一线党组织'
     },
-    donghua: '',
-    daochu:''
+    donghua: ''
   },
 
   mutations: {

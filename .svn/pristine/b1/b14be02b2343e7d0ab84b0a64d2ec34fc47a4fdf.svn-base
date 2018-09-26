@@ -106,16 +106,14 @@ export default {
 
         //获取唯一架构
 
-        tmp.map((x,index) => {
+        tmp.map(x => {
           switch (x.organization_name) {
             case "进口博览局临时党委":
               this.$store.commit("FRAM_TWO", x.id);
               break;
-            // case "市商务委推进办临时党总支":
-            //   tmp.splice(index,1);
-            //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
-            //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
-            // part.unshift(x.id);
+            case "市商务委推进办临时党总支":
+              this.$store.commit("FRAN_THREE_ROUTER", x.id);
+            part.unshift(x.id);
 
               break;
             case "餐饮服务保障组临时党支部":
@@ -179,22 +177,19 @@ export default {
       this.str = arr[index];
       this.$store.commit("donghua", this.str);
 
-      //			debugger
+//			debugger
 //			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
 //    this.$store.commit("BREAD_SID_ID", id);
 //    let zhuanhuan=Object(JSON.parse(this.storage.getStorage('uinfo')).id);
 			let zhuanhuan=JSON.parse(this.storage.getStorage('uinfo')).id;
 			let username=JSON.parse(this.storage.getStorage('uinfo')).username;
-			let pid=JSON.parse(this.storage.getStorage('uinfo')).pid;
-			if(pid>0){
-				zhuanhuan=pid;
+			if(zhuanhuan==122||zhuanhuan==116){
+				zhuanhuan=124
 			}
-//			if(zhuanhuan==122||zhuanhuan==116){
-//				zhuanhuan=124
-//			}
 			if(username=='admin'){
-      this.$store.commit("BREAD_SID_ID", id);
-      if (flag === this.$store.state.part.framworkerthreeRouter) {
+				
+				 this.$store.commit("BREAD_SID_ID", id);
+      	if (flag === this.$store.state.part.framworkerthreeRouter) {
         this.$router.push({
           path: "/framework/framework/frameworkThree"
         });
@@ -215,15 +210,16 @@ export default {
         this.$router.push("/framework/framework/frameworkTwo");
       } else {
         this.$router.push("/framework/framework/frameworkFirst");
-    }
+      }
       }else{
-      	 Message({
-		              message: `您没有权限查看`,
-		              duration: 1500
-		           });
-  }
+      	Message({
+              message: `您没有权限查看`,
+              type: 'error',
+              duration: 1500
+            });
+      }
 			}
-
+      
 //    if (flag === this.$store.state.part.framworkerthreeRouter) {
 //      this.$router.push({
 //        path: "/framework/framework/frameworkThree"
@@ -244,12 +240,13 @@ export default {
 }
 
 .div-warp {
+  margin-top: 80px;
   height: 76px;
   padding: 10px 15px;
   background-color: #d40e19;
   width: 160px;
   border-radius: 10px;
-  margin-top: 40px;
+  margin-top: 80px;
   cursor: pointer;
 }
 
@@ -280,7 +277,7 @@ export default {
 
 .heng-line {
   border-top: 4px solid #d40e19;
-  width: 180%;
+  width: 120%;
 }
 
 .heng-line-left {
@@ -337,7 +334,7 @@ export default {
   background-color: #d40e19;
   width: 160px;
   border-radius: 10px;
-  margin: 50px 30px 0 0px;
+  margin: 100px 30px 0 0px;
   // margin-top: 100px;
   // margin-right: 30px;
   cursor: pointer;
@@ -353,7 +350,7 @@ export default {
 }
 
 .child-div-two {
-  top: -40px;
+  top: -90px;
   left: 50%;
   transform: translateX(-50%);
   width: 4px;
@@ -364,7 +361,7 @@ export default {
 .child-line {
   height: 30px;
   width: 4px;
-  margin: 0px auto -40px;
+  margin: 40px auto -40px;
   // background-color: orange;
 }
 
@@ -373,7 +370,7 @@ export default {
 }
 
 .child-ul > li:nth-last-of-type(1) {
-  margin: 50px 0 0 0px;
+  margin: 100px 0 0 0px;
 }
 
 

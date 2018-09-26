@@ -48,11 +48,8 @@ window.onresize = function() {
     clientWidth = document.documentElement.clientWidth;
   }
 
-   let dh=document.getElementById("frameworkSelf").style.height =
+  document.getElementById("frameworkSelf").style.height =
     clientHeight - 164 + "px";
-
-      console.log(dh);
-  console.log(2222222222);
 };
 
 // document.getElementById("fullScreen").addEventListener(
@@ -213,7 +210,6 @@ export default {
   text-align: center;
   background: url("../../../static/framework_bg.jpg") no-repeat;
   background-size: 100% 100%;
-  // z-index: ;
   p {
     width: 500px;
     position: absolute;

@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
   	<a href="https://file.shyunhua.com/jbhfile/上传统一格式.xlsx" class="moban">模板导入下载</a>
-  	<a :href="'http://jbh.shyunhua.com/user_export?examine_status=1&organization_id='+this.topBar2[2].selected[0]+'.html'" class="daochu">批量导出</a>
-  	<!--<el-button type="primary" size="small" class="qingchu" @click='qingchu()'>清除</el-button>-->
+  	<!--<a href="http://jbh.shyunhua.com/user_export?examine_status=1&organization_id=44" class="moban">批量导出</a>-->
+  	<el-button type="primary" size="small" class="qingchu" @click='qingchu()'>清除</el-button>
     <list :url="URL+url" :update="update" :topBar="topBar" :topBar2="topBar2" :canSelect="canSelect" :indexBar="indexBar"
           :thead="thead"
           :actionBar="actionBar"></list>
@@ -654,7 +654,6 @@
       	keys:[],
       	i:0,
       	arr1:[],
-      	daochu:133,
       	organizationList1:[],
         /** *************** 引用的表格的  start *************** **/
         listLoading: true,
@@ -853,7 +852,6 @@
 //            {id: 3, value: '已删除'},
             ]
           },
-					{name: '清除', fun: this.qingchu, type: 'primary'},
 
         ],
         // 表格头- 是否可选
@@ -1106,15 +1104,12 @@
       }
 
     },
-    updated() {
-
-    },
     created() {
       this.init();
-
     },
     activated() {
       this.init();
+
     },
 		computed:{
 			data(){
@@ -1139,9 +1134,6 @@
 				this.data2 = arr;
 				return this.data2;
 			},
-//			daochu1(){
-//				return this.daochu2=this.topBar2[2].selected[0];
-//			},
 			newUserInfo: {
         get: function () {
           this.examine.user_id = this.addForm.id;
@@ -1152,9 +1144,8 @@
           this.examine.user_temp_in_date = this.addForm.user_temp_in_date;
           this.examine.user_temp_out_date = this.addForm.user_temp_out_date;
         }
+     }
 
-    },
-//		console.log(this.topBar2[2].selected)
 		},
 //		computed: {
 //    newUserInfo: {
@@ -1171,22 +1162,18 @@
 //  },
     methods:{
     	qingchu(){
-//  		 console.log(this.$store.state.nav.daochu[0])
-//		 console.log(this.topBar2[2].selected[0])
     		this.topBar2[0].selected = [];
     		this.topBar2[1].selected = [];
     		this.topBar2[2].selected = [];
         this.topBar2[3].selected = [];
         this.topBar2[4].selected = [];
         window.location.reload();
-        this.topBar2[2].selected
     	},
     	formatRole:function(row,column){
 				//debugger;
     		return row.user_job == 1 ? '书记' : (row.user_job ==2 ? '副书记' : (row.user_job ==3 ? '委员' :'党员'));
     	},
       init() {
-     
       	//this.reload(),
         // 党组织列表
         http.get('/organization?all=1&organization_status=1').then(res => {
@@ -1214,7 +1201,7 @@
 		        this.topBar2[4].selected = [];
 //          this.topBar[4].selected = [];
 //          this.topBar[6].selected = [];
-//						console.log(this.topBar2[2].selected)
+
 						if(JSON.parse(this.storage.getStorage('uinfo')).username!='admin'){
 //								this.topBar[5].hidden=true;
 									this.topBar2[2].hidden=true;
@@ -1314,7 +1301,6 @@
       importData(res) {
 //    	debugger;
       // console.log('kkkkk')
-      
         if(res.code == 0) {
         	Message({
               message: `导入成功`
@@ -1528,7 +1514,6 @@
       },
       /** 编辑账号 **/
       edit(e, d) {
-
       http.get('/active?user_id='+d.id).then(res => {
 				if (res.code == 0) {
 						let str=res.data.data;
@@ -1613,7 +1598,6 @@
                    duration: 1500
                  });
                  this.update++;
-
                }
              });
         })
@@ -1717,7 +1701,6 @@
                 this.showDialog = false;
                 this.initForm();
                 this.update++;
-
               }
             });
           }
@@ -1793,8 +1776,6 @@
 
                 this.initForm();
                 this.update++;
-
-
               }
             });
          }
@@ -2023,14 +2004,6 @@
 	position: absolute;
 	/*right: 30px;*/
 	right: 20px;
-}
-.daochu{
-	font-size: 14px;
-	color: red;
-	/*background: white;*/
-	position: absolute;
-	/*right: 30px;*/
-	right: 120px;
 }
 .qingchu {
   position: absolute;

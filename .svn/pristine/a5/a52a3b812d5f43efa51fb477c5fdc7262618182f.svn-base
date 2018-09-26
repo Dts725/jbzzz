@@ -1106,12 +1106,9 @@
       }
 
     },
-    updated() {
-
-    },
     created() {
       this.init();
-
+      
     },
     activated() {
       this.init();
@@ -1152,7 +1149,7 @@
           this.examine.user_temp_in_date = this.addForm.user_temp_in_date;
           this.examine.user_temp_out_date = this.addForm.user_temp_out_date;
         }
-
+        
     },
 //		console.log(this.topBar2[2].selected)
 		},
@@ -1528,7 +1525,7 @@
       },
       /** 编辑账号 **/
       edit(e, d) {
-
+      	
       http.get('/active?user_id='+d.id).then(res => {
 				if (res.code == 0) {
 						let str=res.data.data;
@@ -1613,7 +1610,6 @@
                    duration: 1500
                  });
                  this.update++;
-
                }
              });
         })
@@ -1717,7 +1713,6 @@
                 this.showDialog = false;
                 this.initForm();
                 this.update++;
-
               }
             });
           }
@@ -1793,8 +1788,6 @@
 
                 this.initForm();
                 this.update++;
-
-
               }
             });
          }

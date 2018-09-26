@@ -20,7 +20,7 @@
 
     </div>
 	    <div v-show="showDialog">
-	      <info :dialog-title="dialogTitle" :show-dialog="showDialog" :add-form="addForm" :frame-work-flag="frameWorkFlag"></info>
+	      <info :dialog-title="dialogTitle" :show-dialog="showDialog" :add-form="addForm"></info>
 	    </div>
   </div>
 </template>
@@ -47,7 +47,6 @@
         data : null,
         dialogTitle: "详细信息",
         showDialog: false,
-        frameWorkFlag : true,
 
         // 新增弹出表单
         addForm: {

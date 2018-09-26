@@ -424,7 +424,6 @@
       },
       /** 获取列表数据 **/
       _getList(url) {
-//    	debugger
         let _this = this;
         this.listLoading = true;
         axios({
@@ -636,8 +635,7 @@
       // EventCascadeChange(arr) {
       //   this._getList(`${this.url}${/\?/.test(this.url) ? '&' : '?'}${this.cascaderKey}=${arr[arr.length - 1]}`);
       // },
-      EventCascadeChange(arr, key) { 
-      	this.$store.commit("daochu",arr);
+      EventCascadeChange(arr, key) {
         this.cascader[key] = arr[arr.length - 1];
         let url = '';
         // this._getList(`${this.url}${/\?/.test(this.url) ? '&' : '?'}${this.cascaderKey}=${arr[arr.length - 1]}`);
@@ -647,7 +645,6 @@
         this._getList(`${this.url}?` + url);
       },
       EventCascadeChange2(arr, key) {
-//  	debugger
         this.cascader2[key] = arr[arr.length - 1];
         let url = '';
         // this._getList(`${this.url}${/\?/.test(this.url) ? '&' : '?'}${this.cascaderKey}=${arr[arr.length - 1]}`);
@@ -655,7 +652,6 @@
           url += `&${i}=${this.cascader2[i]}`;
         }
         this._getList(`${this.url}?` + url);
-       this.$emit('cascadeChange',{data:url});
       },
 
     }

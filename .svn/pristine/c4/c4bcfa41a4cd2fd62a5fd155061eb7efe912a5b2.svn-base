@@ -1,9 +1,8 @@
 <template>
   <div class="app-container">
   	<a href="https://file.shyunhua.com/jbhfile/上传统一格式.xlsx" class="moban">模板导入下载</a>
-  	<a :href="'http://jbh.shyunhua.com/user_export?examine_status=1&organization_id='+this.topBar2[2].selected[0]+'.html'" class="daochu">批量导出</a>
-  	<!--<el-button type="primary" size="small" class="qingchu" @click='qingchu()'>清除</el-button>-->
-    <list :url="URL+url" :update="update" :topBar="topBar" :topBar2="topBar2" :canSelect="canSelect" :indexBar="indexBar"
+  	<el-button type="primary" class="qingchu" @click='qingchu()'>清除</el-button>
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
           :thead="thead"
           :actionBar="actionBar"></list>
       <!-- <div id="fileExport">
@@ -137,7 +136,7 @@
 							      :key="item.id"
 							      :label="item.user_temp_team"
 							      :value="item.id">
-
+							      
 							    </el-option>
 						    </el-select>
             </el-form-item>
@@ -155,9 +154,8 @@
                            :value="String(com.id)">
                 </el-option>-->
               <!--</el-select>-->
-              <el-tree :check-strictly='true' :data="data" show-checkbox=""  :default-expand-all="true" node-key="id" ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick" :default-checked-keys='keys' v-if='username1=="admin"'>
+              <el-tree :check-strictly='true' :data="data" show-checkbox=""  :default-expand-all="true" node-key="id" ref="treeForm" highlight-current :props="defaultProps" @check-change="handleClick" :default-checked-keys='keys'>
 							</el-tree>
-							<el-input size="medium" v-model="name" :disabled='true' v-if='username1!="admin"'></el-input>
 							<!--<el-input size="medium" v-model="addForm.user_organization_id" :disabled='true' v-if="dialogType=='edit'"></el-input>-->
             </el-form-item>
           </el-col>
@@ -193,7 +191,7 @@
               <!--<span>{{huodong}}</span>-->
               <el-input v-model="huodong" :disabled='true'></el-input>
             </el-form-item>
-
+            
           </el-col>
         </el-row>
         <!--<el-form-item label="设置社区" prop="communitySelect" v-if="username=='admin'">-->
@@ -654,7 +652,6 @@
       	keys:[],
       	i:0,
       	arr1:[],
-      	daochu:133,
       	organizationList1:[],
         /** *************** 引用的表格的  start *************** **/
         listLoading: true,
@@ -675,7 +672,16 @@
             showList: false,
             fun: this.importData
           },
-//
+//        {
+//          name: '模板导入下载',
+//          type: 'danger',
+//          isUpLoad: true,
+//          url: 'https://file.shyunhua.com/jbhfile/上传统一格式.xlsx',
+//          maxSize: '',
+//          limit: 100,
+//          showList: false,
+//          //fun: this.importData
+//        },
           {name: '搜索', key: 'user_name', searchTipCon: '请输入名字', class: '',options:[]},
 //        {
 //          name: '保障组别筛选',
@@ -711,86 +717,7 @@
 //          }
 //          ]
 //        },
-//					{
-//          name: '保障组别筛选',
-//          key: 'user_temp_team',
-//          plugType: 'cascader',
-//          //dataUrl: this.URL + '/user',
-//          searchTipCon: '保障组别筛选',
-//          selected: [],
-//          class: '',
-////          options:this.fffff,
-//						options:[]
-//        },
-//
-//        {
-//          name: '党内职务筛选',
-////          width:'100',
-//          key: 'user_job',
-//          plugType: 'cascader',
-//          searchTipCon: '党内职务筛选',
-//          selected: [],
-//          class: '',
-//          options: [
-//            {id: 1, value: '书记'},
-//            {id: 2, value: '副书记'},
-//            {id: 3, value: '委员'},
-//            {id: 4, value: '党员'},
-//            // {value: 1, label: '书记'},
-//            // {value: 2, label: '副书记'},
-//            // {value: 3, label: '委员'},
-//            // {value: 4, label: '党员'},
-//          ]
-//        },
-//        {
-//          name: '党组织筛选',
-//          key: 'organization_id',
-//          plugType: 'cascader',
-//          //dataUrl: this.URL + '/user',
-//          searchTipCon: '党组织筛选',
-//          selected: [],
-//          class: '',
-////          options:this.fffff,
-//						options:[]
-//        },
-////           {
-////             name: '党组织筛选',
-////             key: 'organization_id',
-////             plugType: 'cascader',
-////             dataUrl: this.URL + '/organization',
-////             searchTipCon: '党组织筛选',
-////             class: ''
-////           },
-//        {
-//          name: '状态筛选',
-//          key: 'user_status',
-//          plugType: 'cascader',
-//          searchTipCon: '状态筛选',
-//          selected: [],
-//          class: '',
-//          options: [
-//            {id: 1, value: '在岗'},
-//            {id: 2, value: '已离岗'},
-////            {id: 3, value: '已删除'},
-//          ]
-//        },
-//        {
-//          name: '评价筛选',
-//          key: 'examine_status',
-//          plugType: 'cascader',
-//          searchTipCon: '评价筛选',
-//          selected: [],
-//          class: '',
-//          options: [
-//            {id: 0, value: '未评价'},
-//            {id: 1, value: '已评价'},
-////            {id: 3, value: '已删除'},
-//          ]
-//        },
-//
-      ],
-      topBar2: [
-          {
+					{
             name: '保障组别筛选',
             key: 'user_temp_team',
             plugType: 'cascader',
@@ -799,11 +726,11 @@
             selected: [],
             class: '',
 //          options:this.fffff,
-            options: []
+						options:[]
           },
+					
           {
             name: '党内职务筛选',
-//          width:'100',
             key: 'user_job',
             plugType: 'cascader',
             searchTipCon: '党内职务筛选',
@@ -814,6 +741,10 @@
               {id: 2, value: '副书记'},
               {id: 3, value: '委员'},
               {id: 4, value: '党员'},
+              // {value: 1, label: '书记'},
+              // {value: 2, label: '副书记'},
+              // {value: 3, label: '委员'},
+              // {value: 4, label: '党员'},
             ]
           },
           {
@@ -825,8 +756,16 @@
             selected: [],
             class: '',
 //          options:this.fffff,
-            options: []
+						options:[]
           },
+//           {
+//             name: '党组织筛选',
+//             key: 'organization_id',
+//             plugType: 'cascader',
+//             dataUrl: this.URL + '/organization',
+//             searchTipCon: '党组织筛选',
+//             class: ''
+//           },
           {
             name: '状态筛选',
             key: 'user_status',
@@ -853,8 +792,7 @@
 //            {id: 3, value: '已删除'},
             ]
           },
-					{name: '清除', fun: this.qingchu, type: 'primary'},
-
+          
         ],
         // 表格头- 是否可选
         canSelect: false,
@@ -937,7 +875,7 @@
           user_job: '',  // varchar(50) DEFAULT NULL COMMENT '党内职务',
 
           user_origin_organization_name: '',  // varchar(11) DEFAULT NULL '原党组织id',
-//        user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+          user_organization_id: '',  // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
 					organization_name:'',
           // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
           user_status: '',  // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
@@ -1045,21 +983,21 @@
         organizationList: [],
         // 社区列表
         communityList: [],
-	     examine: {
-	      // CREATE TABLE `examine` (
-	      id: '', // int(11) NOT NULL AUTO_INCREMENT COMMENT '考评id',
-	      user_id: '', // int(11) DEFAULT NULL COMMENT '用户id',
-	      examine_summarize: '', // text COMMENT '个人小结',
-	      examine_assess: '', // text COMMENT '评价',
-	      examine_key: '', // text COMMENT '关键事件',
-	      examine_date: '', // varchar(20) DEFAULT NULL COMMENT '考评日期',
-	      //     PRIMARY KEY (`id`)
-	      // ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='考评表';
-	      user_organization_id: '', // 现在临时党组织id
-				organization_name:'',
-	      user_temp_in_date: '',
-	      user_temp_out_date: '',
-	    },
+         examine: {
+          // CREATE TABLE `examine` (
+          id: '', // int(11) NOT NULL AUTO_INCREMENT COMMENT '考评id',
+          user_id: '', // int(11) DEFAULT NULL COMMENT '用户id',
+          examine_summarize: '', // text COMMENT '个人小结',
+          examine_assess: '', // text COMMENT '评价',
+          examine_key: '', // text COMMENT '关键事件',
+          examine_date: '', // varchar(20) DEFAULT NULL COMMENT '考评日期',
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='考评表';
+//        user_organization_id: '', // 现在临时党组织id
+					organization_name:'',
+          user_temp_in_date: '',
+          user_temp_out_date: '',
+        },
         /** *************** 弹窗的  end *************** **/
         url: '/user',
         url1:'/examine',
@@ -1093,8 +1031,6 @@
           author: '',
           event: '',
           showIcon: false,
-          name:'',
-          username1:'',
           // }
 
         },
@@ -1106,15 +1042,12 @@
       }
 
     },
-    updated() {
-
-    },
     created() {
       this.init();
-
     },
     activated() {
       this.init();
+
     },
 		computed:{
 			data(){
@@ -1139,9 +1072,6 @@
 				this.data2 = arr;
 				return this.data2;
 			},
-//			daochu1(){
-//				return this.daochu2=this.topBar2[2].selected[0];
-//			},
 			newUserInfo: {
         get: function () {
           this.examine.user_id = this.addForm.id;
@@ -1152,9 +1082,8 @@
           this.examine.user_temp_in_date = this.addForm.user_temp_in_date;
           this.examine.user_temp_out_date = this.addForm.user_temp_out_date;
         }
+     }
 
-    },
-//		console.log(this.topBar2[2].selected)
 		},
 //		computed: {
 //    newUserInfo: {
@@ -1170,23 +1099,19 @@
 //    }
 //  },
     methods:{
-    	qingchu(){
-//  		 console.log(this.$store.state.nav.daochu[0])
-//		 console.log(this.topBar2[2].selected[0])
-    		this.topBar2[0].selected = [];
-    		this.topBar2[1].selected = [];
-    		this.topBar2[2].selected = [];
-        this.topBar2[3].selected = [];
-        this.topBar2[4].selected = [];
+    	qingchu(){ 
+    		this.topBar[3].selected = [];
+    		this.topBar[4].selected = [];
+    		this.topBar[5].selected = [];
+        this.topBar[6].selected = [];
+        this.topBar[7].selected = [];
         window.location.reload();
-        this.topBar2[2].selected
     	},
     	formatRole:function(row,column){
 				//debugger;
     		return row.user_job == 1 ? '书记' : (row.user_job ==2 ? '副书记' : (row.user_job ==3 ? '委员' :'党员'));
     	},
       init() {
-     
       	//this.reload(),
         // 党组织列表
         http.get('/organization?all=1&organization_status=1').then(res => {
@@ -1200,24 +1125,14 @@
 									value:this.organizationList[i].organization_name,
 								});
 					}
-//          this.topBar[5].options = arr;
-//          this.topBar[5].selected = [];
-//
-//          this.topBar[4].selected = [];
-//          this.topBar[6].selected = [];
-						this.topBar2[2].options = arr;
-            this.topBar2[2].selected = [];
-            this.topBar2[0].selected = [];
-		    		this.topBar2[1].selected = [];
-		    		this.topBar2[2].selected = [];
-		        this.topBar2[3].selected = [];
-		        this.topBar2[4].selected = [];
-//          this.topBar[4].selected = [];
-//          this.topBar[6].selected = [];
-//						console.log(this.topBar2[2].selected)
+            this.topBar[5].options = arr;
+            this.topBar[5].selected = [];
+            
+            this.topBar[4].selected = [];
+            this.topBar[6].selected = [];
+            
 						if(JSON.parse(this.storage.getStorage('uinfo')).username!='admin'){
-//								this.topBar[5].hidden=true;
-									this.topBar2[2].hidden=true;
+								this.topBar[5].hidden=true;
 		    };
 //          debugger;
 //          this.shaixuan = arr;
@@ -1245,12 +1160,12 @@
 									value:this.organizationList1[i].user_temp_team,
 								});
 					}
-            this.topBar2[0].options = this.arr1;
+            this.topBar[3].options = this.arr1;
           }
 //        console.log(this.arr1)
         });
 
-
+				
 
 
 
@@ -1281,12 +1196,8 @@
           //console.log(account?type=1&organization_id=${this.community_id})
           let username = JSON.parse(this.storage.getStorage('uinfo')).username;
           let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
-//        debugger
-          this.name=JSON.parse(this.storage.getStorage('uinfo')).name;
-          this.username1 = JSON.parse(this.storage.getStorage('uinfo')).username;
           //console.log(user_organization_id)
           this.url = username == 'admin' ? '/user' : `/user?organization_id=${community_id}`;
-//        console.log(this.username1)
       },
       mouseenter(obj) {
         obj.showIcon = true;
@@ -1312,9 +1223,8 @@
         },
       /** 导入数据 **/
       importData(res) {
-//    	debugger;
+      	//debugger;
       // console.log('kkkkk')
-      
         if(res.code == 0) {
         	Message({
               message: `导入成功`
@@ -1342,9 +1252,7 @@
 				this.addForm.user_organization_id=JSON.parse(this.storage.getStorage('uinfo')).id;
 		    };
       },
-
        pingjia(e, d) {
-//	debugger
         this.searchCon = '';
         this.EventTempInfo.history=[];
 				//debugger;
@@ -1358,45 +1266,39 @@
 				}else if(d.examine_status==1){
 					this.dialogType1='edit'
 					this.EventTempInfo.status='edit'
-//					console.log(this.examine.id)
-					url2=`${this.URL}/examine/${d.examine_id}?user_id=${d.id}`
+					url2=`${this.URL}/examine/${d.id}?user_id=${d.id}`
 				};
         this.getData(url2,'','get', res => {
           if (res.code == 0) {
           	//debugger;
-
+          	this.addForm.user_id = res.data.id;
             // 日期转换为时间戳
             this.addForm = JSON.parse(JSON.stringify(res.data));
-//            debugger
+            //debugger
             this.detailData = res.data;
             this.detailData.user_job= 1 ? this.detailData.user_job='书记' :(this.detailData.user_job ==2 ? this.detailData.user_job='副书记' : (this.detailData.user_job ==3 ?this.detailData.user_job= '委员':'党员'));
-
+            
 //          this.addForm.active_type== 1 ? this.addForm.active_type='三会一课' : (this.addForm.active_type ==2 ? this.addForm.active_type='主题党日' : (this.addForm.active_type ==3 ?this.addForm.active_type= '关怀帮扶':
-
-
+            
+            
 //          this.showDetailDialog = true;
             this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm); //格式化时间
             //this.addForm.user_organization_id = String(this.addForm.organization_id);
             this.addForm.organization_name = String(this.addForm.organization_name)
-
-//	          this.addForm.id = res.data.id; //修正form的id
-//	    			this.addForm.user_id = res.data.user_id; //修正form的id
-//	    			this.addForm.user_id = res.data.id;
-        			this.addForm.id = d.id;
+            this.addForm.id = res.data.id; //修正form的id
+      			this.addForm.user_id = res.data.user_id; //修正form的id
 //						this.addForm.user_id=String(res.data.user_id);
             this.showDialog1 = true;
             this.dialogTitle = '评价信息';
             //this.dialogType = 'edit';
-            this.examine.id=res.data.id;
             this.addForm.user_temp_team=Number(this.addForm.user_temp_team)
             if(d.examine_status==1){
-            	this.EventTempInfo.history = Array.isArray(res.data.examine_key)?res.data.examine_key:JSON.parse(res.data.examine_key);
+            	this.EventTempInfo.history = JSON.parse(res.data.examine_key);
 	            this.examine.examine_summarize = res.data.examine_summarize;
 	            this.examine.examine_assess = res.data.examine_assess;
-	            this.examine.user_organization_id = JSON.stringify(res.data.organization_id);
-//	            this.addForm.id = res.data.user_id;
+	            this.addForm.id = res.data.user_id;
             }else{
-//          	this.examine;
+            	this.examine();
 //          	Message({
 //            message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
 //            // type: 'error',
@@ -1404,7 +1306,7 @@
 //          });
             }
 
-//          this.examine.id = res.data.id;
+            this.examine.id = res.data.id;
             if(res.data.examine_key==false){
             	this.EventTempInfo.history=[]
             }
@@ -1443,10 +1345,7 @@
 //            });
 //            return false;
 //          }
-
             _this.sendData(url, this.examine, sendType, res => {
-
-
               if (res.code == 0) {
                 Message({
                   message: type == 'new' ? '新增成功！！！' : '修改成功！！！',
@@ -1528,7 +1427,6 @@
       },
       /** 编辑账号 **/
       edit(e, d) {
-
       http.get('/active?user_id='+d.id).then(res => {
 				if (res.code == 0) {
 						let str=res.data.data;
@@ -1545,10 +1443,10 @@
             });
 				}
         });
-
+      	
 //				debugger;
 //    	console.log(d)
-
+			
     	this.keys=[]
 			//	let _this=this;
 			//console.log('hhhh')
@@ -1613,7 +1511,6 @@
                    duration: 1500
                  });
                  this.update++;
-
                }
              });
         })
@@ -1690,7 +1587,7 @@
          // this.addForm.user_organization_id==[]
 //    		console.log(this.addForm.user_organization_id);
 //    		console.log(Number(_this.$refs.treeForm.getCheckedKeys()));
-
+					
          // this.addForm.user_organization_id = Number(_this.$refs.treeForm.getCheckedKeys());
           	//console.log(Number(_this.$refs.treeForm.getCheckedKeys()));
             if (type == 'new') {
@@ -1704,7 +1601,6 @@
             // 日期转换为时间戳
             this.addForm = this.dateFontsFiter(this.dateFonts, this.addForm);
             delete this.addForm.user_temp_team_name;
-            delete this.addForm.examine_id;
 						console.log(this.addForm)
 //						debugger
             _this.sendData(url, this.addForm, sendType, res => {
@@ -1717,7 +1613,6 @@
                 this.showDialog = false;
                 this.initForm();
                 this.update++;
-
               }
             });
           }
@@ -1737,22 +1632,19 @@
       },
       ///////////////确定保存///////////////////////
        submitAddForm1(formName, type) {
-
 //     	console.log(type)
-        let aa = this.newUserInfo,obj={};
+        let aa = this.newUserInfo;
         let _this = this, sendType = 'get', url = this.url1;
         // // 需要转换为时间戳的日期字段
         // arr = ['user_birth', 'user_in_date', 'user_become_date'];
 
         this.$refs[formName].validate((valid) => {
-//    	debugger
-        let ids = JSON.parse(JSON.stringify(this.examine.id));
-
+        	//debugger
+          let ids = JSON.parse(JSON.stringify(this.examine.id));
           if (valid) {
             if (type == 'new') {
               sendType = 'post';
             }else if (type == 'edit') {
-//          	let ids =JSON.parse(JSON.stringify(this.examine.id));
               sendType = 'put';
               url = url + '/' + ids;
             }
@@ -1765,36 +1657,22 @@
 //            });
 //            return false;
 //          }
-//						console.log(this.addForm.id)
-						_this.examine.user_id=this.addForm.id;
-						_this.examine.user_organization_id = this.addForm.user_organization_id;
-//						this.examine.user_organization_id=this.addForm.organization_id；
-						obj = JSON.parse(JSON.stringify(_this.examine));
-						obj.examine_key = JSON.parse(obj.examine_key).length==0?'':JSON.parse(obj.examine_key);
-						console.log(_this.examine)
-//						obj.user_organization_id = '1111111'
-//          debugger
-//          debugger
-//      		delete this.examine.organization_name;
-						delete obj.organization_name;
-
-
-//						debugger
-            _this.sendData(url, obj, sendType, res => {
+//						_this.examine.examine_key = JSON.parse(_this.examine.examine_key);
+            if(_this.examine.examine_key.length==0){
+            	_this.examine.examine_key='';
+            }
+          //  debugger
+          delete this.examine.organization_name;
+            _this.sendData(url, this.examine, sendType, res => {
               if (res.code == 0) {
-//            	 debugger
                 Message({
                   message: type == 'new' ? '新增成功！！！' : '修改成功！！！',
                   type: 'success',
                   duration: 1500
                 });
                 this.showDialog1 = false;
-//				debugger
-
                 this.initForm();
                 this.update++;
-
-
               }
             });
          }
@@ -2024,20 +1902,12 @@
 	/*right: 30px;*/
 	right: 20px;
 }
-.daochu{
-	font-size: 14px;
-	color: red;
-	/*background: white;*/
+.qingchu{
 	position: absolute;
-	/*right: 30px;*/
-	right: 120px;
-}
-.qingchu {
-  position: absolute;
-  /*right:650px;*/
-  right: 9%;
-  top: 230px;
-  height: 34px;
+	/*right:650px;*/
+	right:22%;
+	top: 193px;
+	height: 34px;
 }
 </style>
 

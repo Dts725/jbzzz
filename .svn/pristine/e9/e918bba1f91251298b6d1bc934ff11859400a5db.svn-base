@@ -33,7 +33,7 @@
 <script>
 import framework from "./attendComment";
 import http from "@/api/http";
-import {Message, MessageBox} from 'element-ui'
+
 // import router from '../../../router/'
 
 // window.onresize = function() {
@@ -111,11 +111,11 @@ export default {
             case "进口博览局临时党委":
               this.$store.commit("FRAM_TWO", x.id);
               break;
-            // case "市商务委推进办临时党总支":
-            //   tmp.splice(index,1);
-            //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
-            //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
-            // part.unshift(x.id);
+            case "市商务委推进办临时党总支":
+              tmp.splice(index,1);
+              tmp.splice(Math.floor(tmp.length/2 -1),0,x);
+              this.$store.commit("FRAN_THREE_ROUTER", x.id);
+            part.unshift(x.id);
 
               break;
             case "餐饮服务保障组临时党支部":
@@ -150,7 +150,6 @@ export default {
         data.map(x => {
           tmp.map((el, index) => {
             if (el.id === x) {
-//            console.log("进来了");
               tmp.splice(index, 1);
             }
           });
@@ -162,7 +161,6 @@ export default {
 
     //点击跳转路由
     router(id, flag) {
-//  	debugger
       let arr = [
         "animated zoomIn",
         "animated fadeIn",
@@ -180,19 +178,6 @@ export default {
       this.$store.commit("donghua", this.str);
 
       //			debugger
-//			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
-//    this.$store.commit("BREAD_SID_ID", id);
-//    let zhuanhuan=Object(JSON.parse(this.storage.getStorage('uinfo')).id);
-			let zhuanhuan=JSON.parse(this.storage.getStorage('uinfo')).id;
-			let username=JSON.parse(this.storage.getStorage('uinfo')).username;
-			let pid=JSON.parse(this.storage.getStorage('uinfo')).pid;
-			if(pid>0){
-				zhuanhuan=pid;
-			}
-//			if(zhuanhuan==122||zhuanhuan==116){
-//				zhuanhuan=124
-//			}
-			if(username=='admin'){
       this.$store.commit("BREAD_SID_ID", id);
       if (flag === this.$store.state.part.framworkerthreeRouter) {
         this.$router.push({
@@ -203,36 +188,6 @@ export default {
       } else {
         this.$router.push("/framework/framework/frameworkFirst");
       }
-			}else{
-//				debugger
-				if(flag==zhuanhuan){
-      	this.$store.commit("BREAD_SID_ID", id);
-      	if (flag === this.$store.state.part.framworkerthreeRouter) {
-        this.$router.push({
-          path: "/framework/framework/frameworkThree"
-        });
-      } else if (flag == this.$store.state.part.framworkerTwo) {
-        this.$router.push("/framework/framework/frameworkTwo");
-      } else {
-        this.$router.push("/framework/framework/frameworkFirst");
-    }
-      }else{
-      	 Message({
-		              message: `您没有权限查看`,
-		              duration: 1500
-		           });
-  }
-			}
-
-//    if (flag === this.$store.state.part.framworkerthreeRouter) {
-//      this.$router.push({
-//        path: "/framework/framework/frameworkThree"
-//      });
-//    } else if (flag == this.$store.state.part.framworkerTwo) {
-//      this.$router.push("/framework/framework/frameworkTwo");
-//    } else {
-//      this.$router.push("/framework/framework/frameworkFirst");
-//    }
     }
   }
 };

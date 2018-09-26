@@ -370,7 +370,7 @@ div {
   width: 4px;
   height: 135%;
   left: 50%;
-  transform: translate(-50%, -20%);
+  transform: translate(-50%, -19%);
   z-index: auto;
 }
 
