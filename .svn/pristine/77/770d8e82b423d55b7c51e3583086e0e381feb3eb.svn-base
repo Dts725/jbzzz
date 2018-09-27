@@ -258,11 +258,8 @@ export default {
 //      }
 //    }
 
-            if (flag === this.$store.state.part.framworkerthreeRouter || flag === this.$store.state.part.framworkerthree[0] || flag === this.$store.state.part.framworkerthree[1]) {
-              // debugger
-
-              console.log('9999999999999999')
-            this.$router.push({
+            if (flag === this.$store.state.part.framworkerthreeRouter) {
+              this.$router.push({
                 path: "/framework/framework/frameworkThree"
               });
             } else if (flag == this.$store.state.part.framworkerTwo) {

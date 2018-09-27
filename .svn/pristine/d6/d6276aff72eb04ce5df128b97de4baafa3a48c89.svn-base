@@ -699,7 +699,7 @@
       dataCall (data,list) {
 
            let datas = Array.from(new Set(data))
-                // console.log(datas)
+                console.log(datas)
 
 
                list.map((x,index) => {
@@ -719,8 +719,8 @@
       handleCheckedCitiesChangeAttend(value) {
         // console.log(this.checkedCities)
         console.log(value)
-        // console.log(this.cities)
-        // console.log('出席')
+        console.log(this.cities)
+        console.log('出席')
 
         // this.dataCall (this.active_attend_userID_select,this.initInfo);
         // this.addForm.active_attend_name = this.checkedCities;
@@ -744,7 +744,7 @@
       },
       handleCheckedCitiesChangeAbsence(value) {
 
-        // console.log(value)
+        console.log(value)
 
         // this.dataCall (this.active_absence_userID_select,this.cities);
 
@@ -831,15 +831,15 @@
       },
       /** 编辑 **/
       edit(e, d) {
-        // this.checkedCitiesReserve =null;
-        //  this.checkedCities=null;
+        this.checkedCitiesReserve =[];
+         this.checkedCities=[];
         this.showDialog = true;
         this.dialogTitle = "编辑党组织活动";
         this.dialogType = "edit";
         http.http("active/" + d.id, "", "get").then(res => {
           if (res.code == 0) {
-            // this.checkedCitiesReserve = res.data.active_absence_name.split(',');
-            // this.checkedCities = res.data.active_attend_name.split(',');
+            this.checkedCitiesReserve = res.data.active_absence_name.split(',')
+            this.checkedCities = res.data.active_attend_name.split(',')
             this.addForm = res.data;
             this.imgList = res.data.photo;
           }
@@ -896,8 +896,8 @@
           sendType = "get",
           url = "active";
 
-        this.addForm.active_attend = this.arrDiff(this.active_attend_userID_select, this.active_attend_userID, this.addForm.active_attend = [],this.cities).join(",");
-        this.addForm.active_absence = this.arrDiff(this.active_absence_userID_select, this.active_absence_userID, this.addForm.active_absence = [],this.activeAbsenceList).join(",");
+        this.addForm.active_attend = this.arrDiff(this.active_attend_userID_select, this.active_attend_userID, this.addForm.active_attend = []).join(",");
+        this.addForm.active_absence = this.arrDiff(this.active_absence_userID_select, this.active_absence_userID, this.addForm.active_absence = []).join(",");
       //  console.log("11111111111111111111")
 
         this.addForm.active_attend_name = undefined;
@@ -929,13 +929,10 @@
                 this.showDialog = false;
                 this.initForm();
                 this.update++;
-        //  this.addForm.active_attend  = null;
-
               }
             });
           }
         });
-
       },
       // 发送数据
       sendData(url, data, type, call) {
@@ -1086,7 +1083,6 @@
       attend() {
         this.activeAbsenceFlag = false;
         this.attendNum = !this.attendNum;
-
         if (this.cities.length) return;
 
 
@@ -1101,9 +1097,7 @@
               this.cities.push(el.user_name);
               this.active_attend_userID.push(el.id);
 
-
             });
-
           }
         });
 
@@ -1118,7 +1112,9 @@
         // debugger
       },
 
-
+      open () {
+        console.lo
+      },
 
       //缺席人数
       activeAbsence() {
@@ -1155,35 +1151,12 @@
       },
 
       //数组去重
-      /**
-       *arrSelect 选中数组
-       *arrUserId 选中用户ID
-       *attendUserId 编辑进来用户选中ID,
-       *city 选中城市处理列表
-       */
-      arrDiff(arrSelect, arrUserId, attendUserId,city) {
-        let selectList = []; // 选中ID
-        let result = [];//最终结果
-        if(attendUserId.length) {
+      arrDiff(arrSelect, arrUserId, attendUserId) {
+        let selectList = [];
+        let result = [];
 
-            //添加编辑的选中数组
-          for ( let i =0;i<attendUserId.length;i++) {
-            for ( let j =0;j<city.length;j++) {
-              if(attendUserId[i] === city[j].id) {
-                selectList.push(j)
-              }
-            }
-          }
-        }
-        selectList = Array.from(new Set(arrSelect.concat(selectList)));
+        selectList = Array.from(new Set(arrSelect));
 
-            arrUserId = Array.from(new Set( arrUserId.concat(attendUserId)));
-
-            console.log(arrSelect)
-            console.log(selectList)
-
-            console.log(selectList)
-            console.log('0000000000000')
         arrUserId.forEach((el, index) => {
           for (let i = 0; i < selectList.length; i++) {
             if (index === selectList[i]) {
@@ -1192,7 +1165,7 @@
 
           }
         })
-        return Array.from(new Set(result));
+        return Array.from(new Set(result, ...attendUserId));
       }
     },
   };

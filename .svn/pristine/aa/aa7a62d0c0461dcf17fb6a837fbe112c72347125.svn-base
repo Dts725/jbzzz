@@ -1,5 +1,5 @@
 <template>
-
+	
   <div >
     <!-- 弹窗start -->
     <!-- 弹出框 -->
@@ -165,12 +165,12 @@
       }
     },
     name: "detailsInfo",
-    // data() {
-    //   return {
-    //   	shuju22:true,
-    //   	name:''
-    //   };
-    // },
+    data() {
+      return {
+      	shuju22:true,
+      	name:''
+      };
+    },
 //		created(){
 //			console.log(this.addForm)
 //		},
@@ -192,7 +192,7 @@
 //			})
 //			debugger
     },
-
+    
 //		updated(){
 ////			this.name=this.addForm.organization_name;
 ////			console.log(this.addForm)
