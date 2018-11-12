@@ -1,0 +1,213 @@
+<template>
+  <div class=" contian">
+
+    <div class="pr">
+      <div class="pa attend-oval-bg attend-line "></div>
+      <ul class="flex-clounm-between padd20 pr" >
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{data.organization_part}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">{{data.organization_name}}</p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">党总支书记:<span v-for="(el,index) in data.organization_secretary" :key="index" @click= getUser(el)>{{index  !==  (data.organization_secretary.length-1) ? el.user_name + ',' : el.user_name }}</span></p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">副书记:<span v-for="(el,index) in data.organization_deputy_secretary" :key="index" @click= getUser(el)>{{index  !==  (data.organization_deputy_secretary.length-1) ? el.user_name + ',' : el.user_name }}</span></p>
+        </li>
+        <li>
+          <p class="attend-oval-color   attend-oval attend-oval-bg attend-oval-margin attend-oval-pad1">委员:<span v-for="(el,index) in data.organization_commissioner" :key="index" @click= getUser(el)>{{index  !==  (data.organization_commissioner.length-1) ? el.user_name + ',' : el.user_name }}</span></p>
+        </li>
+
+      </ul>
+
+    </div>
+    <div class="mg-top30 pr">
+      <div class="party-scoped pa "></div>
+      <ul class="flex-space-nowarp party padd20  overflow-auto" style="height :100%;">
+
+        <!-- <li v-for="(el ,index) in data.child" :key="index" class="pr flex" style="max-width:50%;" @click="detailsInfo(el.id,index)"> -->
+        <li class="pr flex" >
+          <div class="attend-line-center-scoped pa"></div>
+          <!-- <div class="x-line"></div> -->
+          <p class="attend-oval-party-scoped attend-oval-color">{{partyDataFood.organization_name}}</p>
+
+          <!-- <div v-if ="1 === flag" class="active-party " > -->
+          <div class="active-party ">
+            <framework :props-data="partyDataFood" :show-party="false" :frame-work-flag="true"></framework>
+          </div>
+        </li>
+
+        <li class="pr flex" >
+          <div class="attend-line-center-scoped pa"></div>
+          <p class="attend-oval-party-scoped attend-oval-color">{{partyDataShop.organization_name}}</p>
+
+          <!-- <div v-if ="2 === flag" class="active-party " > -->
+          <div class="active-party">
+            <framework :props-data="partyDataShop" :show-party="false" :frame-work-flag="true"></framework>
+          </div>
+        </li>
+
+      </ul>
+
+
+    </div>
+
+  </div>
+</template>
+
+<script>
+  import framework from "./attendComment";
+  import http from "@/api/http";
+  export default {
+    name: "frameworkThree",
+    components: {
+      framework
+    },
+    created() {
+   			this.list = this.$store.state.part.framworkerthree;
+      console.log(this.list)
+      this.init();
+      this.list.unshift(this.$store.state.nav.id.id)
+      this.detailsInfo(this.list[0]);
+      this.detailsInfo(this.list[1]);
+      this.detailsInfo(this.list[2]);
+    },
+
+    data() {
+      return {
+
+        data: null,
+        partyData: null,
+        flag: false,
+        partyDataFood : null, //餐饮部
+        partyDataShop : null, //商委部
+        list : [78,75], // 80 总支 ,75 餐饮 78 商务
+        csnyin : '',
+        shangwu : ''
+
+      };
+    },
+//  deactivated() {
+//    this.showDialog = false
+//
+//  },
+//  beforeDestroy() {
+//    this.showDialog = false
+//
+//  },
+//  updated(){
+//  	 this.showDialog = false
+//  },
+    methods: {
+      init() {
+        http.get("/organization/" + this.$store.state.nav.id.id).then(res => {
+          this.data = res.data;
+        });
+      },
+
+      //二级党员组织
+      detailsInfo(el) {
+
+        http.get("/organization/" + el).then(res => {
+          switch (el) {
+            case this.list[0]:
+              this.partyData = res.data;
+              break;
+            case this.list[1]:
+              this.partyDataFood = res.data;
+
+              break;
+            case this.list[2]:
+            this.partyDataShop = res.data;
+              break;
+
+
+            default:
+              break;
+          }
+
+        });
+      },
+
+      // 商务委推进办临时党支部
+      getUser (item) {
+        this.showDialog = true;
+        this.dialogTitle = item.user_name;
+        http.get('/user/' + item.id).then(res =>{
+          this.addForm= res.data;
+        })
+      }
+    }
+  };
+</script>
+
+<style lang="scss" scoped>
+  .padd20 {
+    z-index: 1;
+    padding: 0 20px 20px;
+  }
+
+  .party>li:nth-last-of-type(1)>div:nth-of-type(1){
+      width: 0;
+    // margin-left: -0.5rem;
+  }
+
+  // .party>li:nth-last-of-type(1)>p {
+  //  margin-right: 3rem;
+  // }
+  .party li {
+    width: 50%;
+  }
+
+  .mg-top30 {
+    margin-top: 12px;
+  }
+
+  .attend-oval-party-scoped {
+    border-radius: 100px;
+    // margin-left: -1.rem;
+    // width: 50%;
+    background-color: #d40e19;
+     padding: 0.6rem 4rem;
+    margin-top: 2.5rem;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+  }
+
+  .attend-line-center-scoped {
+    width: 100%;
+    height: 2.5rem;
+    // margin-left: 1rem;
+    top: 0px;
+    left: 50%;
+    border-left: 4px solid #d40e19;
+    border-top: 4px solid #d40e19;
+    transform: translate(-1px);
+    z-index: 101;
+  }
+
+  .party-scoped {
+    width: 100%;
+    height: 4px;
+    padding: 0 26% 0 26%;
+    background-clip: content-box;
+    background-color: #d40e19;
+  }
+
+  .active-party {
+    margin-top: 120px;
+  }
+
+.z-x-line{
+  width: 4px;
+  height: 100%;
+  left: 50%;
+  transform: translate(-50%, 9%);
+  z-index: 0;
+}
+</style>

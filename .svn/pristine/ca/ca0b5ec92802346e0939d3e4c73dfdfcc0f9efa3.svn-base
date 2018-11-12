@@ -1,0 +1,551 @@
+<template>
+  <div class="count-con">
+    <div class="charts">
+      <!--<div class="charts-con" v-for="(et,idx) in echartsData" :key="et.id">-->
+      <!--<echarts-show :echartsData="et"></echarts-show>-->
+      <!--</div>-->
+
+      <div class="charts-row">
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['organization']"></echarts-show>
+          <div class="charts-table">
+            <!--<ul>-->
+            <!--<li v-for="li in echartsData['organization'].data" :key="li.value">{{li.name}}-&#45;&#45;{{li.value}}</li>-->
+            <!--</ul>-->
+            <!--<el-table :data="echartsData['organization'].data.reverse()" border fit highlight-current-row>-->
+            <!--<el-table-column align="center" label='编号' width="55">-->
+            <!--<template slot-scope="scope">-->
+            <!--{{scope.$index+1}}-->
+            <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column label="党组织名称" align="center">-->
+            <!--<template slot-scope="scope">-->
+            <!--{{scope.row.name}}-->
+            <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column label="人数" width="auto" align="center">-->
+            <!--<template slot-scope="scope">-->
+            <!--{{scope.row.value}}-->
+            <!--</template>-->
+            <!--</el-table-column>-->
+            <!--</el-table>-->
+          </div>
+        </div>
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['organization_active']"></echarts-show>
+          <!--<div class="charts-table">-->
+          <!--<el-table :data="echartsData['organization_active'].data.reverse()" border fit highlight-current-row>-->
+          <!--<el-table-column align="center" label='编号' width="55">-->
+          <!--<template slot-scope="scope">-->
+          <!--{{scope.$index+1}}-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column label="党组织活动名称" align="center">-->
+          <!--<template slot-scope="scope">-->
+          <!--{{scope.row.name}}-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+          <!--<el-table-column label="次数" width="auto" align="center">-->
+          <!--<template slot-scope="scope">-->
+          <!--{{scope.row.value}}-->
+          <!--</template>-->
+          <!--</el-table-column>-->
+          <!--</el-table>-->
+          <!--</div>-->
+        </div>
+      </div>
+      <el-button type="primary" size="small" @click="showMore=!showMore" style="float:right;">
+        {{showMore?'隐藏更多 ▼':'显示更多 ▶'}}
+      </el-button>
+
+      <div class="charts-row" v-if="showMore">
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_sex']"></echarts-show>
+        </div>
+        
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_education']"></echarts-show>
+        </div>
+      </div>
+      <div class="charts-row" v-if="showMore">
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_temp_team']"></echarts-show>
+        </div>
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_dispatched_unit']"></echarts-show>
+        </div>
+      </div>
+      <!--<div class="charts-row" v-if="showMore">
+        <div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_status']"></echarts-show>
+        </div>
+        
+        <!--<div class="charts-con">
+          <echarts-show :echartsData="echartsData['user_education']"></echarts-show>
+        </div>
+      </div>-->
+
+
+    </div>
+  </div>
+</template>
+
+<script>
+  import http from '@/api/http';
+  import EchartsShow from '@/components/EchartsShow';
+  import {Message, MessageBox} from 'element-ui';
+  import Vue from 'vue';
+
+  export default {
+    components: {
+      EchartsShow
+    },
+    data() {
+      return {
+        showMore: false,
+        user_temp_team_list: [],
+        echartsData: {
+          // 男女
+          user_sex: {
+            /** 圆环图1 **/
+            id: 1,
+            title: '男女分布情况', // 标题
+            type: 'PieDoughnut',
+            tipsName: '人数', // 提示的标题
+            data: [
+              // {name: '男', value: 55},
+              // {name: '女', value: 28},
+            ]
+          },
+           // 解散
+//        user_status: {
+//          id: 7,
+//          title: '在岗离岗分布情况', // 标题
+//          type: 'PieDoughnut',
+//          tipsName: '人数', // 提示的标题
+//          data: [
+//            // {name: '男', value: 55},
+//            // {name: '女', value: 28},
+//            // {name: '联盟广告', value: 234},
+//            // {name: '视频广告', value: 135},
+//            // {name: '搜索引擎', value: 1548}
+//          ]
+//        },
+          // 学历
+          user_education: {
+            /** 圆环图2 **/
+            id: 2,
+            title: '学历分布情况', // 标题
+            type: 'PieDoughnut',
+            tipsName: '学历', // 提示的标题
+            data: [
+              // {name: '博士', value: 4},
+              // {name: '硕士', value: 32},
+              // {name: '专科', value: 4},
+              // {name: '本科', value: 38},
+              // {name: '中专', value: 1},
+              // {name: '高中', value: 3},
+              // {name: '空白', value: 22},
+            ]
+          },
+          // 保障组
+          user_temp_team: {
+            /** 柱状图1 **/
+            id: 3,
+            // title: '保障组情况（单位：人）', // 标题
+            title: '保障组情况 ', // 标题
+            type: 'Bar',
+            direction: 'row', // 轴向： row横向显示，col 纵向显示
+            tipsName: '人数', // 提示的标题
+            data: [
+              // {name: '外宾接待组', value: 1},
+              // {name: '贸易便利化组', value: 2},
+              // {name: '旅行保障组', value: 3},
+              // {name: '食品安全保障组', value: 3},
+              // {name: '餐饮服务保障组', value: 4},
+              // {name: '医疗卫生保障组', value: 4},
+              // {name: '综合秘书组', value: 4},
+              // {name: '统筹协调组', value: 4},
+              // {name: '志愿者服务保障组', value: 8},
+              // {name: '城保障协调组', value: 21},
+              // {name: '工程项目组', value: 21},
+              // {name: '进口博览局', value: 30},
+            ]
+          },
+          // 派出单位
+          user_dispatched_unit: {
+            /** 柱状图2 **/
+            id: 4,
+            // title: '派出单位情况（单位：人）', // 标题
+            title: '派出单位情况 ', // 标题
+            type: 'Bar',
+            direction: 'row', // 轴向： row横向显示，col 纵向显示
+            tipsName: '人数', // 提示的标题
+            data: [
+              // {name: '市商务委', value: 13},
+              // {name: '市重大办', value: 1},
+              // {name: '市质量技监局', value: 1},
+              // {name: '外办', value: 1},
+              // {name: '团市委', value: 1},
+              // {name: '青年团上海市委员会', value: 1},
+              // {name: '进口博览局', value: 1},
+            ]
+          },
+          //
+          organization: {
+            /** 柱状图3 **/
+            id: 5,
+            direction: 'row', // 轴向： row横向显示，col 纵向显示
+            // title: '党组织情况（单位：人）', // 标题
+            title: '党组织情况 ', // 标题
+            type: 'Bar',
+            tipsName: '人数', // 提示的标题
+            data: [
+              // {name: '市商务委', value: 13},
+              // {name: '市重大办', value: 1},
+              // {name: '市质量技监局', value: 1},
+              // {name: '外办', value: 1},
+              // {name: '团市委', value: 1},
+              // {name: '青年团上海市委员会', value: 1},
+              // {name: '进口博览局', value: 1},
+            ]
+          },
+          // 党组织活动情况
+          organization_active: {
+            /** 柱状图4 **/
+            id: 6,
+            // title: '党组织活动情况（单位：次）', // 标题
+            title: '党组织活动情况 ', // 标题
+            type: 'Bar',
+            direction: 'row', // 轴向： row横向显示，col 纵向显示
+            tipsName: '次数', // 提示的标题
+            data: [
+              // {name: '市商务委', value: 13},
+              // {name: '市重大办', value: 1},
+              // {name: '市质量技监局', value: 1},
+              // {name: '外办', value: 1},
+              // {name: '团市委', value: 1},
+              // {name: '青年团上海市委员会', value: 1},
+              // {name: '进口博览局', value: 1},
+            ]
+          },
+
+        },
+        url: '',
+
+
+        // /** 柱状图案例 **/
+        // title: '柱状图案例', // 标题
+        // type: 'Bar',
+        // tipsName: '人数', // 提示的标题
+        // data: [
+        //   {name: '直接访问', value: 335},
+        //   {name: '邮件营销', value: 310},
+        //   {name: '联盟广告', value: 234},
+        //   {name: '视频广告', value: 135},
+        //   {name: '搜索引擎', value: 805}
+        // ]
+        /** 饼状图案例 **/
+        // title: '饼状图案例', // 标题
+        // type: 'Pie',
+        // tipsName: '人数', // 提示的标题
+        // data: [
+        //   {name: '直接访问', value: 335},
+        //   {name: '邮件营销', value: 310},
+        //   {name: '联盟广告', value: 234},
+        //   {name: '视频广告', value: 135},
+        //   {name: '搜索引擎', value: 805}
+        // ]
+
+        /******************* 关键事件记录  start *******************/
+
+        /******************* 关键事件记录  end *******************/
+        datas: [],
+        organizationList: [],
+      }
+    },
+    created() {
+      // this.init();
+//    debugger
+      // 保障组
+      http.get('/user_temp_team').then(res => {
+        if (res.code == 0) {
+          // 保障组
+          this.user_temp_team_list = res.data;
+        }
+      });
+    },
+    activated() {
+      // 保障组
+      http.get('/user_temp_team').then(res => {
+        if (res.code == 0) {
+          // 保障组
+          this.user_temp_team_list = res.data;
+        }
+      });
+      this.init();
+    },
+    computed: {},
+    methods: {
+      init() {
+        // let w = '', h = '';
+        // this.$el.querySelectorAll('.charts-con').forEach(el => {
+        //   // debugger;
+        //   if (el.clientWidth) {
+        //     w = el.clientWidth;
+        //     h = el.clientHeight;
+        //   } else {
+        //     el.style.width = w + 'px';
+        //     el.style.height = h + 'px';
+        //   }
+        // });
+
+        // 男女、学历、派出单位、保障组
+        http.get('/user_tongji').then(res => {
+//      	debugger
+          if (res.code == 0) {
+            this.datas = res.data;
+            for (let i in res.data) {
+              let arr = [];
+              // this.echartsData[i].data = res.data[i];
+              for (let j of res.data[i]) {
+                if (j[i]) {
+                  arr.push({
+                    name: j[i],
+                    value: j[i + '_number']
+                  });
+                }
+              }
+              // this.echartsData[i].data = JSON.parse(JSON.stringify(arr));
+              /** 保障组名字重置 **/
+              if (i == 'user_temp_team') {
+                // arr = this.filterName(arr, '进口博览局');
+                arr.forEach(ele => {
+                  ele.name = this.filterName(ele.name, this.user_temp_team_list);
+                });
+              }
+              // 去重
+              arr = this.removeRepeat(arr, 'name');
+              // 排序
+              this.echartsData[i].data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
+              if (i == 'user_temp_team') {
+                if (/\s保障组数:.*\d+/.test(this.echartsData[i].title)) {
+                  this.echartsData[i].title = this.echartsData[i].title.replace(/\s保障组数:.*\d+/, ` 保障组数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`);
+                } else {
+                  this.echartsData[i].title = this.echartsData[i].title + ` 保障组数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`;
+                }
+              }
+              if (i == 'user_dispatched_unit') {
+                if (/\s单位数:.*\d+/.test(this.echartsData[i].title)) {
+                  this.echartsData[i].title = this.echartsData[i].title.replace(/\s单位数:.*\d+/, ` 单位数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`);
+                } else {
+                  this.echartsData[i].title = this.echartsData[i].title + ` 单位数:${this.echartsData[i].data.length} 总人数:${this.countNum(this.echartsData[i].data)}`;
+                }
+              }
+            }
+            /** 保障组名字重置 **/
+            // this.filterName(this.echartsData.user_temp_team.data, '进口博览局');
+          }
+        });
+        // 党组织列表
+        http.get('/organization?all=1').then(res => {
+          if (res.code == 0) {
+            // 保障组名字重置
+            let arr = this.filterData(res.data.data);
+            // 去重
+            arr = this.removeRepeat(arr, 'name');
+            this.echartsData.organization.data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
+            if (/\s组织数:.*\d+/.test(this.echartsData.organization.title)) {
+              this.echartsData.organization.title = this.echartsData.organization.title.replace(/\s组织数:.*\d+/, ` 组织数:${this.echartsData.organization.data.length} 总人数:${this.countNum(this.echartsData.organization.data)}`);
+            } else {
+              this.echartsData.organization.title = this.echartsData.organization.title + ` 组织数:${this.echartsData.organization.data.length} 总人数:${this.countNum(this.echartsData.organization.data)}`;
+            }
+            arr.forEach(ele => {
+              ele.value = 0;
+            });
+            this.organizationList = arr;
+            this.getActiveList();
+          }
+        });
+				
+      },
+      // 党组织 - 活动列表
+      getActiveList() {
+        http.get('/active').then(res => {
+          if (res.code == 0) {
+            let _this = this;
+            let organizationList = JSON.parse(JSON.stringify(this.organizationList));
+            // organizationList.forEach(ele => {
+            //   ele.value = 0;
+            // });
+            // /** 保障组名字重置 **/
+            let arr = this.filterDataActive(res.data.data, organizationList);
+            // 去重
+            arr = this.removeRepeat(arr, 'name');
+            this.echartsData.organization_active.data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
+            // this.echartsData.organization_active.title = this.echartsData.organization_active.title + (/\s合计:.*\d+/.test(this.echartsData.organization_active.title) ? this.echartsData.organization_active.title.replace(/\s合计:.*\d+/, '') : ` 合计:${this.countNum(this.echartsData.organization_active.data)}`);
+            if (/\s组织数:.*\d+/.test(this.echartsData.organization_active.title)) {
+              this.echartsData.organization_active.title = this.echartsData.organization_active.title.replace(/\s组织数:.*\d+/, ` 组织数:${this.echartsData.organization_active.data.length} 总次数:${this.countNum(this.echartsData.organization_active.data)}`);
+            } else {
+              this.echartsData.organization_active.title = this.echartsData.organization_active.title + ` 组织数:${this.echartsData.organization_active.data.length} 总次数:${this.countNum(this.echartsData.organization_active.data)}`;
+            }
+
+            // setTimeout(() => {
+            //   /** 保障组名字重置 **/
+            //   let arr = _this.filterDataActive(res.data.data, organizationList);
+            //   _this.echartsData.organization_active.data = JSON.parse(JSON.stringify(arr.sort(_this.sortObj('value', 'down'))));
+            // }, 1000);
+            //   debugger;
+          }
+        });
+        
+      },
+			
+			
+			
+			
+			
+      /** 党组织 **/
+      filterData(data) {
+        let arr = [];
+        data.forEach(ele => {
+          if (ele.child && ele.child.length > 0) {
+            ele.child.forEach(el => {
+              if (el.organization_name == '上海市公安局驻国家会展中心前方安保临时党支部') {
+                el.organization_name = '前方安保临时党支部';
+              }
+              arr.push({
+                name: el.organization_name,
+                value: el.sum
+              });
+            });
+          } else {
+            if (ele.organization_name == '上海市公安局驻国家会展中心前方安保临时党支部') {
+              ele.organization_name = '前方安保临时党支部';
+            }
+            arr.push({
+              name: ele.organization_name,
+              value: ele.sum
+            });
+          }
+        });
+        return arr;
+      },
+      /** 党组--活动 **/
+      filterDataActive(data, tar) {
+        let arr = JSON.parse(JSON.stringify(tar));
+        data.forEach(ele => {
+          arr.forEach(el => {
+            if (ele.organization_name == el.name) {
+              // arr.push({
+              //   name: ele.organization_name,
+              //   value: el.name + 1
+              // });
+              if (el.name == '上海市公安局驻国家会展中心前方安保临时党支部') {
+                el.name = '前方安保临时党支部';
+              }
+              el.value += 1;
+            }
+
+          });
+        });
+        return arr;
+      },
+
+      /** 合计 **/
+      countNum(arr) {
+        let num = 0;
+        arr.forEach(ele => {
+          num += ele.value;
+        });
+        return num;
+      },
+
+      /** 保障组名字重置 **/
+      filterName(id, arr) {
+        let ar = JSON.parse(JSON.stringify(arr)), tmp = '';
+        ar.forEach((ele, idx) => {
+          if (ele.id == id) {
+            tmp = ele.user_temp_team;
+          }
+        });
+        return tmp;
+      },
+      // filterName(arr, name) {
+      //   let ar = JSON.parse(JSON.stringify(arr)), tmp = [], obj = {name: '进口博览局', value: 0};
+      //   ar.forEach((ele, idx) => {
+      //     // if (ele.name.indexOf(name) > -1) {
+      //     //   obj.value += ele.value;
+      //     // } else {
+      //     //   tmp.push(ele);
+      //     // }
+      //     debugger;
+      //     tmp.push({
+      //       name:'',
+      //       value:''
+      //     });
+      //   });
+      //   // tmp.push(obj);
+      //   return tmp;
+      // },
+
+      /** 数组对象排序
+       * prop: 数组对象的key， type：up升序 down降序
+       * 使用方法：arr.sort(sortObj('key'[,'down']))
+       * **/
+      sortObj(prop, type = 'up') {
+        return function (obj1, obj2) {
+          var val1 = obj1[prop];
+          var val2 = obj2[prop];
+          if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+            val1 = Number(val1);
+            val2 = Number(val2);
+          }
+          if (val1 < val2) {
+            return type == 'up' ? -1 : 1;
+          } else if (val1 > val2) {
+            return type == 'up' ? 1 : -1;
+          } else {
+            return 0;
+          }
+        }
+      },
+
+      /** 数组对象去重 **/
+      removeRepeat(arr, key) {
+        //  方法1：利用对象访问属性的方法，判断对象中是否存在key
+        var result = [];
+        var obj = {};
+        for (var i = 0; i < arr.length; i++) {
+          if (!obj[arr[i][key]]) {
+            result.push(arr[i]);
+            obj[arr[i][key]] = true;
+          }
+        }
+        // debugger;
+        return result;
+      },
+    }
+  }
+</script>
+<style lang="scss" scoped>
+  /** 总体设置 **/
+  .count-con, .charts {
+    width: 100%;
+    height: 100%;
+  }
+
+  .charts {
+    box-sizing: border-box;
+    height: 90%;
+    width: 98%;
+  }
+
+  .charts-row {
+    box-sizing: border-box;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+</style>

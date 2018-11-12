@@ -4,7 +4,7 @@
     <div class="body-party pr">
       <div class="attend-line-scoped pa"></div>
       <ul class="flex-space-nowarp party  padd20 overflow-auto">
-        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click.stop="router(el,el.id)">
+        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click="router(el,el.id)">
           <div class="flex-center line-scoped-top ">
             <div class="heng-line pa" :class="{'heng-line-left': (index === 0) ,'heng-line-right' : (index === data.length-1) }"></div>
             <div class="attend-line-center-scoped pa"></div>
@@ -17,7 +17,8 @@
             <div class="child-line attend-oval-bg"></div>
             <div class="child-div attend-oval-bg"></div>
             <ul class="flex-between child-ul">
-              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color" @click.stop="router(item,item.id)">
+              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color" >
+
                 <div class="child-div-two pa attend-oval-bg"></div>
                 <span class="child-span">{{item.organization_name}}</span>
               </li>
@@ -96,7 +97,7 @@ export default {
         id: 0,
         organization_name: "进博一线党组织"
       });
-      http.get("/organization?organization_status=1").then(res => {
+      http.get("/organization?organization_status=1&all=1").then(res => {
         //获取child
         let list,
           data = [],
@@ -111,17 +112,11 @@ export default {
             case "进口博览局临时党委":
               this.$store.commit("FRAM_TWO", x.id);
               break;
-              // case "市商务委推进办临时党总支":
-              //   tmp.splice(index,1);
-              //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
-              //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
-              // part.unshift(x.id);
           }
         });
 
 
-        //二级支部数据
-        // this.$store.commit("FRAN_THREE", part);
+
         list = res.data.data.map(x => {
 
           if (x.child.length) {
@@ -149,44 +144,19 @@ export default {
         let ids = res.data.data.map(x => {
           return x.id;
         });
-        // console.log(ids);
-        // console.log(list);
-        // console.log(data); //父id
-        // console.log(childrenId); //父id
-        // console.log(tmp);
 
-
-
-        // 居中处理
-        Array.from(new Set(data)).map(x => {
-          tmp.map((el, index) => {
-            if (el.id === x) {
-              tmp.splice(Math.floor(tmp.length / 2 - 1), 0, el);
-            }
-          });
-        });
-
-        //刪除有总之的党支部
-        childrenId.map(x => {
-            tmp.splice(ids.indexOf(x),1);
-          })
-
-      //最后一步去重
-      ids =   tmp.map(x=> {
-          return x.id;
-         })
-            Array.from(new Set(data)).map(x => {
-
-              // console.log(ids.reverse.indexOf(x));
-              tmp.reverse().splice(ids.reverse().indexOf(x),1);
-
-            })
+      let dff = [];
         //    	debugger
+        tmp.map(x => {
+          // if(childrenId[0] === x.id  || childrenId[1] === x.id) return;
+          if(childrenId.indexOf(x.id) !== -1) return;
+            dff.push(x);
+        })
 
     this.$store.commit("FRAN_THREE_ROUTER", data[0]);
         this.$store.commit("FRAN_THREE", childrenId);
 
-        this.data = tmp.reverse();
+        this.data = dff.reverse();
       });
     },
 
@@ -204,16 +174,15 @@ export default {
         "animated slideInUp",
         "animated slideInDown"
       ];
-//    debugger
       let index = Math.floor(Math.random() * arr.length);
       //return arr[index];
       this.str = arr[index];
 //    this.$store.commit("donghua", this.str);
+//			let flag1=flag;
 			this.$store.commit('BREAD_HD',flag);
 //  			debugger
       //			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
       this.$store.commit("BREAD_SID_ID", id);
-      //    let zhuanhuan=Object(JSON.parse(this.storage.getStorage('uinfo')).id);
       let zhuanhuan = JSON.parse(this.storage.getStorage("uinfo")).id;
       let username = JSON.parse(this.storage.getStorage("uinfo")).username;
       let pid = JSON.parse(this.storage.getStorage("uinfo")).pid;
@@ -258,11 +227,10 @@ export default {
 //      }
 //    }
 
-            if (flag === this.$store.state.part.framworkerthreeRouter || flag === this.$store.state.part.framworkerthree[0] || flag === this.$store.state.part.framworkerthree[1]) {
+//          if (flag === this.$store.state.part.framworkerthreeRouter || flag === this.$store.state.part.framworkerthree[0] || flag === this.$store.state.part.framworkerthree[1]) {
               // debugger
-
-              console.log('9999999999999999')
-            this.$router.push({
+            if (flag === this.$store.state.part.framworkerthreeRouter) {
+            	this.$router.push({
                 path: "/framework/framework/frameworkThree"
               });
             } else if (flag == this.$store.state.part.framworkerTwo) {
@@ -317,7 +285,7 @@ export default {
 
 .heng-line {
   border-top: 4px solid #d40e19;
-  width: 180%;
+  width: 160%;
 }
 
 .heng-line-left {

@@ -1,0 +1,419 @@
+<template>
+  <div class="pr">
+    <div class="top-line"></div>
+    <div class="body-party pr">
+      <div class="attend-line-scoped pa"></div>
+      <ul class="flex-space-nowarp party  padd20 overflow-auto">
+        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click="router(el,el.id)">
+          <div class="flex-center line-scoped-top ">
+            <div class="heng-line pa" :class="{'heng-line-left': (index === 0) ,'heng-line-right' : (index === data.length-1) }"></div>
+            <div class="attend-line-center-scoped pa"></div>
+            <div class=" attend-oval-color div-warp  collection-scoped flex-center-items" ref="input1">
+              <span class="attend-oval-scoped">{{el.organization_name}}</span>
+            </div>
+          </div>
+
+          <div v-if="el.organization_type === '1' && el.child.length">
+            <div class="child-line attend-oval-bg"></div>
+            <div class="child-div attend-oval-bg"></div>
+            <ul class="flex-between child-ul">
+              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color" >
+
+                <div class="child-div-two pa attend-oval-bg"></div>
+                <span class="child-span">{{item.organization_name}}</span>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</template>
+
+<script>
+import framework from "./attendComment";
+import http from "@/api/http";
+import { Message, MessageBox } from "element-ui";
+// import router from '../../../router/'
+
+// window.onresize = function() {
+//             let el = this.$refs.line[0].offsetLeft;
+//             // let ds  = el.querySelector(".div-warp").offsetLeft;
+//       console.log(el);
+//       console.log("999999999999999999999999");
+
+//       let d = querySelector(".attend-line-scoped");
+//       d.style.padding = l + "px 0px" + 100 + "px";
+// };
+export default {
+  name: "index",
+  components: {
+    framework
+  },
+  data() {
+    return {
+      data: null,
+      datas: null
+    };
+  },
+  created() {
+    // this.size();
+    this.init();
+  },
+  activated() {
+    // this.size();
+    this.init();
+  },
+  beforeUpdate() {
+    let _this = this;
+
+    this.$nextTick().then(function() {
+      let el = document.getElementsByClassName("collection-scoped");
+
+      for (var i = 0; i < el.length; i++) {
+        if (i == 0) {
+          document.querySelector(".attend-line-scoped").style.paddingLeft =
+            el[i].offsetLeft + 100 + "px";
+        }
+        if (i === el.length - 1) {
+          document.querySelector(".attend-line-scoped").style.paddingRight =
+            el[i].offsetWidth + 80 + "px";
+        }
+      }
+    });
+  },
+  //computed:{
+  //			donghua1(){
+  //				let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+  //				let index=Math.floor(Math.random()*arr.length);
+  //				//return arr[index];
+  //			return this.str=arr[index];
+  //			}
+  //		},
+  methods: {
+    init() {
+      this.$store.commit("BREAD_SID_ID", {
+        id: 0,
+        organization_name: "进博一线党组织"
+      });
+      http.get("/organization?organization_status=1&all=1").then(res => {
+        //获取child
+        let list,
+          data = [],
+          tmp = res.data.data;
+
+        let part = []; //缓存唯一架构
+
+        //获取唯一架构
+
+        tmp.map((x, index) => {
+          switch (x.organization_name) {
+            case "进口博览局临时党委":
+              this.$store.commit("FRAM_TWO", x.id);
+              break;
+              // case "市商务委推进办临时党总支":
+              //   tmp.splice(index,1);
+              //   tmp.splice(Math.floor(tmp.length/2 -1),0,x);
+              //   this.$store.commit("FRAN_THREE_ROUTER", x.id);
+              // part.unshift(x.id);
+          }
+        });
+
+
+        //二级支部数据
+        // this.$store.commit("FRAN_THREE", part);
+        list = res.data.data.map(x => {
+
+          if (x.child.length) {
+
+            return x.child;
+          } else {
+            return 0;
+          }
+        });
+        //获取ID
+
+      let childrenId = [] ;//子ID
+        let id = list.map(x => {
+
+
+          if (Array.isArray(x)) {
+            data = x.map(y => {
+                childrenId.push(y.id);
+                // console.log(x.id)
+              return y.pid;
+            });
+          }
+        });
+        //维护一个简单数组
+        let ids = res.data.data.map(x => {
+          return x.id;
+        });
+        // console.log(ids);
+        // console.log(list);
+        console.log(data); //父id
+        console.log(childrenId); //父id
+        // console.log(tmp);
+
+
+
+        // 居中处理
+        // Array.from(new Set(data)).map(x => {
+        //   tmp.map((el, index) => {
+        //     if (el.id === x) {
+        //       // tmp.splice(Math.floor(tmp.length / 2 - 1), 0, el);
+        //     }
+        //   });
+        // });
+
+        //刪除有总之的党支部
+        // childrenId.map(x => {
+        //     tmp.splice(ids.indexOf(x),1);
+        //   })
+
+      //最后一步去重
+      // ids =   tmp.map(x=> {
+      //     return x.id;
+      //    })
+      //       Array.from(new Set(data)).map(x => {
+
+      //         // console.log(ids.reverse.indexOf(x));
+      //         tmp.reverse().splice(ids.reverse().indexOf(x),1);
+
+      //       })
+      let dff = [];
+        //    	debugger
+        tmp.map(x => {
+          if(childrenId[0] === x.id  || childrenId[1] === x.id) return;
+            dff.push(x);
+        })
+
+    this.$store.commit("FRAN_THREE_ROUTER", data[0]);
+        this.$store.commit("FRAN_THREE", childrenId);
+
+        this.data = dff.reverse();
+      });
+    },
+
+    //点击跳转路由
+    router(id, flag) {
+//      	debugger
+      let arr = [
+        "animated zoomIn",
+        "animated fadeIn",
+        "animated bounceInDown",
+        "animated fadeInDown",
+        "animated fadeInUpBig",
+        "animated flipInX",
+        "animated rotateIn",
+        "animated slideInUp",
+        "animated slideInDown"
+      ];
+      let index = Math.floor(Math.random() * arr.length);
+      //return arr[index];
+      this.str = arr[index];
+//    this.$store.commit("donghua", this.str);
+//			let flag1=flag;
+			this.$store.commit('BREAD_HD',flag);
+//  			debugger
+      //			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
+      this.$store.commit("BREAD_SID_ID", id);
+      let zhuanhuan = JSON.parse(this.storage.getStorage("uinfo")).id;
+      let username = JSON.parse(this.storage.getStorage("uinfo")).username;
+      let pid = JSON.parse(this.storage.getStorage("uinfo")).pid;
+
+//  console.log(this.$store.state.nav.huodong)
+//  debugger
+//    if (pid > 0) {
+//      zhuanhuan = pid;
+//    }
+//    //			if(zhuanhuan==122||zhuanhuan==116){
+//    //				zhuanhuan=124
+//    //			}
+//    if (username == "admin") {
+//      this.$store.commit("BREAD_SID_ID", id);
+//      if (flag === this.$store.state.part.framworkerthreeRouter) {
+//        this.$router.push({
+//          path: "/framework/framework/frameworkThree"
+//        });
+//      } else if (flag == this.$store.state.part.framworkerTwo) {
+//        this.$router.push("/framework/framework/frameworkTwo");
+//      } else {
+//        this.$router.push("/framework/framework/frameworkFirst");
+//      }
+//    } else {
+//      //				debugger
+//      if (flag == zhuanhuan) {
+//        this.$store.commit("BREAD_SID_ID", id);
+//        if (flag === this.$store.state.part.framworkerthreeRouter) {
+//          this.$router.push({
+//            path: "/framework/framework/frameworkThree"
+//          });
+//        } else if (flag == this.$store.state.part.framworkerTwo) {
+//          this.$router.push("/framework/framework/frameworkTwo");
+//        } else {
+//          this.$router.push("/framework/framework/frameworkFirst");
+//        }
+//      } else {
+//        Message({
+//          message: `您没有权限查看`,
+//          duration: 1500
+//        });
+//      }
+//    }
+
+//          if (flag === this.$store.state.part.framworkerthreeRouter || flag === this.$store.state.part.framworkerthree[0] || flag === this.$store.state.part.framworkerthree[1]) {
+              // debugger
+            if (flag === this.$store.state.part.framworkerthreeRouter) {
+            	this.$router.push({
+                path: "/framework/framework/frameworkThree"
+              });
+            } else if (flag == this.$store.state.part.framworkerTwo) {
+              this.$router.push("/framework/framework/frameworkTwo");
+            } else {
+              this.$router.push("/framework/framework/frameworkFirst");
+            }
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.padd20 {
+  padding: 0 20px 20px;
+}
+
+.div-warp {
+  height: 76px;
+  padding: 10px 15px;
+  background-color: #d40e19;
+  width: 160px;
+  border-radius: 10px;
+  margin-top: 40px;
+  cursor: pointer;
+}
+
+.top-center {
+  width: 4px;
+  height: 2rem;
+  top: -2rem;
+  left: 50%;
+  transform: translate(-2px);
+  background-color: #d40e19;
+}
+
+.body-party {
+  // margin-top: 100px;
+}
+
+.party > li {
+  margin-right: 2%;
+}
+
+.party
+  > li:nth-last-of-type(1)
+  > div:nth-of-type(1)
+  .attend-line-center-scoped {
+  width: 0px;
+  // margin-left: 0;
+}
+
+.heng-line {
+  border-top: 4px solid #d40e19;
+  width: 160%;
+}
+
+.heng-line-left {
+  border-top: 4px solid #d40e19;
+  width: 100%;
+  left: 50%;
+}
+
+.heng-line-right {
+  border-top: 4px solid #d40e19;
+  width: 50%;
+  left: 0;
+}
+
+.top-line {
+  width: 4px;
+  height: 30px;
+  position: relative;
+  top: 0;
+  left: 50%;
+  transform: translate(-2px);
+  z-index: 102;
+  background-color: #d40e19;
+}
+
+.attend-line-scoped {
+  width: 100%;
+  height: 4px;
+  padding: 0 5rem 0 7.35rem;
+  background-clip: content-box;
+  background-color: #d40e19;
+}
+
+.attend-oval-scoped {
+  height: auto;
+}
+
+.attend-line-center-scoped {
+  height: 2.5rem;
+  margin-left: 1rem;
+  top: 0px;
+  left: 50%;
+  border-left: 4px solid #d40e19;
+  border-top: 4px solid #d40e19;
+  transform: translateX(-2px);
+  z-index: 101;
+  // width: 140%;
+  margin-left: -2px;
+}
+
+.child-li {
+  height: 76px;
+  padding: 10px 15px;
+  background-color: #d40e19;
+  width: 160px;
+  border-radius: 10px;
+  margin: 50px 30px 0 0px;
+  // margin-top: 100px;
+  // margin-right: 30px;
+  cursor: pointer;
+}
+
+.child-div {
+  width: 100%;
+  height: 4px;
+  padding: 0 78px 0 78px;
+  background-clip: content-box;
+  // background-color: green;
+  margin: 40px auto -10px;
+}
+
+.child-div-two {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 40px;
+  // background-color: yellow;
+}
+
+.child-line {
+  height: 30px;
+  width: 4px;
+  margin: 0px auto -40px;
+  // background-color: orange;
+}
+
+.child-ul {
+  padding: 0px;
+}
+
+.child-ul > li:nth-last-of-type(1) {
+  margin: 50px 0 0 0px;
+}
+</style>

@@ -66,14 +66,21 @@
       framework
     },
     created() {
-      this.list = this.$store.state.part.framworkerthree;
+    	this.list = this.$store.state.part.framworkerthree;
+    	this.list.unshift(this.$store.state.nav.id.id)
+    				if(window.localStorage.getItem('flag') !== "0") {
+  window.localStorage.setItem('id',this.list);
+      window.localStorage.setItem('flag',"0")
+    	}
 
+//    console.log(this.list)
       this.init();
-      this.list.unshift(this.$store.state.part.framworkerthreeRouter)
-  console.log(this.list)
-      this.detailsInfo(this.list[0]);
-      this.detailsInfo(this.list[1]);
-      this.detailsInfo(this.list[2]);
+//    this.init(window.localStorage.getItem('id')[1]);
+//    this.init(window.localStorage.getItem('id')[2]);
+
+//    this.detailsInfo(this.list[0]);
+//    this.detailsInfo(this.list[1]);
+//    this.detailsInfo(this.list[2]);
     },
 
     data() {
@@ -81,7 +88,7 @@
 
         data: null,
         partyData: null,
-        flag: false,
+//      flag: false,
         partyDataFood : null, //餐饮部
         partyDataShop : null, //商委部
         list : [78,75], // 80 总支 ,75 餐饮 78 商务
@@ -90,11 +97,25 @@
 
       };
     },
+
+    beforeDestroy() {
+			window.localStorage.setItem('flag', "1");
+    },
+
     methods: {
       init() {
-        http.get("/organization/" + this.$store.state.nav.id.id).then(res => {
-          this.data = res.data;
-        });
+      	let arr=window.localStorage.getItem('id').split(',')
+        http.get("/organization/" + arr[0]).then(res => {
+
+              this.data = res.data;
+//            console.log(this.data)
+         }),
+        http.get("/organization/" + arr[1]).then(res => {
+              this.partyDataFood = res.data;
+         }),
+        http.get("/organization/" + arr[2]).then(res => {
+              this.partyDataShop = res.data;
+        })
       },
 
       //二级党员组织

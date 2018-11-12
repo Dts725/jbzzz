@@ -1,0 +1,1205 @@
+<template>
+  <div class="app-container">
+    <list :url="URL+url" :update="update" :topBar="topBar" :canSelect="canSelect" :indexBar="indexBar"
+          :thead="thead"
+          :actionBar="actionBar"></list>
+
+    <!-- 弹出框 -->
+    <el-dialog :title="dialogTitle" :dialogType="dialogType" :visible.sync="showDialog" center top="10%" width="850px" height=auto @close='closeDialog' custom-class="el-dialog-H">
+      <!--<list :update="update" :topBar="topBar1" :canSelect="canSelect" :indexBar="indexBar"
+          :actionBar="actionBar"></list>-->
+      <el-form :model="addForm"  ref="addForm" label-width="100px" class="demo-ruleForm">
+      	<el-row>
+	        <p class="search">
+	          <el-input style="width:35%" v-model="num" placeholder="请输入姓名" clearable ></el-input>
+	
+	          <!--<el-autocomplete v-model="num" clearable :fetch-suggestions="querySearchAsync" placeholder="请输入姓名" @select="handleSelect" :blur='aaa()'></el-autocomplete>-->
+	          <!--<el-button size="small" type="primary" @click="_searchCon(num)" icon="el-icon-search">{{topBar.useSearch.btnName}}</el-button>-->
+	           <!--<el-autocomplete class="inline-input" v-model="state1" :fetch-suggestions="querySearch" placeholder="请输入内容"  @select="handleSelect" :blur='aaa()'></el-autocomplete>-->
+	          <el-button size="small" type="primary" @click="_searchCon(num)" icon="el-icon-search">搜索</el-button>
+	         <ul class='yincang' v-show="this.num!=''">
+	          	<li v-for='item in list2' @click="getDeatil11(item.value)" >{{item.value}}</li>
+	          </ul>
+	        </p>
+	        <!------------------------------------------------额外的----------------------------------->
+        	<el-col :span="12" class='zuzhi'>
+                <select class="transfer-se" id="sel" @change='biangeng' placeholder="请选择" v-model="addForm.id" >
+		              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" >{{item.organization_name}}</option>
+		            </select>
+            </el-col>
+        </el-row>
+        <!--<nav class="nav1">
+          <div class="shuju" v-if="isShow==1">
+            <span>姓名:</span><span>{{isShow==1?addForm.user_name:''}}</span>
+            <span class="sex">性别:</span><span>{{isShow==1?addForm.user_sex:''}}</span>
+            <span class="card">身份证号:</span><span>{{isShow==1?addForm.user_card:''}}</span>
+            <span class="phone">联系方式:</span><span>{{isShow==1?addForm.user_telephone:''}}</span>
+          </div>
+          <div :class="isShow==2?'msj':'noShow'">暂无数据</div>
+        </nav>-->
+        
+        <!--<nav class="nav1" >
+          <div class="shuju">
+            <span>姓名:</span><span>{{addForm.user_name}}</span>
+            <span >现所在党支部:</span><span>{{addForm.user_organization_name}}</span>
+            		<select class="transfer-se" id="sel" :change='biangeng' placeholder="请选择">
+		              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" >{{item.organization_name}}</option>
+		            </select>
+            <input type="checkbox" name="" class="xuanze" value="" />
+          </div>
+        </nav>-->
+				<el-table
+			    ref="multipleTable"
+			    :data="tableData3"
+			    tooltip-effect="dark"
+			    style="width: 100%"
+			    @selection-change="handleSelectionChange" 
+			    height="330"
+			    >
+			    <el-table-column
+			      type="selection"
+			      width="55">
+			    </el-table-column>
+			    <el-table-column
+			    	prop="user_name"
+			      label="姓名"
+			      width="120">
+			    </el-table-column>
+			    <el-table-column
+			      prop="user_sex"
+			      label="性别"
+			      width="60">
+			    </el-table-column>
+			    <el-table-column
+			     	prop="user_card"
+			      label="身份证号"
+			      width="180">
+			    </el-table-column>
+			     <el-table-column
+			     	prop="user_phone"
+			      label="联系方式"
+			      width="140">
+			    </el-table-column>
+			    <el-table-column
+			      prop="user_organization_name"
+			      label="现所在党支部"
+			      width="auto">
+			    </el-table-column>
+			    <!--<el-table-column
+			    	prop="name"
+			      label="地址"
+			      >
+			      <template slot-scope="scope">
+			      	<select class="transfer-se" id="sel" placeholder="请选择">
+		              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" >{{item.organization_name}}</option>
+		            </select>
+			      </template>
+			    </el-table-column>-->
+			  </el-table>
+			  
+			  <div style="margin-top: 20px">
+			  	<el-col :span="12">
+			    <el-button @click="toggleSelection()">取消选择</el-button>
+				    <!--<select class="transfer-se" id="sel" placeholder="请选择" v-model="ssa" @change="xuanze($event)">
+			        <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id" :label="item.organization_name"></option>
+			     </select>-->
+			     </el-col>
+			     <el-col :span="12" v-if='isshow12'>
+				     <el-select v-model="addForm.organization_id" placeholder="请选择" @change="xuanze($event)" >
+	                  <el-option v-for="item in organizationList" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
+	                  </el-option>
+	           </el-select>
+          </el-col>
+			  </div>
+
+
+
+				<!--<el-col :span="12" v-if="isShowzb == 1">
+              <el-form-item label="转移到所在支部" prop="organization_id">
+                <el-select v-model="addForm.organization_id" placeholder="请选择" >
+                  <el-option v-for="item in organizationList" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>-->
+
+
+				<!--<el-row>
+          <el-col :span="5">
+            <el-form-item label="姓名" prop="user_name">
+              <el-input v-model="addForm.user_name" :disabled='true'></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+              <el-form-item label="现所在党支部" prop="user_organization_name">
+                <el-input v-model="addForm.user_organization_name" :disabled='true'></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="11" v-if="isShowzb == 1">
+              <el-form-item label="转移到所在支部" prop="organization_id">
+                <el-select v-model="addForm.organization_id" placeholder="请选择" >
+                  <el-option v-for="item in organizationList" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-row>-->
+
+				<!----------------------------------------组织变更------------------------------->
+
+
+        <!--<el-row>
+          <el-col :span="12">
+            <el-form-item label="姓名" prop="user_name">
+              <el-input v-model="addForm.user_name" :disabled='true'></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="性别" prop="user_sex">
+              <el-input v-model="addForm.user_sex" :disabled='true'></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="身份证号" prop="user_card">
+              <el-input v-model="addForm.user_card" :disabled='true'></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系方式" prop="user_phone" >
+              <el-input v-model="addForm.user_phone" :disabled='true'></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
+
+       		<el-row>
+            <el-col :span="12">
+              <el-form-item label="现所在党支部" prop="user_organization_name">
+                <el-input v-model="addForm.user_organization_name" :disabled='true'></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="isShowzb == 1">
+              <el-form-item label="转移到所在支部" prop="organization_id">
+                <el-select v-model="addForm.organization_id" placeholder="请选择">
+                  <el-option v-for="item in organizationList" :key="item.organization_id" :label="item.organization_name" :value="item.organization_id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>-->
+
+
+
+
+
+       <!--<div class="nav">-->
+          <!--<div class="now">
+            <span class="now-span">现所在党支部</span><span class="now-span1">{{isShow==1?addForm.user_organization_name:''}}</span>
+          </div>-->
+          <!--<div class="transfer" v-if="isShowzb == 1">
+            <span class="transfer-span">转移到所在支部</span>
+            <select class="transfer-se" id="sel">
+              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id">{{item.organization_name}}</option>
+            </select>
+          </div>-->
+          <!--<div class="transfer" v-if="isShowzb == 2">
+            <span class="transfer-span">如果确认转移，该党员数据将从数据库中删除</span>
+             <select class="transfer-se" id="sel">
+              <option v-for="item in organizationList" :key="item.organization_id" :value="item.organization_id">{{item.organization_name}}</option>
+            </select>
+          </div>-->
+        <!--</div>-->
+        <el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('addForm', dialogType)">确定</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item>
+        <!--<el-form-item class="align-right">
+          <el-button type="primary" @click="submitAddForm('tableData3', dialogType)">确定</el-button>
+          <el-button @click="resetAddForm('addForm')">取消</el-button>
+        </el-form-item>-->
+      </el-form>
+    </el-dialog>
+
+  </div>
+</template>
+
+<script>
+  import http from "@/api/http";
+  import list from "@/components/TableList";
+  import { Message, MessageBox } from "element-ui";
+	import $ from "jquery";
+  export default {
+    components: {
+      list
+    },
+    data() {
+      return {
+      	piliang:'',
+      	selVal:'',
+      	ssa:'',
+      	tableData3: [{
+      		id:'',
+          user_name: '',
+          user_sex:'',
+          user_card:'',
+          user_phone:'',
+          user_organization_name: '',
+          organization_id:'',
+          user_status:'',
+        }],
+        multipleSelection: [],
+      	children:[],
+      	
+				list2:[],
+				list3:[],
+      	/** *************** 请求数据  *************** **/
+      	shuju:[],
+        /** *************** 引用的表格的  start *************** **/
+        restaurants: [],
+        num: "",
+        state1:"",
+        isshow12:true,
+        likai:'',
+      	isShow: 2,
+//				isShow:2,
+        isShowzb: 2,
+        transfer_type: 1,
+        listLoading: true,
+        timeout:null,
+        // 列表头部的功能区--key为搜索的字段名
+        topBar:[
+          {name: '组织变更', type: 'success', class: '', fun: this.newRole},
+          {name: '离开岗位', type: 'primary', class: '', fun: this.newRole1},
+        {name: '搜索', key: 'user_name', searchTipCon: '请输入党员姓名', class: ''},
+        ],
+        topBar1:[
+          {
+            name: '党组织筛选',
+            key: 'organization_id',
+            plugType: 'cascader',
+            //dataUrl: this.URL + '/user',
+            searchTipCon: '党组织筛选',
+            selected: [],
+            class: '',
+//          options:this.fffff,
+						options:[]
+          },
+        ],
+        // topBar: {
+        //   useNewBtn: {
+        //     btnName: "组织变更",
+        //     btnClass: "",
+        //     btnType: "success",
+        //     keys: [],
+        //     fun: this.newRole
+        //   },
+        //   useNewBtn1: {
+        //     btnName: "离开岗位",
+        //     btnClass: "",
+        //     btnType: "primary",
+        //     keys: [],
+        //     fun: this.newRole1
+        //   },
+        //   useSearch: {
+        //     key: "user_name",
+        //     btnName: "搜索",
+        //     searchTipCon: "请输入党员姓名"
+        //   }
+        // },
+        // 表格头- 是否可选
+        canSelect: false,
+        // 表格头- 索引序号
+        indexBar: { name: "编号", key: "auto", width: "100" },
+        // 表格头 - 字段内容
+        thead: [
+          { name: "党员姓名", key: "user_name", width:'auto' },
+          { name: "联系方式", key: "user_phone", width:'auto' },
+//         { name: "性别", key: "user_sex", width:'auto' },
+          { name: "所属组织", key: "organization_name", width:'auto' },
+          { name: "变更类型", key: "transfer_type", filterCon:[{key:2,value:'离开岗位'},{key:1,value:'组织变更'}], width:'auto' },
+          { name: "办理时间", key: "transfer_date", width:'auto', format: 'yyyy - MM - dd' },
+        ],
+        update: 0, // 手动更新数据，每次接收 +1 的值 如：传 update++
+        // 表格头 - 最右边的功能区
+        actionBar: [],
+        //   actionBar: [{ name: "详情", fun: this.edit, type: "success" }],
+        /** *************** 引用的表格的  end *************** **/
+
+        /** *************** 弹窗的  start *************** **/
+        showDialog: false, //
+        dialogTitle: "", // 弹窗标题
+        dialogType: "", // 弹窗类型  用来区分新增或编辑
+
+        // 新增弹出表单
+        addForm: {
+          id: "", // int(11) NOT NULL,
+          user_name: "", // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_id: "",
+          user_sex: "", // varchar(20) DEFAULT NULL COMMENT '性别',
+//					organization_name:'',
+          user_nation: "", // 民族
+          user_birth: "", // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: "", // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: "", // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: "", // 家庭住址
+          user_phone: "", // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: "", // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: "", // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: "", // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: "", // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: "", // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: "", // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_id: "", // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: "", // varchar(11) DEFAULT NULL COMMENT '现所在临时党组织id',
+
+          // user_temp_job: '',  // varchar(20) DEFAULT NULL COMMENT '保障组职务',
+          user_status: "" // varchar(3) DEFAULT '1' COMMENT '1未转出 2已转出',
+
+          //     PRIMARY KEY (`id`)
+          // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='党员表';
+        },
+        // 表单验证规则
+//      rules: {
+//        // 名称
+//        user_name: [
+//          { required: true, message: "请输入姓名", trigger: "blur" },
+//          { min: 2, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur" }
+//        ],
+//        // 性别
+//        user_sex: [
+//          { required: true, message: "请选择性别", trigger: "change" }
+//        ],
+//        // 身份证
+//        user_card: [
+//          { required: true, message: "请输入身份证", trigger: "blur" }
+//        ],
+//        // 出生日期
+//        user_birth: [
+//          { required: true, message: "请选择出生日期", trigger: "blur" }
+//        ],
+//        // 学历
+//        user_education: [
+//          { required: true, message: "请输入学历", trigger: "blur" }
+//        ],
+//        // 联系电话
+//        user_telephone: [
+//          { required: true, message: "请输入联系电话", trigger: "blur" }
+//        ],
+//        // 入党日期
+//        user_in_date: [
+//          { required: true, message: "请选择入党日期", trigger: "blur" }
+//        ],
+//        // 转正日期
+//        user_become_date: [
+//          { required: true, message: "请选择转正日期", trigger: "blur" }
+//        ],
+//        // 派出单位
+//        user_dispatched_unit: [
+//          { required: true, message: "请输入派出单位", trigger: "blur" }
+//        ],
+//        // 原单位
+//        user_origin_unit: [
+//          { required: true, message: "请输入原单位", trigger: "blur" }
+//        ],
+//        // 职务
+//        user_job: [{ required: true, message: "请输入职务", trigger: "blur" }],
+//        // 原党组织id
+//        user_origin_organization_id: [
+//          { required: true, message: "请选择原党组织", trigger: "blur" }
+//        ],
+//        // 党组织id
+//        user_organization_id: [
+//          { required: true, message: "请选择党组织", trigger: "blur" }
+//        ],
+//        // // 保障组职务
+//        // user_temp_job: [
+//        //   {required: true, message: '请输入保障组职务', trigger: 'blur'}
+//        // ],
+//        // 保障组别
+//        user_temp_team: [
+//          { required: true, message: "请输入保障组别", trigger: "blur" }
+//        ],
+//        // 转出状态
+//        user_status: [
+//          { required: true, message: "请选择转出状态", trigger: "blur" }
+//        ],
+//        // 家庭住址
+//        user_address: [
+//          { required: true, message: "请输入家庭住址", trigger: "blur" }
+//        ],
+//        // 民族
+//        user_nation: [
+//          { required: true, message: "请输入民族", trigger: "blur" }
+//        ]
+//      },
+        // 党组织列表
+        organizationList: [{
+          organization_id:'',
+          organization_name:''
+        }],
+        organizationList1: [{
+          organization_id:'',
+          organization_name:''
+        }],
+        child1:[],
+        // 社区列表
+        communityList: [],
+        test: {
+          user_telephone: 111111111
+        },
+        /** *************** 弹窗的  end *************** **/
+        url: "/transfer",
+
+        // 需要转换为时间戳的日期字段
+        dateFonts: ["user_birth", "user_in_date", "user_become_date"],
+        // 列表头部的功能区--key为搜索的字段名
+
+        transfer: {
+          user_id: "",
+          transfer_type: "",
+          transfer_date: "",
+          organization_id: "",
+//        organization_name:''
+        }
+      };
+    },
+    created() {
+      this.init();
+    },
+    activated() {
+      this.init();
+    },
+		mounted() {
+      this.restaurants = this.loadAll();
+   },
+// /organization_record?organization_id=
+    methods: {
+    	xuanze(value){
+  		console.log(value)
+    	},
+    	biangeng(e){
+//  		debugger;
+//				tableData3: [{
+//        user_name: '',
+//        user_sex:'',
+//        user_phone:'',
+//        user_organization_name: '',
+//      }],
+				this.tableData3=[];
+    		let aa=this.addForm.id
+    		this.getData(`${this.URL}/user?user_status=1&organization_id=${aa}`,'', "get", res => {
+          if (res.code == 0) {
+//      	debugger
+          	let shuju11=res.data.data;
+          	for(var i=0;i<shuju11.length;i++){
+          		this.tableData3.push({'id':shuju11[i].id,'user_name':shuju11[i].user_name,'user_sex':shuju11[i].user_sex,'user_phone':shuju11[i].user_phone,'user_organization_name':shuju11[i].user_organization_name,'user_status':shuju11[i].user_status,'user_card':shuju11[i].user_card,organization_id:shuju11[i].organization_id})
+          	}
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+				this.update++;
+    	},
+    	/////////////////////////////////////党组织列表
+    	 toggleSelection(rows) {
+        if (rows) {
+          rows.forEach(row => {
+            this.$refs.multipleTable.toggleRowSelection(row);
+          });
+        } else {
+          this.$refs.multipleTable.clearSelection();
+        }
+      },
+//    handleSelectionChange(val) {
+////      this.multipleSelection = val;
+//				debugger
+//      let a=[];
+//      let b='';
+//      
+//      b=a.join(",")
+//    },
+      
+      
+      
+    		aaa(){
+					this.getData(`${this.URL}/user?user_name=${this.num}`,'', "get", res => {
+          if (res.code == 0) {
+          	let shuju11=res.data.data;
+          	for(var i=0;i<shuju11.length;i++){
+          		this.shuju.push({'value':shuju11[i].user_name})
+          	}
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+    		},
+      		       
+//  		getDeatil1(e){
+//  			this.num=e;
+//  			$('.yincang').css({'display':'none'})
+//    	this.getData(`${this.URL}/user?user_name=${e}`, "", "get", res => {
+//        if (res.code == 0) {
+//          // 日期转换为时间戳
+//          res.data.data = this.dateFontsFiter(this.dateFonts, res.data.data);
+//          this.likai=res.data.data[0].user_status;
+//          this.addForm = res.data.data[0];
+//
+//          if (res.data.data.length == 1) {
+//            this.isShow = 1;
+//          } else {
+//            this.isShow = 2;
+//          }
+//        } else {
+//          Message({
+//            message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+//            // type: 'error',
+//            duration: 1500
+//          });
+//        }
+//      });
+//					$('.yincang').html('')
+//  		},
+				getDeatil11(e){
+    			this.num=e;
+    			$('.yincang').css({'display':'none'})
+      		this.getData(`${this.URL}/user?user_name=${e}`, "", "get", res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            res.data.data = this.dateFontsFiter(this.dateFonts, res.data.data);
+            this.likai=res.data.data[0].user_status;
+            this.addForm = res.data.data[0];
+						let shuju=res.data.data[0];
+            this.tableData3=[{
+				      		id:shuju.id,
+				          user_name:shuju.user_name,
+				          user_sex:shuju.user_sex,
+				          user_card:shuju.user_card,
+				          user_phone:shuju.user_phone,
+				          user_organization_name:shuju.user_organization_name,
+				          organization_id:shuju.user_organization_id
+				      }];
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+					$('.yincang').html('')
+    		},
+    		init(){
+    			let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+					let username = JSON.parse(this.storage.getStorage('uinfo')).username;
+          //console.log(user_organization_id)
+          this.url = username == 'admin' ? '/transfer' : `/transfer?organization_id=${community_id}`;
+          if(username!='admin'){
+          	http.get(`/organization?organization_id=${community_id}`).then(res => {
+					if (res.code == 0) {
+						this.children=res.data.data[0].child;
+					} 
+        });
+          }
+         
+          
+          
+          http.get('/organization?all=1').then(res => {
+          if (res.code == 0) {
+            this.organizationList = res.data.data;
+            let arr = [];
+            for(var i=0;i<this.organizationList.length;i++){
+
+								arr.push({
+									id:this.organizationList[i].id,
+									value:this.organizationList[i].organization_name,
+								});
+					}
+            this.topBar1[0].options = arr;
+          }
+        });
+           
+          
+    		},
+    	loadAll() {
+    		return this.shuju;
+//      return [
+////        { "value": "四海游龙（天山西路店）", "address": "上海市长宁区天山西路" },
+////        { "value": "樱花食堂（凌空店）", "address": "上海市长宁区金钟路968号15楼15-105室" },
+////        { "value": "壹分米客家传统调制米粉(天山店)", "address": "天山西路428号" },
+//      ];
+      },
+      querySearchAsync(queryString, cb) {
+        var restaurants = this.restaurants;
+        var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          cb(results);
+        }, 3000 * Math.random());
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      handleSelect(item) {
+        console.log(item);
+      },
+//    querySearch(queryString, cb) {
+//      var restaurants = this.restaurants;
+//      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+//      // 调用 callback 返回建议列表的数据
+//      cb(results);
+//    },
+//    createFilter(queryString) {
+//      return (restaurant) => {
+//        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+//      };
+//    },
+
+      /** 内部转移 **/
+      newRole(e, d) {
+      	this.tableData3=[];
+        this.showDialog = true;
+        this.dialogTitle = "组织变更";
+        this.dialogType = "new";
+        this.isShow = 2;
+        this.isShowzb = 1;
+        this.transfer_type=1;
+        this.initForm();
+        let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+        let username=JSON.parse(this.storage.getStorage('uinfo')).username;
+        if(username=='admin'){
+        	 http.get("/organization").then(res => {
+          if (res.code == 0) {
+            let arr = [];
+            res.data.data.forEach((element,index) => {
+              arr[index]=({
+                organization_id:element.id,
+                organization_name:element.organization_name
+              })
+            });
+            this.organizationList = arr;
+          }
+        });
+        }else{
+        	if(this.children.length>0){
+        		 	http.get(`/organization?organization_id=${community_id}`).then(res => {
+							 if (res.code == 0) {
+							 this.child1=res.data.data[0].child;
+							 let arr = [];
+	             this.child1.forEach((element,index) => {
+	              arr[index]=({
+	                organization_id:element.id,
+	                organization_name:element.organization_name
+	              })
+	            });
+	            this.organizationList = arr;
+		         }
+	        });
+       }else{
+		       	  Message({
+		              message: `您没有权限变更`,
+		              duration: 1500
+		            });
+	//	          return false;  
+					this.showDialog=false;
+		      }
+       
+        }
+       
+      },
+      newRole1(e, d) {
+      	this.isshow12=false;
+      	this.tableData3=[];
+        this.showDialog = true;
+        this.dialogTitle = "离开岗位";
+        this.dialogType = "new";
+        this.isShowzb = 2;
+        this.isShow = 1;
+        this.transfer_type= 2;
+        this.initForm();
+        let username=JSON.parse(this.storage.getStorage('uinfo')).username;
+//      if(username=='admin'){
+//				this.showDialog = true;
+//      }else{
+//      	if(this.children.length>0){
+//      		this.showDialog = true;
+//     		}else{
+//		       	  Message({
+//		              message: `您没有权限修改`,
+//		              duration: 1500
+//		           });
+//					  this.showDialog=false;
+//		      }
+//      }
+				let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+//      let username=JSON.parse(this.storage.getStorage('uinfo')).username;
+        
+        if(username=='admin'){
+        	 http.get("/organization").then(res => {
+          if (res.code == 0) {
+            let arr = [];
+            res.data.data.forEach((element,index) => {
+              arr[index]=({
+                organization_id:element.id,
+                organization_name:element.organization_name
+              })
+            });
+            this.organizationList = arr;
+          }
+        });
+        }else{
+        	if(this.children.length>0){
+        		 	http.get(`/organization?organization_id=${community_id}`).then(res => {
+							 if (res.code == 0) {
+							 this.child1=res.data.data[0].child;
+							 let arr = [];
+	             this.child1.forEach((element,index) => {
+	              arr[index]=({
+	                organization_id:element.id,
+	                organization_name:element.organization_name
+	              })
+	            });
+	            this.organizationList = arr;
+		         }
+	        });
+       }else{
+		       	  http.get(`/organization?organization_id=${community_id}`).then(res => {
+		       	  	if (res.code == 0) {
+//		       	  	
+		       	  		     this.organizationList=[{
+							          organization_id:res.data.data[0].id,
+							          organization_name:res.data.data[0].organization_name
+							        }]
+		       	  	}
+		       	  })
+		      }
+       
+        }
+      },
+//    _searchCon(e) {
+//      this.getData(`${this.URL}/user?user_name=${e}`, "", "get", res => {
+//        if (res.code == 0) {
+//          // 日期转换为时间戳
+//          res.data.data = this.dateFontsFiter(this.dateFonts, res.data.data);
+//          this.addForm = res.data.data[0];
+//          if (res.data.data.length == 1) {
+//            this.isShow = 1;
+//          } else {
+//            this.isShow = 2;
+//          }
+//        } else {
+//          Message({
+//            message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+//            // type: 'error',
+//            duration: 1500
+//          });
+//        }
+//      });
+//    },
+_searchCon(e) {
+	//debugger;
+	$('.yincang').html('')
+			let community_id=JSON.parse(this.storage.getStorage('uinfo')).id;
+      this.getData(`${this.URL}/user?user_name=${this.num}&organization_id=${community_id?community_id:''}`,'', "get", res => {
+          if (res.code == 0) {
+          	let shuju11=res.data.data;
+          	for(var i=0;i<shuju11.length;i++){
+          		this.list2.push({'value':shuju11[i].user_name})
+          	}
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+},
+      /** 编辑账号 **/
+      edit(e, d) {
+        this.getData(`${this.URL}${this.url}/${d.id}`, "", "get", res => {
+          if (res.code == 0) {
+            // 日期转换为时间戳
+            res.data = this.dateFontsFiter(this.dateFonts, res.data);
+            this.addForm = res.data;
+            this.showDialog = true;
+            this.dialogTitle = "信息详情";
+            this.dialogType = "edit";
+          } else {
+            Message({
+              message: `获取详情失败，请刷新浏览器！！！ ${res.status}`,
+              // type: 'error',
+              duration: 1500
+            });
+          }
+        });
+      },
+      /** 删除 **/
+      // delete(e, d) {
+      //   MessageBox.confirm("您确定删除吗？", "删除", {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning"
+      //   }).then(() => {
+      //     this.sendData(`${this.url}/${d.id}`, "", "delete", res => {
+      //       if (res.code == 0) {
+      //         Message({
+      //           message: "删除成功！！！",
+      //           // type: 'error',
+      //           duration: 1500
+      //         });
+      //         this.update++;
+      //       }
+      //     });
+      //   });
+      // },
+      /** 取消 **/
+      resetAddForm(e, d) {
+        this.showDialog = false;
+        this.initForm();
+        this.organizationList = [];
+        this.num = ''
+      },
+      /**关闭弹框 */
+      closeDialog(){
+        this.num = '';//清空数据
+      },
+       handleSelectionChange(val) {
+//     	debugger
+        let a=[];
+        for(var i=0;i<val.length;i++){
+      	a.push(val[i].id)
+        }
+//      for(var i=0;i<val.length;i++){
+//      	if(val[i].user_status=='1'){
+//      		a.push(val[i].id)
+//      	}
+//      }
+////      let b='';
+////				console.log(a)
+//				if(a.length==0){
+//					this.piliang=a
+//				}else{
+//					this.piliang=a.join(",")
+//				}
+        this.piliang=a.join(",")
+				console.log(this.piliang)
+      },
+      /** 初始化表单 **/
+      initForm() {
+        this.addForm = {
+          id: "", // int(11) NOT NULL,
+          user_name: "", // varchar(20) DEFAULT '' COMMENT '姓名',
+          user_sex: "", // varchar(20) DEFAULT NULL COMMENT '性别',
+
+          user_nation: "", // 民族
+          user_birth: "", // varchar(20) DEFAULT NULL COMMENT '出生日期',
+
+          user_card: "", // varchar(20) DEFAULT NULL COMMENT '身份证',
+          user_education: "", // varchar(20) DEFAULT NULL COMMENT '学历',
+
+          user_address: "", // 家庭住址
+          user_phone: "", // varchar(20) DEFAULT NULL COMMENT '联系电话',
+
+          user_in_date: "", // varchar(20) DEFAULT NULL COMMENT '入党日期',
+          user_become_date: "", // varchar(20) DEFAULT NULL COMMENT '转正日期',
+
+          user_dispatched_unit: "", // varchar(50) DEFAULT NULL COMMENT '派出单位',
+          user_origin_unit: "", // varchar(50) DEFAULT NULL COMMENT '原单位',
+
+          user_temp_team: "", // varchar(20) DEFAULT NULL COMMENT '保障组别',
+          user_job: "", // varchar(50) DEFAULT NULL COMMENT '党内职务',
+
+          user_origin_organization_id: "", // varchar(11) DEFAULT NULL '原党组织id',
+          user_organization_id: "" // varchar(11) DEFAULT NULL COMMENT '党组织id',
+        };
+      },
+
+      // 确定
+      submitAddForm(formName, type) {
+//    	let a=[];
+//    	a=this.$refs.multipleTable.getCheckedKeys();
+//    	
+//      this.num = '';
+				
+//				if(this.likai=='2'){
+//					Message({
+//                message: `已离开岗位,无法进行操作`,
+//                type: "warning",
+//                duration: 1500
+//              });
+//        return false;
+//				}
+//debugger
+//				if(this.piliang.length==0){
+//						Message({
+//                message: `已离开岗位,无法进行操作`,
+//                type: "warning",
+//                duration: 1500
+//              });
+//				}else{
+        let _this = this,
+          sendType = "get",
+          url = this.url;
+//		      this.transfer.user_id = this.addForm.id;
+					this.transfer.user_id = this.piliang;
+//				this.transfer.user_id = this.tableData3[0].id;
+//				this.transfer.user_id = this.piliang;
+        this.transfer.transfer_type = this.transfer_type;
+        this.transfer.transfer_date = new Date().valueOf();
+//      var Sel = document.getElementById("sel");
+//      var index = this.transfer_type==1?Sel.selectedIndex:'';
+//      this.transfer.organization_id = this.transfer_type==1?Sel.options[index].value:'';
+//				this.transfer.organization_id = this.addForm.organization_id;
+				this.transfer.organization_id = this.addForm.organization_id;
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            if (type == "new") {
+              sendType = "post";
+            } else if (type == "edit") {
+              sendType = "put";
+              url = url + "/" + _this.addForm.id;
+            }
+            _this.sendData(url, this.transfer, sendType, res => {
+              if(res.code == 0) {
+                Message({
+                  // message: type == "new" ? "组织变更成功！！！" : "离岗成功！！！",
+                  message: `${this.dialogTitle}成功！！！`,
+                  type: "warning",
+                  duration: 1500
+                });
+                this.showDialog = false;
+                this.initForm();
+                this.organizationList = [];
+                this.update++;
+              }
+            });
+          }
+        });
+//      }
+      },
+      // 发送数据
+      sendData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof call == "function") {
+            call(res);
+          }
+        });
+      },
+      // 获取数据
+      getData(url, data, type, call) {
+        http.http(url, data, type).then(res => {
+          if (typeof call == "function") {
+            call(res);
+          }
+        });
+      },
+      /** 时间 转为13位时间戳 **/
+      formatTime(time, tar) {
+        let t = this.dateformat.timeStamp(time, 13);
+        if (tar) {
+          this.addForm[tar] = t;
+        }
+        return t;
+      },
+
+      /** 将指定的日期转为时间戳
+       * 接收字段名 和 总数据
+       * **/
+      dateFontsFiter(arr, tar) {
+        for (let i in arr) {
+          if (typeof tar[tar[i]] !== "number") {
+            tar[arr[i]] = this.formatTime(tar[arr[i]]);
+          }
+        }
+        return tar;
+      }
+    }
+  };
+</script>
+<style lang="scss" scoped>
+  .now {
+  float: left;
+  margin-left: 0.3rem;
+
+  }
+    .now-span {
+  	display: inline-block;
+    font-size: 0.6rem;
+    color: #000;
+    width: 80px;
+    text-align: right;
+    line-height: 1.5rem;
+
+  }
+  .now-span1 {
+    display: inline-block;
+    border: 1px solid #000;
+    margin-left: 0.8rem;
+    height: 1.9rem;
+    width: 15rem;
+    line-height: 1.9rem;
+    padding-left: 0.7rem;
+    font-size: 0.6rem;
+  }
+  .yincang{
+  	background: white;
+  	position: absolute;
+  	z-index: 999;
+  	width: 260px;
+  	padding-left:13px;
+  }
+  .yincang{
+  	li{
+  		&:hover{
+  			background: #D3DCE6;
+  			cursor: pointer;
+  			width: 260px;
+  		}
+  	}
+  }
+
+  .transfer {
+   /* margin-top: 0.1rem;*/
+    float: right;
+
+  }
+  .transfer-span {
+    font-size: 0.6rem;
+    font-weight: 600;
+    /*color: red;*/
+   margin-right:-6px;
+  }
+  /*#sel{
+  	height: 1.9rem;
+  	 width: 15rem;
+  }*/
+  #sel{
+  	height: 1.9rem;
+  	 width: 10rem;
+  }
+  .transfer-se {
+    display: inline-block;
+    margin-left:0.7rem;
+    height: 1.5rem;
+    width: 15rem;
+    line-height: 1.5rem;
+    padding: 0 0 0 0.5rem;
+  }
+  .align-right {
+    margin-top: 80px;
+  }
+  .nav {
+    margin-top:0.9%;
+    /*height: 25px;*/
+  }
+  /*.nav1 {
+    margin-top: 10%;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    padding: 10px 0;
+    .shuju {
+      font-size:12px;
+      color: #000;
+      span {
+        padding-right: 10px;
+      }
+    }
+    .msj {
+      text-align: center;
+      font-size: 12px;
+      color: #000;
+    }
+    .sex,
+    .card,
+    .phone {
+      margin-left: 20px;
+    }
+    .noShow {
+      display: none;
+    }
+    .noShow1 {
+      display: none !important;
+    }
+    .el-dialog-H{
+      height: 600px;
+    }
+    .el-dialog-H .el-dialog__body{
+      padding: 38px 25px 30px;
+    }
+  }*/
+ .nav1 {
+ 	position: relative;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    /*padding: 10px 0;*/
+    .shuju {
+      font-size:16px;
+      color: #000;
+      span {
+        padding-right: 10px;
+      }
+    }
+    .msj {
+      text-align: center;
+      font-size: 12px;
+      color: #000;
+    }
+    .sex,
+    .card,
+    .phone {
+      margin-left: 20px;
+    }
+    .noShow {
+      display: none;
+    }
+    .noShow1 {
+      display: none !important;
+    }
+    .el-dialog-H{
+      height: 600px;
+    }
+    .el-dialog-H .el-dialog__body{
+      padding: 38px 25px 30px;
+    }
+  }
+  .search{
+  	margin-left:100px;
+  	margin-bottom: 20px;
+  }
+  .zuzhi{
+  	position: absolute;
+  	top:0;
+  	right:-30PX;
+  }
+  .xuanze{
+  	position: absolute;
+  	right: 100px;
+  	top: 8px;
+  	width:20px;
+  	height: 20px;
+  }
+  .el-table--enable-row-transition{
+  	overflow: auto;
+  }
+</style>
