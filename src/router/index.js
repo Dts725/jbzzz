@@ -158,7 +158,7 @@ export const constantRouterMap = [{
     children: [{
         path: 'framework',
         name: 'framework',
-      redirect: '/framework/framework/index',
+        redirect: '/framework/framework/index',
         meta: {
           title: '党组织架构',
           icon: 'desktop'
@@ -185,7 +185,8 @@ export const constantRouterMap = [{
           },
           component: () =>
             import('@/views/framework/childrenRouter/frameworkTwo')
-        }, {
+        },
+        {
           path: 'frameworkThree',
           name: 'frameworkThree',
 
@@ -195,17 +196,29 @@ export const constantRouterMap = [{
           },
           component: () =>
             import('@/views/framework/childrenRouter/frameworkThree')
-          }, {
-            path: 'index',
-            name: 'index',
+        },
+        {
+          path: 'GeneralPartyBranch',
+          name: 'GeneralPartyBranch',
 
-            meta: {
-              title: '党组织架构',
-              icon: 'desktop'
-            },
-            component: () =>
-              import('@/views/framework/childrenRouter/index')
-          }]
+          meta: {
+            title: '党总支',
+            icon: 'desktop'
+          },
+          component: () =>
+            import('@/views/framework/childrenRouter/GeneralPartyBranch')
+        },
+         {
+          path: 'index',
+          name: 'index',
+
+          meta: {
+            title: '党组织架构',
+            icon: 'desktop'
+          },
+          component: () =>
+            import('@/views/framework/childrenRouter/index')
+        }]
       }
 
     ]

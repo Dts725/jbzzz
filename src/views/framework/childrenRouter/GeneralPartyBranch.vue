@@ -1,0 +1,137 @@
+<template>
+  <div class="pr" v-cloak>
+    <div class="flex-center-branch">
+      <p class="div-warp attend-oval-color flex-center-items">{{dataInfo.organization_name}}</p>
+      <div class="top-row"></div>
+    </div>
+
+    <div>
+
+      <div class="line-aix"></div>
+      <ul class="flex-between bottom-aix">
+        <li class="attend-oval-color flex-center-branch" v-for="el in dataInfo.child" :key="el.id" @click="router(el,el.id)">
+          <div class="top-row-line"></div>
+          <p class="div-warp flex-center-items">{{el.organization_name}}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+// import framework from "./attendComment";
+import http from "@/api/http";
+import { Message, MessageBox } from "element-ui";
+
+export default {
+  name: "GeneralPartyBranch",
+  // components: {
+  //   framework
+  // },
+  data() {
+    return {
+      dataInfo: null,
+      datas: null
+    };
+  },
+  created() {
+    if (window.localStorage.getItem("flag") !== "0") {
+      window.localStorage.setItem("id", this.$store.state.part.GeneralPartyBranch);
+      window.localStorage.setItem("flag", "0");
+    }
+    this.init();
+  },
+  activated() {
+    // this.size();
+    // this.init();
+  },
+beforeDestroy() {
+      // window.localStorage.setItem("flag", "0");
+},
+  methods: {
+    init() {
+      let pid = window.localStorage.getItem('id');
+      http.get("/organization/" + pid).then(res => {
+        this.dataInfo = {
+          organization_name: res.data.organization_name,
+          child: res.data.child
+        };
+        console.dir(this.dataInfo.organization_name);
+      });
+    },
+
+    //点击跳转路由
+    router(id, flag) {
+     this.$store.commit("BREAD_SID_ID", {
+        id: flag,
+        organization_name: id.organization_name
+      });
+      if (this.$store.state.part.framworkerthree.indexOf(flag) !== -1) {
+        this.$store.commit("FRAN_BPG", flag);
+      }
+      window.localStorage.setItem("id", this.$store.state.nav.id.id);
+
+
+      if (flag === this.$store.state.part.framworkerthreeRouter) {
+        this.$router.push({
+          path: "/framework/framework/frameworkThree"
+        });
+      } else {
+        this.$router.push("/framework/framework/frameworkFirst");
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.div-warp {
+  height: 76px;
+  padding: 10px 15px;
+  background-color: #d40e19;
+  width: 160px;
+  border-radius: 10px;
+  margin-top: 40px;
+  cursor: pointer;
+}
+.top-row {
+  height: 60px;
+  width: 4px;
+  background-color: #d40e19;
+}
+.flex-center-branch {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+ul {
+  padding: 0;
+}
+.top-row-line {
+  width: 100%;
+  height: 80px;
+  border-left: 4px solid #d40e19;
+  border-top: 4px solid #d40e19;
+  transform: translateX(50%);
+}
+
+.bottom-aix > li:nth-last-of-type(1) .top-row-line {
+  width: 100%;
+  height: 80px;
+  border-left: 0;
+  border-right: 4px solid #d40e19;
+  border-top: 4px solid #d40e19;
+  transform: translateX(-50%);
+}
+.line-aix {
+  position: absolute;
+  left: 50%;
+  width: 83%;
+  transform: translateX(-50%);
+  height: 4px;
+  background-color: #d40e19;
+}
+</style>
+

@@ -4,11 +4,11 @@
     <div class="body-party pr">
       <div class="attend-line-scoped pa"></div>
       <ul class="flex-space-nowarp party  padd20 overflow-auto">
-        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click="router(el,el.id)">
+        <li v-for="(el ,index) in data" :key="index" class="pr scrollFull flex" @click="router(el,el.id,el.pid)">
           <div class="flex-center line-scoped-top ">
             <div class="heng-line pa" :class="{'heng-line-left': (index === 0) ,'heng-line-right' : (index === data.length-1) }"></div>
             <div class="attend-line-center-scoped pa"></div>
-            <div class=" attend-oval-color div-warp  collection-scoped flex-center-items" ref="input1">
+            <div class="div-warp  collection-scoped attend-oval-color flex-center-items" ref="input1">
               <span class="attend-oval-scoped">{{el.organization_name}}</span>
             </div>
           </div>
@@ -17,7 +17,7 @@
             <div class="child-line attend-oval-bg"></div>
             <div class="child-div attend-oval-bg"></div>
             <ul class="flex-between child-ul">
-              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color" >
+              <li v-for="(item,index) in el.child" :key="index" class="child-li flex-center-items pr attend-oval-color">
 
                 <div class="child-div-two pa attend-oval-bg"></div>
                 <span class="child-span">{{item.organization_name}}</span>
@@ -92,152 +92,140 @@ export default {
   //			}
   //		},
   methods: {
+    // init() {
+    //   this.$store.commit("BREAD_SID_ID", {
+    //     id: 0,
+    //     organization_name: "进博一线党组织"
+    //   });
+    //   http.get("/organization?organization_status=1&all=1").then(res => {
+    //     //获取child
+    //     let list,
+    //       data = [],
+    //       tmp = res.data.data;
+
+    //     let part = []; //缓存唯一架构
+
+    //     //获取唯一架构
+
+    //     tmp.map((x, index) => {
+    //       switch (x.organization_name) {
+    //         case "进口博览局临时党委":
+    //           this.$store.commit("FRAM_TWO", x.id);
+    //           break;
+    //       }
+    //     });
+
+    //     list = res.data.data.map(x => {
+
+    //       if (x.child.length) {
+
+    //         return x.child;
+    //       } else {
+    //         return 0;
+    //       }
+    //     });
+    //     //获取ID
+
+    //   let childrenId = [] ;//子ID
+    //     let id = list.map(x => {
+
+    //       if (Array.isArray(x)) {
+    //         data = x.map(y => {
+    //             childrenId.push(y.id);
+    //             // console.log(x.id)
+    //           return y.pid;
+    //         });
+    //       }
+    //     });
+    //     //维护一个简单数组
+    //     let ids = res.data.data.map(x => {
+    //       return x.id;
+    //     });
+
+    //   let dff = [];
+    //     //    	debugger
+    //     tmp.map(x => {
+    //       // if(childrenId[0] === x.id  || childrenId[1] === x.id) return;
+    // 			if(childrenId.indexOf(x.id) !== -1) return;
+    //         dff.push(x);
+    //     })
+
+    //     this.$store.commit("FRAN_THREE_ROUTER", data[0]);
+    //     this.$store.commit("FRAN_THREE", childrenId);
+    //     this.data = dff.reverse();
+    //   });
+    // },
+
     init() {
+
+      //页面初始化
       this.$store.commit("BREAD_SID_ID", {
         id: 0,
         organization_name: "进博一线党组织"
       });
+
+      
       http.get("/organization?organization_status=1&all=1").then(res => {
-        //获取child
-        let list,
-          data = [],
-          tmp = res.data.data;
+        //抽出所有pid不为0的元素
+        let childId = res.data.data.map((x, index) => {
+          if (x.pid !== 0) return index;
+        });
+        let childPid = res.data.data.map((x, index) => {
+          if (x.pid !== 0) return x.pid;
+        });
 
-        let part = []; //缓存唯一架构
-
-        //获取唯一架构
-
-        tmp.map((x, index) => {
-          switch (x.organization_name) {
-            case "进口博览局临时党委":
-              this.$store.commit("FRAM_TWO", x.id);
-              break;
+        let datas = res.data.data;
+        let tmp = [];
+        for (let index = 0; index < childId.length; index++) {
+          if (childId[index] == undefined) {
+            childId.splice(index, 1);
+            index--;
           }
-        });
-
-
-
-        list = res.data.data.map(x => {
-
-          if (x.child.length) {
-
-            return x.child;
-          } else {
-            return 0;
+        }
+        for (let index = 0; index < childPid.length; index++) {
+          if (childPid[index] == undefined) {
+            childPid.splice(index, 1);
+            index--;
           }
-        });
-        //获取ID
+        }
 
-      let childrenId = [] ;//子ID
-        let id = list.map(x => {
-
-
-          if (Array.isArray(x)) {
-            data = x.map(y => {
-                childrenId.push(y.id);
-                // console.log(x.id)
-              return y.pid;
-            });
-          }
-        });
-        //维护一个简单数组
-        let ids = res.data.data.map(x => {
-          return x.id;
+        childPid = Array.from(new Set(childPid));
+        //数组去重
+        childId = Array.from(new Set(childId));
+        datas.forEach((x, index) => {
+          if (childId.indexOf(index) === -1) tmp.push(x);
         });
 
-      let dff = [];
-        //    	debugger
-        tmp.map(x => {
-          // if(childrenId[0] === x.id  || childrenId[1] === x.id) return;
-          if(childrenId.indexOf(x.id) !== -1) return;
-            dff.push(x);
-        })
-
-    this.$store.commit("FRAN_THREE_ROUTER", data[0]);
-        this.$store.commit("FRAN_THREE", childrenId);
-
-        this.data = dff.reverse();
+        //     this.$store.commit("FRAN_THREE_ROUTER", data[0]);
+        this.$store.commit("FRAN_THREE", childPid);
+        this.data = tmp;
       });
     },
 
     //点击跳转路由
-    router(id, flag) {
-//      	debugger
-      let arr = [
-        "animated zoomIn",
-        "animated fadeIn",
-        "animated bounceInDown",
-        "animated fadeInDown",
-        "animated fadeInUpBig",
-        "animated flipInX",
-        "animated rotateIn",
-        "animated slideInUp",
-        "animated slideInDown"
-      ];
-      let index = Math.floor(Math.random() * arr.length);
-      //return arr[index];
-      this.str = arr[index];
-//    this.$store.commit("donghua", this.str);
-//			let flag1=flag;
-			this.$store.commit('BREAD_HD',flag);
-//  			debugger
-      //			console.log(typeof JSON.parse(this.storage.getStorage('uinfo')).id,typeof flag)
-      this.$store.commit("BREAD_SID_ID", id);
-      let zhuanhuan = JSON.parse(this.storage.getStorage("uinfo")).id;
-      let username = JSON.parse(this.storage.getStorage("uinfo")).username;
-      let pid = JSON.parse(this.storage.getStorage("uinfo")).pid;
+    router(id, flag, pid) {
 
-//  console.log(this.$store.state.nav.huodong)
-//  debugger
-//    if (pid > 0) {
-//      zhuanhuan = pid;
-//    }
-//    //			if(zhuanhuan==122||zhuanhuan==116){
-//    //				zhuanhuan=124
-//    //			}
-//    if (username == "admin") {
-//      this.$store.commit("BREAD_SID_ID", id);
-//      if (flag === this.$store.state.part.framworkerthreeRouter) {
-//        this.$router.push({
-//          path: "/framework/framework/frameworkThree"
-//        });
-//      } else if (flag == this.$store.state.part.framworkerTwo) {
-//        this.$router.push("/framework/framework/frameworkTwo");
-//      } else {
-//        this.$router.push("/framework/framework/frameworkFirst");
-//      }
-//    } else {
-//      //				debugger
-//      if (flag == zhuanhuan) {
-//        this.$store.commit("BREAD_SID_ID", id);
-//        if (flag === this.$store.state.part.framworkerthreeRouter) {
-//          this.$router.push({
-//            path: "/framework/framework/frameworkThree"
-//          });
-//        } else if (flag == this.$store.state.part.framworkerTwo) {
-//          this.$router.push("/framework/framework/frameworkTwo");
-//        } else {
-//          this.$router.push("/framework/framework/frameworkFirst");
-//        }
-//      } else {
-//        Message({
-//          message: `您没有权限查看`,
-//          duration: 1500
-//        });
-//      }
-//    }
+      this.$store.commit("BREAD_SID_ID", {
+        id: flag,
+        organization_name: id.organization_name
+      });
+      if (this.$store.state.part.framworkerthree.indexOf(flag) !== -1) {
+        this.$store.commit("FRAN_BPG", flag);
+      }
 
-//          if (flag === this.$store.state.part.framworkerthreeRouter || flag === this.$store.state.part.framworkerthree[0] || flag === this.$store.state.part.framworkerthree[1]) {
-              // debugger
-            if (flag === this.$store.state.part.framworkerthreeRouter) {
-            	this.$router.push({
-                path: "/framework/framework/frameworkThree"
-              });
-            } else if (flag == this.$store.state.part.framworkerTwo) {
-              this.$router.push("/framework/framework/frameworkTwo");
-            } else {
-              this.$router.push("/framework/framework/frameworkFirst");
-            }
+      // let propId = id.pid === 0 ?
+      // this.$store.commit("FRAN_THREE_ROUTER", data[0]);
+      // this.$store.commit("FRAN_THREE", childrenId);
+
+      if (id.child.length !== 0 || pid !== 0) {
+        this.$router.push({
+          path: "/framework/framework/GeneralPartyBranch"
+        });
+      } else if (flag == this.$store.state.part.framworkerTwo) {
+        this.$router.push("/framework/framework/frameworkTwo");
+      } else {
+        this.$router.push("/framework/framework/frameworkFirst");
+      }
     }
   }
 };

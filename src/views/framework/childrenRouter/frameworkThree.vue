@@ -58,163 +58,157 @@
 </template>
 
 <script>
-  import framework from "./attendComment";
-  import http from "@/api/http";
-  export default {
-    name: "frameworkThree",
-    components: {
-      framework
-    },
-    created() {
-    	this.list = this.$store.state.part.framworkerthree;
-    	this.list.unshift(this.$store.state.nav.id.id)
-    				if(window.localStorage.getItem('flag') !== "0") {
-  window.localStorage.setItem('id',this.list);
-      window.localStorage.setItem('flag',"0")
-    	}
-
-//    console.log(this.list)
-      this.init();
-//    this.init(window.localStorage.getItem('id')[1]);
-//    this.init(window.localStorage.getItem('id')[2]);
-
-//    this.detailsInfo(this.list[0]);
-//    this.detailsInfo(this.list[1]);
-//    this.detailsInfo(this.list[2]);
-    },
-
-    data() {
-      return {
-
-        data: null,
-        partyData: null,
-//      flag: false,
-        partyDataFood : null, //餐饮部
-        partyDataShop : null, //商委部
-        list : [78,75], // 80 总支 ,75 餐饮 78 商务
-        csnyin : '',
-        shangwu : ''
-
-      };
-    },
-
-    beforeDestroy() {
-			window.localStorage.setItem('flag', "1");
-    },
-
-    methods: {
-      init() {
-      	let arr=window.localStorage.getItem('id').split(',')
-        http.get("/organization/" + arr[0]).then(res => {
-
-              this.data = res.data;
-//            console.log(this.data)
-         }),
-        http.get("/organization/" + arr[1]).then(res => {
-              this.partyDataFood = res.data;
-         }),
-        http.get("/organization/" + arr[2]).then(res => {
-              this.partyDataShop = res.data;
-        })
-      },
-
-      //二级党员组织
-      detailsInfo(el) {
-
-        http.get("/organization/" + el).then(res => {
-          switch (el) {
-            case this.list[0]:
-              this.partyData = res.data;
-              break;
-            case this.list[1]:
-              this.partyDataFood = res.data;
-
-              break;
-            case this.list[2]:
-            this.partyDataShop = res.data;
-              break;
-
-
-            default:
-              break;
-          }
-
-        });
-      },
-
-      // 商务委推进办临时党支部
-      getUser (item) {
-        this.showDialog = true;
-        this.dialogTitle = item.user_name;
-        http.get('/user/' + item.id).then(res =>{
-          this.addForm= res.data;
-        })
-      }
+import framework from "./attendComment";
+import http from "@/api/http";
+export default {
+  name: "frameworkThree",
+  components: {
+    framework
+  },
+  created() {
+    this.list = this.$store.state.part.framworkerthree;
+    this.list.unshift(this.$store.state.nav.id.id);
+    if (window.localStorage.getItem("flag") !== "0") {
+      window.localStorage.setItem("id", this.list);
+      window.localStorage.setItem("flag", "0");
     }
-  };
+
+    //    console.log(this.list)
+    this.init();
+    //    this.init(window.localStorage.getItem('id')[1]);
+    //    this.init(window.localStorage.getItem('id')[2]);
+
+    //    this.detailsInfo(this.list[0]);
+    //    this.detailsInfo(this.list[1]);
+    //    this.detailsInfo(this.list[2]);
+  },
+
+  data() {
+    return {
+      data: null,
+      partyData: null,
+      //      flag: false,
+      partyDataFood: null, //餐饮部
+      partyDataShop: null, //商委部
+      list: [78, 75], // 80 总支 ,75 餐饮 78 商务
+      csnyin: "",
+      shangwu: ""
+    };
+  },
+
+  beforeDestroy() {
+    window.localStorage.setItem("flag", "1");
+  },
+
+  methods: {
+    init() {
+      let arr = window.localStorage.getItem("id").split(",");
+      http.get("/organization/" + arr[0]).then(res => {
+        this.data = res.data;
+        //            console.log(this.data)
+      }),
+        http.get("/organization/" + arr[1]).then(res => {
+          this.partyDataFood = res.data;
+        }),
+        http.get("/organization/" + arr[2]).then(res => {
+          this.partyDataShop = res.data;
+        });
+    },
+
+    //二级党员组织
+    detailsInfo(el) {
+      http.get("/organization/" + el).then(res => {
+        switch (el) {
+          case this.list[0]:
+            this.partyData = res.data;
+            break;
+          case this.list[1]:
+            this.partyDataFood = res.data;
+
+            break;
+          case this.list[2]:
+            this.partyDataShop = res.data;
+            break;
+
+          default:
+            break;
+        }
+      });
+    },
+
+    // 商务委推进办临时党支部
+    getUser(item) {
+      this.showDialog = true;
+      this.dialogTitle = item.user_name;
+      http.get("/user/" + item.id).then(res => {
+        this.addForm = res.data;
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-  .padd20 {
-    z-index: 1;
-    padding: 0 20px 20px;
-  }
+.padd20 {
+  z-index: 1;
+  padding: 0 20px 20px;
+}
 
-  .party>li:nth-last-of-type(1)>div:nth-of-type(1){
-      width: 0;
-    // margin-left: -0.5rem;
-  }
+.party > li:nth-last-of-type(1) > div:nth-of-type(1) {
+  width: 0;
+  // margin-left: -0.5rem;
+}
 
-  // .party>li:nth-last-of-type(1)>p {
-  //  margin-right: 3rem;
-  // }
-  .party li {
-    width: 50%;
-  }
+// .party>li:nth-last-of-type(1)>p {
+//  margin-right: 3rem;
+// }
+.party li {
+  width: 50%;
+}
 
-  .mg-top30 {
-    margin-top: 12px;
-  }
+.mg-top30 {
+  margin-top: 12px;
+}
 
-  .attend-oval-party-scoped {
-    border-radius: 100px;
-    // margin-left: -1.rem;
-    // width: 50%;
-    background-color: #d40e19;
-     padding: 0.6rem 4rem;
-    margin-top: 2.5rem;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    cursor: pointer;
-  }
+.attend-oval-party-scoped {
+  border-radius: 100px;
+  // margin-left: -1.rem;
+  // width: 50%;
+  background-color: #d40e19;
+  padding: 0.6rem 4rem;
+  margin-top: 2.5rem;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
 
-  .attend-line-center-scoped {
-    width: 100%;
-    height: 2.5rem;
-    // margin-left: 1rem;
-    top: 0px;
-    left: 50%;
-    border-left: 4px solid #d40e19;
-    border-top: 4px solid #d40e19;
-    transform: translate(-1px);
-    z-index: 101;
-  }
+.attend-line-center-scoped {
+  width: 100%;
+  height: 2.5rem;
+  // margin-left: 1rem;
+  top: 0px;
+  left: 50%;
+  border-left: 4px solid #d40e19;
+  border-top: 4px solid #d40e19;
+  transform: translate(-1px);
+  z-index: 101;
+}
 
-  .party-scoped {
-    width: 100%;
-    height: 4px;
-    padding: 0 26% 0 26%;
-    background-clip: content-box;
-    background-color: #d40e19;
-  }
+.party-scoped {
+  width: 100%;
+  height: 4px;
+  padding: 0 26% 0 26%;
+  background-clip: content-box;
+  background-color: #d40e19;
+}
 
-  .active-party {
-    margin-top: 120px;
-  }
+.active-party {
+  margin-top: 120px;
+}
 
-.z-x-line{
+.z-x-line {
   width: 4px;
   height: 100%;
   left: 50%;

@@ -5,70 +5,71 @@
 </template>
 
 <script>
-  import framework from './attendComment'
-  import http from "@/api/http";
+import framework from "./attendComment";
+import http from "@/api/http";
 
-  export default {
-    name: "frameworkFirst",
-    components: {
-      framework
-    },
-    data() {
-      return {
-        data: null,
-        showDialog: false
+export default {
+  name: "frameworkFirst",
+  components: {
+    framework
+  },
+  data() {
+    return {
+      data: null,
+      showDialog: false
+    };
+  },
+  created() {
+    if (window.localStorage.getItem("flag") !== "0") {
+   
 
-      }
-    },
-    created() {
-    	if(window.localStorage.getItem('flag') !== "0") {
-  window.localStorage.setItem('id',this.$store.state.nav.id.id);
-      window.localStorage.setItem('flag',"0")
-    	} 
+      window.localStorage.setItem("id", this.$store.state.nav.id.id);
+      window.localStorage.setItem("flag", "0");
+    }
 
-      this.init();
 
-    },
-    activated() {
-      this.init();
-    },
-    deactivated() {
-      this.showDialog = false
-
-    },
-    beforeDestroy() {
-    	window.localStorage.setItem('flag',"1");
-      this.showDialog = false
-
-    },
-    methods: {
-      init() {
-        http.get('/organization/' + window.localStorage.getItem('id')).then(res => {
-//      	debugger
+    this.init();
+  },
+  activated() {
+    this.init();
+  },
+  deactivated() {
+    this.showDialog = false;
+  },
+  beforeDestroy() {
+    window.localStorage.setItem("flag", "1");
+    this.showDialog = false;
+  },
+  methods: {
+    init() {
+      http
+        .get("/organization/" + window.localStorage.getItem("id"))
+        .then(res => {
+          //      	debugger
           this.data = res.data;
-        })
-      }
+        });
     }
   }
+};
 </script>
 
 <style lang="scss" scoped>
-  ul {
-    padding: 0;
-  }
+ul {
+  padding: 0;
+}
 
-  .contian {
-    // background-color: yellow;
-  }
+.contian {
+  // background-color: yellow;
+}
 
-  .party>li:nth-last-of-type(1)>div {
-    width: 0;
-  }
+.party > li:nth-last-of-type(1) > div {
+  width: 0;
+}
 
-  .div {
-    height: 100%;
-    overflow: auto;
-  }
+.div {
+  height: 100%;
+  overflow: auto;
+}
 
 //   .attend-oval-party {
 //   border-radius: 100px;

@@ -3,7 +3,8 @@ const part = {
 
     framworkerTwo: 101, //架构二
     framworkerthree: [98, 104], //架构三
-    framworkerthreeRouter: '' //架构三
+    framworkerthreeRouter: '', //架构三
+    GeneralPartyBranch: '' //二层结构
 
   },
 
@@ -16,6 +17,9 @@ const part = {
     },
     FRAN_THREE_ROUTER: (state, msg) => {
       state.framworkerthreeRouter = msg
+    },
+    FRAN_BPG : (state, msg) => {
+      state.GeneralPartyBranch = msg
     }
   }
 }
