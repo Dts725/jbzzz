@@ -424,7 +424,6 @@
             let arr = this.filterDataActive(res.data.data, organizationList);
             // 去重
             arr = this.removeRepeat(arr, 'name');
-						
             this.echartsData.organization_active.data = JSON.parse(JSON.stringify(arr.sort(this.sortObj('value', 'up'))));
             if (/\s组织数:.*\d+/.test(this.echartsData.organization_active.title)) {
               this.echartsData.organization_active.title = this.echartsData.organization_active.title.replace(/\s组织数:.*\d+/, ` 组织数:${this.echartsData.organization_active.data.length} 总次数:${this.countNum(this.echartsData.organization_active.data)}`);
@@ -460,7 +459,6 @@
           }
         });
         return arr;
-				
       },
       /** 党组织活动不去重**/
       filterData1(data) {

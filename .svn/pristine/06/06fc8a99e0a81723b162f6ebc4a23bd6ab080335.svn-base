@@ -59,8 +59,6 @@ export default {
   },
   created() {
     // this.size();
-
-    window.localStorage.setItem("flag", "1");
     this.init();
   },
   activated() {
@@ -85,15 +83,88 @@ export default {
       }
     });
   },
-
+  //computed:{
+  //			donghua1(){
+  //				let arr=['animated zoomIn','animated fadeIn','animated bounceInDown','animated fadeInDown','animated fadeInUpBig','animated flipInX','animated rotateIn','animated slideInUp','animated slideInDown'];
+  //				let index=Math.floor(Math.random()*arr.length);
+  //				//return arr[index];
+  //			return this.str=arr[index];
+  //			}
+  //		},
   methods: {
+    // init() {
+    //   this.$store.commit("BREAD_SID_ID", {
+    //     id: 0,
+    //     organization_name: "进博一线党组织"
+    //   });
+    //   http.get("/organization?organization_status=1&all=1").then(res => {
+    //     //获取child
+    //     let list,
+    //       data = [],
+    //       tmp = res.data.data;
+
+    //     let part = []; //缓存唯一架构
+
+    //     //获取唯一架构
+
+    //     tmp.map((x, index) => {
+    //       switch (x.organization_name) {
+    //         case "进口博览局临时党委":
+    //           this.$store.commit("FRAM_TWO", x.id);
+    //           break;
+    //       }
+    //     });
+
+    //     list = res.data.data.map(x => {
+
+    //       if (x.child.length) {
+
+    //         return x.child;
+    //       } else {
+    //         return 0;
+    //       }
+    //     });
+    //     //获取ID
+
+    //   let childrenId = [] ;//子ID
+    //     let id = list.map(x => {
+
+    //       if (Array.isArray(x)) {
+    //         data = x.map(y => {
+    //             childrenId.push(y.id);
+    //             // console.log(x.id)
+    //           return y.pid;
+    //         });
+    //       }
+    //     });
+    //     //维护一个简单数组
+    //     let ids = res.data.data.map(x => {
+    //       return x.id;
+    //     });
+
+    //   let dff = [];
+    //     //    	debugger
+    //     tmp.map(x => {
+    //       // if(childrenId[0] === x.id  || childrenId[1] === x.id) return;
+    // 			if(childrenId.indexOf(x.id) !== -1) return;
+    //         dff.push(x);
+    //     })
+
+    //     this.$store.commit("FRAN_THREE_ROUTER", data[0]);
+    //     this.$store.commit("FRAN_THREE", childrenId);
+    //     this.data = dff.reverse();
+    //   });
+    // },
+
     init() {
+
       //页面初始化
       this.$store.commit("BREAD_SID_ID", {
         id: 0,
         organization_name: "进博一线党组织"
       });
 
+      
       http.get("/organization?organization_status=1&all=1").then(res => {
         //抽出所有pid不为0的元素
         let childId = res.data.data.map((x, index) => {
@@ -121,21 +192,9 @@ export default {
         childPid = Array.from(new Set(childPid));
         //数组去重
         childId = Array.from(new Set(childId));
-      let tmpflag =1;
         datas.forEach((x, index) => {
-          if (childId.indexOf(index) === -1) {
-            if(x.child.length ===0 && tmpflag === 1) {
-              tmpflag = 0;
-              tmp.unshift(x);
-            } else {
-              tmp.push(x)
-            }
-          };
+          if (childId.indexOf(index) === -1) tmp.push(x);
         });
-
-        let slice;
-
-
 
         //     this.$store.commit("FRAN_THREE_ROUTER", data[0]);
         this.$store.commit("FRAN_THREE", childPid);
@@ -145,11 +204,14 @@ export default {
 
     //点击跳转路由
     router(id, flag, pid) {
+		
       this.$store.commit("BREAD_SID_ID", {
         id: flag,
         organization_name: id.organization_name
       });
-
+	  
+	  this.$store.commit("BREAD_HD",id.id);
+	  
       if (this.$store.state.part.framworkerthree.indexOf(flag) !== -1) {
         this.$store.commit("FRAN_BPG", flag);
       }
@@ -162,7 +224,7 @@ export default {
         this.$router.push({
           path: "/framework/framework/GeneralPartyBranch"
         });
-      } else if (id.organization_name === "进口博览局临时党委") {
+      } else if (flag == this.$store.state.part.framworkerTwo) {
         this.$router.push("/framework/framework/frameworkTwo");
       } else {
         this.$router.push("/framework/framework/frameworkFirst");

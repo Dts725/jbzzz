@@ -37,7 +37,6 @@ export default {
   created() {
     if (window.localStorage.getItem("flag") !== "0") {
       window.localStorage.setItem("id", this.$store.state.part.GeneralPartyBranch);
-      window.localStorage.setItem("pid", this.$store.state.part.GeneralPartyBranch);
       window.localStorage.setItem("flag", "0");
     }
     this.init();
@@ -47,11 +46,11 @@ export default {
     // this.init();
   },
 beforeDestroy() {
-      // window.localStorage.setItem("flag", "1");
+      // window.localStorage.setItem("flag", "0");
 },
   methods: {
     init() {
-      let pid = window.localStorage.getItem('pid');
+      let pid = window.localStorage.getItem('id');
       http.get("/organization/" + pid).then(res => {
         this.dataInfo = {
           organization_name: res.data.organization_name,
@@ -71,8 +70,6 @@ beforeDestroy() {
         this.$store.commit("FRAN_BPG", flag);
       }
       window.localStorage.setItem("id", this.$store.state.nav.id.id);
-      // window.localStorage.setItem("pid", this.$store.state.nav.id.id);
-
 
 
       if (flag === this.$store.state.part.framworkerthreeRouter) {
@@ -94,7 +91,7 @@ beforeDestroy() {
   background-color: #d40e19;
   width: 160px;
   border-radius: 10px;
-
+  margin-top: 40px;
   cursor: pointer;
 }
 .top-row {

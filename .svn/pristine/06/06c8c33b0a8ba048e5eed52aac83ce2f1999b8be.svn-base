@@ -94,7 +94,7 @@ beforeDestroy() {
   background-color: #d40e19;
   width: 160px;
   border-radius: 10px;
-
+  margin-top: 40px;
   cursor: pointer;
 }
 .top-row {
